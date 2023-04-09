@@ -43,10 +43,43 @@ case "$1" in
   # To create a new folder for a problem.
   # @parameters
   #  $2 To create a new run of files.
-  #  #3 'C' or 'C++', 'C++' default
+  #  $3 The quantity of problems.
   'create' | 'c' )
 
+    # Verify if user's on the root path.
+    if [ ! -f "config.mk" ]; then
+      red "You have to be on the root path of the project to create a problem's folder."
+      exit 1
+    fi
+
     # Verify if user is on the root of the project.
+    if [ ! "$2" ]; then
+      red "Specify the name's problem following the convention."
+      exit 1
+    fi
+
+    if [ -d "$2" ]; then
+      red "\"$2\" folder or problem solution already exist."
+      exit 1
+    fi
+
+    mkdir -p "$2/tests/"
+    # TODO: Allow the user to choose between C and C++ here.
+    name="$2/source.c++"
+    touch "$name"
+
+    #cd "$2/"
+
+    if [ "$3" -gt 0 ]; then
+      for i in {1..$3}; do
+        touch "./$2/tests/$i.in" "./$2/tests/$i.out"
+      done
+
+      nvim "$name" "./$2/tests"/*
+    else
+      nvim "$name"
+    fi
+
 
   ;;
 

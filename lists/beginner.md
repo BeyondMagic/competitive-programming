@@ -1,16 +1,16 @@
 ### Exercícios preparatórios
 
 1. Tipos de dados e operadores aritméticos, lógicos e relacionais
-    1. [Soma Simples](https://www.beecrowd.com.br/judge/pt/problems/view/1003)
-    2. [Diferença](https://www.beecrowd.com.br/judge/pt/problems/view/1007)
-    3. [Área do círculo](https://www.beecrowd.com.br/judge/pt/problems/view/1002)
-    4. [Esfera](https://www.beecrowd.com.br/judge/pt/problems/view/1011)
-    5. [Média 2](https://www.beecrowd.com.br/judge/pt/problems/view/1006)
-    6. [Área](https://www.beecrowd.com.br/judge/pt/problems/view/1012)
-    7. [Gasto de Combustível](https://www.beecrowd.com.br/judge/pt/problems/view/1017)
-    8. [Conversão de Tempo](https://www.beecrowd.com.br/judge/pt/problems/view/1019)
-    9. [O Maior](https://www.beecrowd.com.br/judge/pt/problems/view/1013)
-    10. [Distância entre dois pontos](https://www.beecrowd.com.br/judge/pt/problems/view/1015)
+    1.  x [Soma Simples](https://www.beecrowd.com.br/judge/pt/problems/view/1003)
+    2.  x [Diferença](https://www.beecrowd.com.br/judge/pt/problems/view/1007)
+    3.  x [Área do círculo](https://www.beecrowd.com.br/judge/pt/problems/view/1002)
+    4.  x [Esfera](https://www.beecrowd.com.br/judge/pt/problems/view/1011)
+    5.  x [Média 2](https://www.beecrowd.com.br/judge/pt/problems/view/1006)
+    6.  x [Área](https://www.beecrowd.com.br/judge/pt/problems/view/1012)
+    7.  x [Gasto de Combustível](https://www.beecrowd.com.br/judge/pt/problems/view/1017)
+    8.  x [Conversão de Tempo](https://www.beecrowd.com.br/judge/pt/problems/view/1019)
+    9.  x [O Maior](https://www.beecrowd.com.br/judge/pt/problems/view/1013)
+    10. x  [Distância entre dois pontos](https://www.beecrowd.com.br/judge/pt/problems/view/1015)
 
 2. Condicionais
     1. [Lanche](https://www.beecrowd.com.br/judge/pt/problems/view/1038)
