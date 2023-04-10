@@ -31,11 +31,11 @@ case "$1" in
         red "\"$2\" problem's folder does not exist."
         exit 1
       fi
-      n="$2" make optimise
+      n="$2" make optimise -s
     else
       last_dir="$PWD"
       cd "../"
-      n="$(basename "$last_dir")" make optimise
+      n="$(basename "$last_dir")" make optimise -s
       cd "$last_dir"
     fi
   ;;
@@ -108,11 +108,10 @@ case "$1" in
           continue
         fi
       fi
-      bold "    RESULT:"
-
       bold "$a.  INPUT:"
       gray "$input"
 
+      bold "$a.   RESULT:"
       red "$result"
       bold "    EXPECTED:"
       gray "$expected"
