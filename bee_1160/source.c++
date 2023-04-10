@@ -6,15 +6,10 @@ void solve (double pa, double pb, double g1, double g2)
 {
   size_t anos = 0;
 
-  double pa_initial = pa,
-         pb_initial = pb;
-
-  while (pb > pa and anos <= 100)
+  while (pa <= pb and anos < 101)
   {
-    pa = pa_initial + pa_initial * g1 / 100;
-    pb = pb_initial + pb_initial * g2 / 100;
-    pa_initial = pa;
-    pb_initial = pb;
+    pa += (double) (size_t)(pa * g1 / 100);
+    pb += (double) (size_t)(pb * g2 / 100);
     anos++;
   }
   if (anos > 100)
