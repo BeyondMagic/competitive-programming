@@ -20,7 +20,7 @@ case "$1" in
   #  $2? Name of the project in case of root folder.
   'run' | 'r' )
 
-    # To verify if is the root folder.
+    # If it the root folder.
     if [ -f "config.mk" ]; then
 
       if [ ! "$2" ]; then
@@ -31,11 +31,13 @@ case "$1" in
         red "\"$2\" problem's folder does not exist."
         exit 1
       fi
-      n="$2" make optimise -s
+      export c="$(echo source.* | awk -F '[.]' '{print $NF}')"
+      n="$2" make build -s
     else
       last_dir="$PWD"
+      export c="$(echo source.* | awk -F '[.]' '{print $NF}')"
       cd "../"
-      n="$(basename "$last_dir")" make optimise -s
+      n="$(basename "$last_dir")" make build -s
       cd "$last_dir"
     fi
   ;;
@@ -44,6 +46,7 @@ case "$1" in
   # @parameters
   #  $2 To create a new run of files.
   #  $3 The quantity of problems.
+  #  $4 C++ or C. C++ by default.
   'create' | 'c' )
 
     # Verify if user's on the root path.
@@ -64,8 +67,12 @@ case "$1" in
     fi
 
     mkdir -p "$2/tests/"
-    # TODO: Allow the user to choose between C and C++ here.
-    name="$2/source.c++"
+
+    if [ "$4" ]; then
+      name="$2/source.$4"
+    else
+      name="$2/source.c++"
+    fi
     touch "$name"
 
     #cd "$2/"

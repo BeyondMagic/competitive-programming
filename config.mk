@@ -2,6 +2,12 @@
 # -- Program defaults.
 
 NAME_PROGRAM = $(n)
+LANGUAGE = $(c)
+COMPILER = g++
+
+ifeq ($(c), c)
+	COMPILER = gcc
+endif
 
 #OBJECTS = main.o
 
@@ -50,14 +56,18 @@ C_FLAGS := $(C_FLAGS) -ftrivial-auto-var-init=zero
 #------------------------------------------------
 # -- Sanitisers.
 
-C_EXTRA := $(C_EXTRA) -fsanitize-undefined-trap-on-error
+ifeq ($(COMPILER), g++)
+	C_EXTRA := $(C_EXTRA) -fsanitize-undefined-trap-on-error
 
-C_EXTRA := $(C_EXTRA) -fsanitize-address-use-after-scope
+	C_EXTRA := $(C_EXTRA) -fsanitize-address-use-after-scope
 
-C_EXTRA := $(C_EXTRA) -fsanitize=address
-C_EXTRA := $(C_EXTRA),undefined
-C_EXTRA := $(C_EXTRA),nullability
-C_EXTRA := $(C_EXTRA),implicit-integer-truncation
-C_EXTRA := $(C_EXTRA),implicit-integer-arithmetic-value-change
-C_EXTRA := $(C_EXTRA),implicit-conversion
-C_EXTRA := $(C_EXTRA),integer
+	C_EXTRA := $(C_EXTRA) -fsanitize=address
+	C_EXTRA := $(C_EXTRA),undefined
+
+	# Those are only for clang++.
+	#C_EXTRA := $(C_EXTRA),nullability
+	#C_EXTRA := $(C_EXTRA),implicit-integer-truncation
+	#C_EXTRA := $(C_EXTRA),implicit-integer-arithmetic-value-change
+	#C_EXTRA := $(C_EXTRA),implicit-conversion
+	#C_EXTRA := $(C_EXTRA),integer
+endif
