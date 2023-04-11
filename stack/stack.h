@@ -40,7 +40,7 @@ bool stack_push (struct Stack *head, const void *data, size_t data_size)
   if (!head->data)
     return -3;
 
-  memcpy(head->data, data, data_size);
+  memcpy(head->data, data, data_size * sizeof(char));
   return 0;
 }
 
@@ -50,15 +50,29 @@ bool stack_push (struct Stack *head, const void *data, size_t data_size)
  * @parameters 
  * @returns true if sucessfull, false if failed.
  **/
-bool stack_pop (struct Stack *top)
+bool stack_pop (struct Stack *head)
 {
-  if (!top)
+  if (!head)
     return false;
 
-  struct Stack *temp = top;
-  top = top->next;
+  struct Stack *temp = head;
+  head = head->next;
   free(temp->data);
   free(temp);
 
   return true;
+}
+
+/*
+ * @description It returns a boolean value indicating whether
+ * @complexity O(1)
+ * @parameters
+ * @returns
+ *   true if empty;
+ *   false if not empty;
+ */
+[[nodiscard("A verifier's return value gives its reason.")]]
+inline bool stack_is_empty (struct stack *head)
+{
+  return !head;
 }
