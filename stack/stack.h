@@ -47,8 +47,11 @@ bool stack_push (struct Stack *head, const void *data, size_t data_size)
 /*
  * @description It removes an element from the top of the stack.
  * @complexity O(1)
- * @parameters 
- * @returns true if sucessfull, false if failed.
+ * @parameters
+ *   head: stack to be perfomed.
+ * @returns
+ *   true if sucessfull;
+ *   false if failed.
  **/
 bool stack_pop (struct Stack *head)
 {
