@@ -1,21 +1,35 @@
 #include <iostream>
-#include <set>
+#include <vector>
+#include <algorithm>
+#include <deque>
 
 using namespace std;
 
-size_t solve (set<size_t> a)
+auto solve (deque<size_t> a)
 {
-  size_t n = 0;
-  n = *a.begin();
+  auto biggest = a.front();
+  a.pop_front();
 
-  return n;
+  size_t sum = 0;
+
+  while (!a.empty())
+  {
+    sum += a.front();
+    a.pop_front();
+    biggest--;
+  }
+
+  return sum + biggest;
 }
 
 int main()
 {
-  set<size_t> a;
+  deque<size_t> a;
+
   size_t b;
-  cin >> b;
-  a.emplace(b);
+  while (cin >> b)
+    a.emplace_back(b);
+
+  sort(a.rbegin(), a.rend());
   cout << solve(a) << '\n';
 }
