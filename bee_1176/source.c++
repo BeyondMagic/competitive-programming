@@ -21,17 +21,17 @@ size_lt fibonacci (size_lt n)
 
 inline auto solve (size_lt n)
 {
-    return fibonacci(n);
+  return fibonacci(n);
 }
 
 int main ()
 {
-    size_t n;
-    cin >> n;
-    while (n--)
-    {
-        size_lt a;
-        cin >> a;
-        cout << "Fib(" << a << ") = " << solve(a) << '\n';
-    }   
+  size_t n;
+  cin >> n;
+  while (n--)
+  {
+    size_lt a;
+    cin >> a;
+    cout << "Fib(" << a << ") = " << solve(a) << '\n';
+  }
 }
