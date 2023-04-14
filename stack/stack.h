@@ -2,12 +2,24 @@
 #include <stdbool.h>
 #include <string.h>
 
+/*
+ * Stack is represented using nodes (StackNode) of a linked list.
+ * Each node consists of two fields: data and next (storing address of next node).
+ * The data field of each node contains the assigned value,
+ * and the next points to the node containing the next item in the stack.
+ */
 struct StackNode
 {
   void *data;
   struct StackNode *next;
 };
 
+/*
+ * Stack is data structure that follows the LIFO (Last in, First out) principle:
+ * insertion and deletion can take place only at one end.
+ * Implemented using a  linked list means we are implementing stack allocating dynamic memory,
+ * whereas using array it has to be defined elsewhere.
+ */
 struct Stack
 {
   size_t size;
