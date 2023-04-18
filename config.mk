@@ -7,6 +7,7 @@ COMPILER = g++
 
 ifeq ($(c), c)
 	COMPILER = gcc
+	C_FLAGS := $(C_FLAGS) -std=c2x
 endif
 
 #OBJECTS = main.o
@@ -19,7 +20,7 @@ endif
 #---------------------------------------------
 # -- Warnings we *need* to see.
 
-C_FLAGS := -O3
+C_FLAGS := $(C_FLAGS) -O3
 
 C_FLAGS := $(C_FLAGS) -Wall
 
