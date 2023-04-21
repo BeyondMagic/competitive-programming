@@ -81,12 +81,13 @@ case "$1" in
 
     mkdir -p "$2/tests/"
 
-    if [ "$4" ]; then
-      name="$2/source.$4"
-    else
-      name="$2/source.c++"
-    fi
-    touch "$name"
+    # Make default C++.
+    [ ! "$4" ] && extension="c++" \
+               || extension="$4"
+
+    name="$2/source.$extension"
+
+    cp "template.$extension" "$name"
 
     if [ "$3" -gt 0 ]; then
       for i in {1..$3}; do
