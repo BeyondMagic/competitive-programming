@@ -100,6 +100,7 @@ case "$1" in
     fi
   ;;
 
+  # TODO: Warn the user if the output was only accepted because we had to trail spaces or newlines.
   'test' | 't' )
 
     # Discover the quantity of tests.
@@ -115,8 +116,8 @@ case "$1" in
       expected="$(cat "./tests/$a.out")"
 
       if [ $? -eq 0 ]; then
-        min_result="$(echo "$result" | tr -d '\r\n' | awk '{$1=$1};1')"
-        min_expected="$(echo "$expected" | tr -d '\r\n' | awk '{$1=$1};1')"
+        min_result="$(echo "$result" | awk '{$1=$1};1' | tr -d '\r\n')"
+        min_expected="$(echo "$expected" | awk '{$1=$1};1' |tr -d '\r\n')"
         if [ "$min_result" = "$min_expected" ]; then
           green "$a. $result"
           continue
