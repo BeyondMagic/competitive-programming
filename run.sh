@@ -1,5 +1,10 @@
 #!/usr/bin/env zsh
 #
+# Tool to create, build, test, and modify competitive problems.
+#
+# @param string: modify or m. Modify a problem.
+#   @param string: name of project in case being in root path.
+#
 # @param string: run or r. Build the project.
 #   @param string: name of project in case being in root path.
 #     @param boolean: force move compile_commands.json
@@ -38,6 +43,30 @@ function build ()
 
 case "$1" in
 
+  'modify' | 'm' )
+
+    # Verify if user's on the root path.
+    if [ ! -f "config.mk" ]; then
+      red "You have to be on the root path of the project to create a problem's folder."
+      exit 1
+    fi
+
+    # Has to have problem's name.
+    if [ ! "$2" ]; then
+      red "Specify the name's problem following the convention."
+      exit 1
+    fi
+
+    if [ ! -d "./$2/" ]; then
+      red "\"$2\" problem's folder does not exist."
+      exit 1
+    fi
+
+    cd "./$2/"
+    nvim "./source."* +args\ % "./tests"/*
+
+  ;;
+
   'run' | 'r' )
 
     # If it the root folder.
@@ -47,12 +76,12 @@ case "$1" in
         red "\$2 argument should be the problem's folder name."
         exit 1
       fi
-      if [ ! -f "./$2/" ]; then
+      if [ ! -d "./$2/" ]; then
         red "\"$2\" problem's folder does not exist."
         exit 1
       fi
       export c="$(echo source.* | awk -F '[.]' '{print $NF}')"
-      n="$2" build $43
+      n="$2" build $3
     else
       last_dir="$PWD"
       export c="$(echo source.* | awk -F '[.]' '{print $NF}')"
@@ -70,7 +99,7 @@ case "$1" in
       exit 1
     fi
 
-    # Verify if user is on the root of the project.
+    # Has to have problem's name.
     if [ ! "$2" ]; then
       red "Specify the name's problem following the convention."
       exit 1
@@ -104,9 +133,15 @@ case "$1" in
 
   'test' | 't' )
 
-    # Discover the quantity of tests.
-    [ "$2" ] && quantity="$2" \
-             || quantity="$(fd --base-directory tests/ --extension in --size +1b | wc -l)"
+    # Discover the quantity of tests in the root folder of the problem.
+    quantity=$(fd --base-directory tests/ --extension in --size +1b | wc -l)
+    if [ $2 ]; then
+      if [ $2 -gt $quantity ]; then
+        gray "There are not that many tests."
+      else
+        quantity=$2
+      fi
+    fi
 
     failed=""
 
