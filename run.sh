@@ -149,6 +149,7 @@ case "$1" in
     for a in {1..$quantity}
     do
 
+      failed=0
       input="$(cat "./tests/$a.in")"
       result="$("./binary" < "./tests/$a.in")"
       expected="$(cat "./tests/$a.out")"
@@ -193,7 +194,7 @@ case "$1" in
         echo "$result" > "./failed/$a.result"
         diff "./failed/$a.result" "./tests/$a.out"  --unified=0 > "./failed/$a.diff"
         rm -f "./failed/$a.result"
-        failed=true
+        failed=1
       }
 
       bold "    EXPECTED:"
@@ -203,8 +204,8 @@ case "$1" in
     done
 
     if [ -d "./failed/" ]; then
-      [ "$failed" ] && nvim "./failed/"* \
-                    || rm -rf "$failed_folder"
+      [ "$failed" = 1 ] && nvim "./failed/"* \
+                        || rm -rf "./failed/"
 
     fi
 
