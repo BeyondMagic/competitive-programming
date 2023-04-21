@@ -1,3 +1,5 @@
 .ccls-cache/
 **/binary
 **/compile_commands.json
+/README.pdf
+**/failed/
