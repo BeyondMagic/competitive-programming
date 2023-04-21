@@ -102,12 +102,13 @@ case "$1" in
     fi
   ;;
 
-  # TODO: Warn the user if the output was only accepted because we had to trail spaces or newlines.
   'test' | 't' )
 
     # Discover the quantity of tests.
     [ "$2" ] && quantity="$2" \
              || quantity="$(fd --base-directory tests/ --extension in --size +1b | wc -l)"
+
+    failed=""
 
     # Run over each one.
     for a in {1..$quantity}
@@ -144,16 +145,33 @@ case "$1" in
         fi
       fi
 
+      # Here failed.
       bold "$a.  INPUT:"
       gray "$input"
 
       bold "$a.   RESULT:"
       red "$result"
+
+      # See difference between results.
+      {
+        mkdir -p './failed'
+        echo "$result" > "./failed/$a.result"
+        diff "./failed/$a.result" "./tests/$a.out"  --unified=0 > "./failed/$a.diff"
+        rm -f "./failed/$a.result"
+        failed=true
+      }
+
       bold "    EXPECTED:"
       gray "$expected"
 
       echo
     done
+
+    if [ -d "./failed/" ]; then
+      [ "$failed" ] && nvim "./failed/"* \
+                    || rm -rf "$failed_folder"
+
+    fi
 
   ;;
 
