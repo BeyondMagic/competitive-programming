@@ -8,6 +8,7 @@ COMPILER = g++
 ifeq ($(c), c)
 	COMPILER = gcc
 	C_FLAGS := $(C_FLAGS) -std=c2x
+	C_FLAGS := $(C_FLAGS) -lm
 endif
 
 #OBJECTS = main.o
