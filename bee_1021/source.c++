@@ -3,8 +3,8 @@
 
 using namespace std;
 
-const string nota_format  = " nota(s) de R$ ";
-const string moeda_format = " moeda(s) de R$ ";
+constexpr static auto nota_format  = " nota(s) de R$ ";
+constexpr static auto moeda_format = " moeda(s) de R$ ";
 
 double notas(double m)
 {
