@@ -24,6 +24,8 @@ function gray  () { echo "\033[2m$1\033[0m" }
 function bold  () { echo "\033[3m$1\033[0m" }
 function red   () { echo "\033[31m$1\033[m" }
 function green () { echo "\033[32m$1\033[m" }
+function yellow () { echo "\033[33m$1\033[m" }
+function bright_yellow () { echo "\033[93m$1\033[m" }
 
 function build ()
 {
@@ -115,14 +117,33 @@ case "$1" in
       result="$("./binary" < "./tests/$a.in")"
       expected="$(cat "./tests/$a.out")"
 
+      #echo "__result: \"$result\"\nexpected: \"$expected\"" | nvim
+      #exit 1
+
       if [ $? -eq 0 ]; then
-        min_result="$(echo "$result" | awk '{$1=$1};1' | tr -d '\r\n')"
-        min_expected="$(echo "$expected" | awk '{$1=$1};1' |tr -d '\r\n')"
-        if [ "$min_result" = "$min_expected" ]; then
+        if [ "$result" = "$expected" ]; then
           green "$a. $result"
           continue
         fi
+
+        min_result="$(echo "$result" | awk '{$1=$1};1')"
+        min_expected="$(echo "$expected" | awk '{$1=$1};1')"
+
+        if [ "$min_result" = "$min_expected" ]; then
+          gray "Had to remove leading and trailing spaces."
+          bright_yellow "$a. $result"
+          continue
+        fi
+
+        min_result="$(echo "$min_result" | tr -d '\r\n')"
+        min_expected="$(echo "$min_expected" | tr -d '\r\n')"
+        if [ "$min_result" = "$min_expected" ]; then
+          gray "Had to remove newlines, leading and trailing spaces."
+          yellow "$a. $result"
+          continue
+        fi
       fi
+
       bold "$a.  INPUT:"
       gray "$input"
 
