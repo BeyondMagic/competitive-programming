@@ -3,3 +3,7 @@
 **/compile_commands.json
 /README.pdf
 **/failed/
+
+# As monitor of the class APC in FGA (UnB).
+# I save the codes to test them later on.
+/**/apc_**/mon_**.c
