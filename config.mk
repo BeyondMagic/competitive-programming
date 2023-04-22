@@ -11,6 +11,12 @@ ifeq ($(c), c)
 	C_FLAGS := $(C_FLAGS) -lm
 endif
 
+ifdef f
+	FILE = $(f)
+else
+	FILE = source
+endif
+
 #OBJECTS = main.o
 
 #---------------------------------------------

@@ -71,7 +71,6 @@ case "$1" in
 
     # If it the root folder.
     if [ -f "config.mk" ]; then
-
       if [ ! "$2" ]; then
         red "\$2 argument should be the problem's folder name."
         exit 1
@@ -84,7 +83,14 @@ case "$1" in
       n="$2" build $3
     else
       last_dir="$PWD"
-      export c="$(echo source.* | awk -F '[.]' '{print $NF}')"
+
+      if [ -f "$2" ]; then
+        export f="$(basename "$2" | awk '{gsub(/.*[/]|[.].*/, "", $0)} 1')"
+        export c="$(echo "$2" | awk -F '[.]' '{print $NF}')"
+      else
+        export c="$(echo source.* | awk -F '[.]' '{print $NF}')"
+      fi
+
       cd "../"
       n="$(basename "$last_dir")" build $3
       cd "$last_dir"
