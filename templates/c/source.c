@@ -4,6 +4,9 @@
 #include <math.h>
 #include <stdbool.h>
 
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+
 /* calculation */
 int solve (int a)
 {
