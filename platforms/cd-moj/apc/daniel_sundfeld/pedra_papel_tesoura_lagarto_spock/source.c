@@ -4,11 +4,11 @@
 #include <math.h>
 
 enum JOGOS {
-  PEDRA = 0,
-  PAPEL = 1,
+  PEDRA   = 0,
+  PAPEL   = 1,
   TESOURA = 2,
   LAGARTO = 3,
-  SPOCK = 4,
+  SPOCK   = 4,
 };
 
 /* calculation */
@@ -18,9 +18,9 @@ char solve (int a, int b)
     return '\0';
 
   if (  (a == PEDRA   && (b == TESOURA || b == LAGARTO))
-     || (a == PAPEL   && (b == SPOCK || b == PEDRA))
-     || (a == TESOURA && (b == PAPEL || b == LAGARTO))
-     || (a == LAGARTO && (b == PAPEL || b == SPOCK))
+     || (a == PAPEL   && (b == SPOCK   || b == PEDRA))
+     || (a == TESOURA && (b == PAPEL   || b == LAGARTO))
+     || (a == LAGARTO && (b == PAPEL   || b == SPOCK))
      || (a == SPOCK   && (b == TESOURA || b == PEDRA))
      )
     return 'A';
@@ -28,7 +28,7 @@ char solve (int a, int b)
   return 'B';
 }
 
-int main(void)
+int main (void)
 {
   /* input */
   int a, b;

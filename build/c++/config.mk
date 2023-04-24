@@ -1,51 +1,52 @@
 #---------------------------------------------
 # -- Program defaults.
 
-NAME_PROGRAM = $(n)
-LANGUAGE = $(c)
+NAME_PROGRAM = $(root)
 COMPILER = g++
 
-ifeq ($(c), c)
-	COMPILER = gcc
-	C_FLAGS := $(C_FLAGS) -std=c2x
-	C_FLAGS := $(C_FLAGS) -lm
-endif
-
-ifdef f
-	FILE = $(f)
+ifdef filename
+	FILE = $(filename)
 else
-	FILE = source
+	FILE = source.c++
 endif
 
-#OBJECTS = main.o
+#---------------------------------------------
+# C++ standard version
+
+FLAGS := $(FLAGS) -std=c++2b
+
+#---------------------------------------------
+# Libraries
+
+#LIBS := $(LIBS) -lm
 
 #---------------------------------------------
 # -- Debugging.
 
-#C_FLAGS := -ggdb
+#FLAGS := -ggdb
 
 #---------------------------------------------
 # -- Warnings we *need* to see.
 
-C_FLAGS := $(C_FLAGS) -O3
+FLAGS := $(FLAGS) -O3
 
-C_FLAGS := $(C_FLAGS) -Wall
+FLAGS := $(FLAGS) -Wall
 
-C_FLAGS := $(C_FLAGS) -Werror
+FLAGS := $(FLAGS) -Werror
 
-C_FLAGS := $(C_FLAGS) -Wextra
+FLAGS := $(FLAGS) -Wextra
 
-C_FLAGS := $(C_FLAGS) -pedantic
+FLAGS := $(FLAGS) -pedantic
 
-C_FLAGS := $(C_FLAGS) -Wconversion
+FLAGS := $(FLAGS) -Wconversion
 
-C_FLAGS := $(C_FLAGS) -Wsign-conversion
+FLAGS := $(FLAGS) -Wsign-conversion
 
 # Signed integer overflow is defined to wrap-around (behavior of Java, release-mode Rust, and unchecked C#). GCC and Clang provide non-standard settings to do this already
-C_FLAGS := $(C_FLAGS) -fwrapv
+FLAGS := $(FLAGS) -fwrapv
 
 # All uninitialized variables of automatic storage duration and fundamental or trivially-constructible types are zero-initialized, and all other variables of automatic storage storage and initialized via a defaulted constructor will be initialized by applying this same rule to their non-static data members. All uninitialized pointers will be initialized to nullptr. (approximately the behavior of Java). State of padding is unspecified. GCC and Clang have a similar setting available now
-C_FLAGS := $(C_FLAGS) -ftrivial-auto-var-init=zero
+FLAGS := $(FLAGS) -ftrivial-auto-var-init=zero
 
 # Direct use of any form new, delete, std::construct_at, std::uninitialized_move, manual destructor calls, etc are prohibited. Manual memory and object lifetime management is relegated to unsafe code.
 
@@ -64,18 +65,16 @@ C_FLAGS := $(C_FLAGS) -ftrivial-auto-var-init=zero
 #------------------------------------------------
 # -- Sanitisers.
 
-ifeq ($(COMPILER), g++)
-	C_EXTRA := $(C_EXTRA) -fsanitize-undefined-trap-on-error
+EXTRA := $(EXTRA) -fsanitize-undefined-trap-on-error
 
-	C_EXTRA := $(C_EXTRA) -fsanitize-address-use-after-scope
+EXTRA := $(EXTRA) -fsanitize-address-use-after-scope
 
-	C_EXTRA := $(C_EXTRA) -fsanitize=address
-	C_EXTRA := $(C_EXTRA),undefined
+EXTRA := $(EXTRA) -fsanitize=address
+EXTRA := $(EXTRA),undefined
 
-	# Those are only for clang++.
-	#C_EXTRA := $(C_EXTRA),nullability
-	#C_EXTRA := $(C_EXTRA),implicit-integer-truncation
-	#C_EXTRA := $(C_EXTRA),implicit-integer-arithmetic-value-change
-	#C_EXTRA := $(C_EXTRA),implicit-conversion
-	#C_EXTRA := $(C_EXTRA),integer
-endif
+# Those are only for clang++.
+#EXTRA := $(EXTRA),nullability
+#EXTRA := $(EXTRA),implicit-integer-truncation
+#EXTRA := $(EXTRA),implicit-integer-arithmetic-value-change
+#EXTRA := $(EXTRA),implicit-conversion
+#EXTRA := $(EXTRA),integer
