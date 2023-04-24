@@ -19,7 +19,8 @@
 #   @param number: quantity of tests to run.
 #
 # @note: Enviroment variables used:
-#   EDITOR
+#   EDITOR, like nvim
+#   READER, like zathura
 #
 # Dependencies:
 #   fd
@@ -34,6 +35,7 @@
 SCRIPT="$(basename $0)"
 SOURCE='source'
 TEMPLATE='templates'
+PROBLEM='problem.pdf'
 
 # To colorise output uniquely.
 
@@ -76,6 +78,16 @@ function _hasnt_folder () {
 
   if [ -d "$name" ]; then
     red "\"$name\" folder or problem solution already exist."
+    exit 1
+  fi
+}
+
+function _has_template () {
+  language="$1"
+  shift
+
+  if [ ! -d "$(git rev-parse --show-cdup)/templates/$language/" ]; then
+    red "\"$language\" does not have template yet!"
     exit 1
   fi
 }
@@ -155,13 +167,12 @@ function _build_bear_cpp_c ()
   shift
 
   bear -- make build -s
-  if [ ! -f "$root/$compile_file" ]; then
-    mv compile_commands.json "$last_dir"
-  fi
+  #if [ ! -f "$root/$compile_file" ]; then
+    mv -f "$compile_file" "$root/$compile_file"
+  #fi
 }
 
-function build ()
-{
+function build () {
   language="$1"
   shift
 
@@ -212,6 +223,8 @@ function build ()
       cd "./$folder/"
       _set_tests "$tests"
 
+      [ -f "./$PROBLEM" ] && $READER "$PROBLEM" & disown
+
       _open_editor
 
     ;;
@@ -249,6 +262,10 @@ function build ()
                || _hasnt_argument "$extension" 'extension'
       shift
 
+      _has_template "$extension"
+
+      # TODO: Pass link as next argument to download the problems' PDF.
+
       tests="$1"
       [ "$1" ] && shift \
                || gray 'Not set quantity of tests. Default is none.'
@@ -274,7 +291,7 @@ function build ()
 
       diff="$1"
       [ "$1" ] && shift \
-               || gray 'Not called whether difference should be shown if failed. Default is true.'
+               || gray 'Not called whether difference should be shown if failed. Default is false.'
 
       _is_not_in_root
       _has_folder 'tests'
