@@ -7,10 +7,13 @@ Exercises from the class _Algorithms and Programming for Computers_ , in the Uni
     <summary>1st list</summary>
 
     1. [Olá Mundo](//problem.pdf)
-    2. [Media Ponderada](/apc_media_arimetica_ponderada/problem.pdf)
-    3. [Maquina Venda Automatica](/apc_maquina_venda_automatica/problem.pdf)
-    4. [Horas Segundos](/apc_horas_segundos_minutos/problem.pdf)
-    5. [Digito Verificador Conta Corrente](/apc_digito_verificador_conta_corrente/problem.pdf)
+    2. [Distância de Manhattan](/distancia_manhattan/problem.pdf)
+    3. [Busca na Internet](/busca_internet/problem.pdf)
+    4. [Pneu](/pneu/problem.pdf)
+    5. [Pedágio](/pedagio/problem.pdf)
+    6. [Quadrados](/quadrados/problem.pdf)
+    7. [Tomadas](/tomadas/problem.pdf)
+    8. [Transporte](/transporte/problem.pdf)
   </details>
 
 </details>
