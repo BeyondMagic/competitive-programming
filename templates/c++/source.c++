@@ -10,6 +10,11 @@ int solve (int a)
 
 int main()
 {
+  /* desynchronize C and C++ io */
+  ios::sync_with_stdio(false);
+  /* untie cin from cout */
+  cin.tie(NULL);
+
   /* output rules */
   cout << fixed << setprecision(3);
 
