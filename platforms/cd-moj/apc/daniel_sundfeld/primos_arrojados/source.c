@@ -13,25 +13,15 @@ bool is_prime (int a)
 }
 
 /* calculation */
-void solve (int n)
+char solve (int a)
 {
-  while (n--)
+  while (a)
   {
-    int a;
-    scanf("%d", &a);
-    bool prime = true;
-    while (a)
-    {
-      if (a == 1 || !is_prime(a))
-      {
-        prime = false;
-        break;
-      }
-      a /= 10;
-    }
-
-    printf("%c\n", prime ? 'S' : 'N');
+    if (a == 1 || !is_prime(a))
+      return 'N';
+    a /= 10;
   }
+  return 'S';
 }
 
 int main(void)
@@ -41,5 +31,10 @@ int main(void)
   scanf("%d", &a);
 
   /* output */
-  solve(a);
+  while (a--)
+  {
+    int b;
+    scanf("%d", &b);
+    printf("%c\n", solve(b));
+  }
 }

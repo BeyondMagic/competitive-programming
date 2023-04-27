@@ -8,6 +8,7 @@ int solve (int a)
 {
   int maior;
   scanf("%d", &maior);
+  a--;
 
   while (a--)
   {

@@ -20,6 +20,7 @@ enum JOGADORES {
 int solve (int b, int t)
 {
   int area;
+
   /* Rectangle. */
   if (b == t)
     area = b * ALTURA;

@@ -3,25 +3,26 @@
 #include <string.h>
 #include <math.h>
 
-/* calculation */
-int solve (int a, int b, int c, int d)
-{
-  if (a >= b && a >= c && a >= d)
-    return a;
-  else if (b >= a && b >= c && b >= d)
-    return b;
-  else if (c >= a && c >= b && c >= d)
-    return c;
-  else
-    return d;
-}
-
 int main(void)
 {
   /* input */
-  int a, b, c, d;
-  scanf("%d %d %d %d", &a, &b, &c, &d);
+  int maior;
+  scanf("%d", &maior);
+
+  /* calculation */
+  int x;
+  scanf("%d", &x);
+  if (x > maior)
+    maior = x;
+
+  scanf("%d", &x);
+  if (x > maior)
+    maior = x;
+
+  scanf("%d", &x);
+  if (x > maior)
+    maior = x;
 
   /* output */
-  printf("%d\n", solve(a, b, c, d));
+  printf("%d\n", x);
 }
