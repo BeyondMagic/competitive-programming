@@ -8,15 +8,15 @@ void solve ()
 {
   int par = 0, impar = 0;
   int a;
-  scanf("%d", &a);
-  while (a)
-  {
+  do {
+    scanf("%d", &a);
+
     if (a % 2)
       impar += a;
     else
       par += a;
-    scanf("%d", &a);
-  }
+
+  } while (a);
 
   printf("%d %d\n", par, impar);
 }

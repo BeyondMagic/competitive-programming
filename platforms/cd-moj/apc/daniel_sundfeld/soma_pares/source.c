@@ -8,13 +8,11 @@ int solve (void)
 {
   int soma = 0;
   int n;
-  scanf("%d", &n);
-  while (n)
-  {
+  do {
+    scanf("%d", &n);
     if (!(n % 2))
       soma += n;
-    scanf("%d", &n);
-  }
+  } while (n);
   return soma;
 }
 
