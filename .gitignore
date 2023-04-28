@@ -1,7 +1,7 @@
 .ccls-cache/
 **/binary
 **/compile_commands.json
-/README.pdf
+**/README.pdf
 **/failed/
 
 # As monitor of the class APC in FGA (UnB).
