@@ -5,13 +5,13 @@
 #include <stdbool.h>
 
 /* calculation */
-size_t solve (size_t m)
+int solve (int m)
 {
-  size_t n = 0, cod = 0;
+  int n = -1, cod = -1;
   while (m--)
   {
-    size_t a, b;
-    scanf("%zu %zu", &b, &a);
+    int a, b;
+    scanf("%d %d", &b, &a);
     if ( (a > n) || (a == n && b < cod) )
     {
       n = a;
@@ -24,8 +24,8 @@ size_t solve (size_t m)
 int main(void)
 {
   /* input */
-  size_t n, day = 1;
-  while (scanf("%zu", &n) != EOF)
+  int n, day = 1;
+  while (scanf("%d", &n) != EOF)
     /* output */
-    printf("Dia %zu\n%zu\n", day++, solve(n));
+    printf("Dia %d\n%d\n\n", day++, solve(n));
 }
