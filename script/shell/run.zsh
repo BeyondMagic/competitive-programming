@@ -2,62 +2,45 @@
 #
 # Tool to create, build, test, and modify competitive problems.
 #
-# @param string: modify or m. Modify a problem.
-#   @param string: name of project in case being in root path.
+# @note
+#   + Enviroment variables used:
+#     - EDITOR, like nvim
+#     - READER, like zathura
 #
-# @param string: run or r. Build the project.
-#   @param string: name of project in case being in root path.
-#     @param boolean: force move compile_commands.json
-#   @param boolean: force move compile_commands.json
-#
-# @param string: create or r
-#   @param string: name of project to be created.
-#   @param tests: quantity of tests to be used.
-#   @param language: C++ or C.
-#
-# @param string: test or t. Will show input and output of all tests.
-#   @param number: quantity of tests to run.
-#
-# @note: Enviroment variables used:
-#   EDITOR, like nvim
-#   READER, like zathura
-#
-# Dependencies:
+# @dependencies
+#   zsh
+#     https://www.zsh.org/
 #   fd
 #     github.com/sharkdp/fd
 #   git
-#   cat (rust)
+#     https://git-scm.com/
 #
-# BeyondMagic © 2022-2023 <beyondmagic@mail.ru>
+# @author
+#   João F. BeyondMagic <koetemagie@gmail.com>
 
 # Global variables.
 
 SCRIPT="$(basename $0)"
+SCRIPT_FOLDER="$(dirname "$0")"
 SOURCE='source'
-TEMPLATE='templates'
+ROOT="$SCRIPT_FOLDER/.."
+TEMPLATES="$ROOT/templates"
+BUILDS="$ROOT/build"
 PROBLEM='problem.pdf'
 
-# To colorise output uniquely.
-
-function gray  () { echo "\033[2m$@\033[0m" }
-function bold  () { echo "\033[3m$@\033[0m" }
-function red   () { echo "\033[31m$@\033[m" }
-function green () { echo "\033[32m$@\033[m" }
-function yellow () { echo "\033[33m$@\033[m" }
-function bright_yellow () { echo "\033[93m$@\033[m" }
+source "$SCRIPT_FOLDER"/_logging.sh
 
 # Auxialiary functions to reduce code.
-
 function _is_in_root () {
   if [ ! -f "./$SCRIPT" ]; then
-    red "You have to be on the root path of the project to create a problem's folder."
+    ___log_error "You have to be on the root path of the project to create a problem's folder."
     exit 1
   fi
 }
 
 function _is_not_in_root () {
   if [ -f "./$SCRIPT" ]; then
-    red "You have to be on a folder's problem."
+    ___log_error "You have to be on a folder's problem."
     exit 1
   fi
 }
@@ -67,7 +50,7 @@ function _has_folder () {
   shift
 
   if [ ! -d "./$folder/" ]; then
-    red "\"./$folder/\" problem's folder does not exist."
+    ___log_error "\"./$folder/\" problem's folder does not exist."
     exit 1
   fi
 }
@@ -77,7 +60,7 @@ function _hasnt_folder () {
   shift
 
   if [ -d "$name" ]; then
-    red "\"$name\" folder or problem solution already exist."
+    ___log_error "\"$name\" folder or problem solution already exist."
     exit 1
   fi
 }
@@ -86,8 +69,8 @@ function _has_template () {
   language="$1"
   shift
 
-  if [ ! -d "$(git rev-parse --show-cdup)/templates/$language/" ]; then
-    red "\"$language\" does not have template yet!"
+  if [ ! -d "$TEMPLATES/$language/" ]; then
+    ___log_error "\"$language\" does not have template yet!"
     exit 1
   fi
 }
@@ -101,7 +84,7 @@ function _hasnt_argument () {
 
   # Has to have problem's name.
   if [ ! "$name" ]; then
-    red "Specify the $reason's problem following the convention."
+    ___log_error "Specify the $reason's problem following the convention."
     exit 1
   fi
 }
@@ -180,21 +163,21 @@ function build () {
 
     'c' )
 
-      cd ./build/c/
+      cd "$BUILDS"/c/
       _build_bear_cpp_c $@
 
     ;;
 
     'c++' | 'cpp' )
 
-      cd ./build/c++/
+      cd "$BUILDS"/c++/
       _build_bear_cpp_c $@
 
     ;;
 
     'typescript' | 'ts' )
 
-      cd ./build/typescript/
+      cd "$BUILDS"/typescript/
       build_typescript $@
 
     ;;
@@ -208,6 +191,8 @@ function build () {
 
   case "$action" in
 
+    # @param string: modify or m. Modify a problem.
+    #   @param string: name of project in case being in root path.
     'modify' | 'm' )
 
       folder="$1"
@@ -215,7 +200,7 @@ function build () {
 
       tests="$1"
       [ "$1" ] && shift \
-               || gray 'Not called quantity of tests.'
+               || ___log 'Not called quantity of tests.'
 
       _hasnt_argument "$folder" 'folder'
       _has_folder "$folder"
@@ -229,29 +214,35 @@ function build () {
 
     ;;
 
+    # @param string: run or r. Build the project.
+    #   @param string: name of project in case being in root path.
+    #     @param boolean: force move compile_commands.json
+    #   @param boolean: force move compile_commands.json
     'run' | 'r' )
 
       # Has to be in a folder's problem.
       _is_not_in_root
 
-      root="$PWD"
+      problem_root="$PWD"
 
       filename="$1"
       [ "$1" ] && shift
 
-      if [ -f "$filename" ]; then
-        #filename="$(basename "$filename")"
-        language="$(echo "$filename" | awk -F '[.]' '{print $NF}')"
-      else
+      language="$(echo "$filename" | awk -F '[.]' '{print $NF}')"
+
+      if [ ! -f "$filename" ]; then
         filename="$(echo source.*)"
-        language="$(echo "$filename" | awk -F '[.]' '{print $NF}')"
       fi
 
-      cd $(git rev-parse --show-cdup)
+      cd $ROOT
       build $language "$root" "$filename"
-      cd "$root"
+      cd "$problem_root"
     ;;
 
+    # @param string: create or r
+    #   @param string: name of project to be created.
+    #   @param tests: quantity of tests to be used.
+    #   @param language: C++ or C.
     'create' | 'c' )
 
       [ "$1" ] && folder="$1" \
@@ -268,11 +259,11 @@ function build () {
 
       tests="$1"
       [ "$1" ] && shift \
-               || gray 'Not set quantity of tests. Default is none.'
+               || ___log 'Not set quantity of tests. Default is none.'
 
       _hasnt_folder "$folder"
 
-      cp -r "$(git rev-parse --show-cdup)templates/$extension/" "$folder"
+      cp -r "$TEMPLATES/$extension/" "$folder"
       touch "$folder/$SOURCE.$extension"
       cd "$folder"
 
@@ -283,15 +274,17 @@ function build () {
 
     ;;
 
+    # @param string: test or t. Will show input and output of all tests.
+    #   @param number: quantity of tests to run.
     'test' | 't' )
 
       tests="$1"
       [ "$1" ] && shift \
-               || gray 'Not called quantity of tests.'
+               || ___log 'Not called quantity of tests.'
 
       diff="$1"
       [ "$1" ] && shift \
-               || gray 'Not called whether difference should be shown if failed. Default is false.'
+               || ___log 'Not called whether difference should be shown if failed. Default is false.'
 
       _is_not_in_root
       _has_folder 'tests'
@@ -300,7 +293,7 @@ function build () {
       quantity=$(fd --base-directory tests/ --extension in --size +1b | wc -l)
 
       if [[ "$tests" ]] && [[ "$tests" -gt $quantity ]]; then
-        gray "There are not that many tests."
+        ___log "There are not that many tests."
       fi
 
       failed=false
@@ -311,7 +304,7 @@ function build () {
         filename="./tests/$a.in"
 
         if [ ! -s "$filename" ]; then
-          gray "Input file $a is empty."
+          ___log "Input file $a is empty."
           continue
         fi
 
@@ -321,7 +314,7 @@ function build () {
 
         if [ $? -eq 0 ]; then
           if [ "$result" = "$expected" ]; then
-            green "$a. $result"
+            ___log_success "$a. $result"
             continue
           fi
 
@@ -329,26 +322,26 @@ function build () {
           min_expected="$(echo "$expected" | awk '{$1=$1};1')"
 
           if [ "$min_result" = "$min_expected" ]; then
-            gray "Had to remove leading and trailing spaces."
-            bright_yellow "$a. $result"
+            ___log "Had to remove leading and trailing spaces."
+            ___log_warning "$a. $result"
             continue
           fi
 
           min_result="$(echo "$min_result" | tr -d '\r\n')"
           min_expected="$(echo "$min_expected" | tr -d '\r\n')"
           if [ "$min_result" = "$min_expected" ]; then
-            gray "Had to remove newlines, leading and trailing spaces."
-            yellow "$a. $result"
+            ___log "Had to remove newlines, leading and trailing spaces."
+            ___log_warning "$a. $result"
             continue
           fi
         fi
 
         # If it got here, it failed.
-        bold "$a.  INPUT:"
-        gray "$input"
+        ___log_bold "$a.  INPUT:"
+        ___log "$input"
 
-        bold "$a.   RESULT:"
-        red "$result"
+        ___log_bold "$a.   RESULT:"
+        ___log_error "$result"
 
         if [ "$diff" ]; then
           mkdir -p './failed'
@@ -358,8 +351,8 @@ function build () {
           failed=true
         fi
 
-        bold "    EXPECTED:"
-        gray "$expected"
+        ___log_bold "    EXPECTED:"
+        ___log "$expected"
 
         echo
       done
