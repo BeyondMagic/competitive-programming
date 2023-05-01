@@ -379,5 +379,14 @@ function build () {
 
     ;;
 
+    # Will build and test.
+    'judge' | 'j' )
+
+      "$0" run
+      "$0" test
+
+    ;;
+
+
   esac
 }
