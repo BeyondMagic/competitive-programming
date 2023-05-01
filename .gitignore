@@ -1,9 +1,22 @@
-.ccls-cache/
-**/binary
-**/compile_commands.json
+# Compiles automatically in my computer
+# for every markdown file. So ignoring it.
 **/README.pdf
+
+# For C and C++ problem-builds.
+.ccls-cache/
+**/compile_commands.json
+
+# Executable of builds.
+**/binary
+
+# The folder the script will create to put
+# failed case-test outputs.
 **/failed/
 
 # As monitor of the class APC in FGA (UnB).
 # I save the codes to test them later on.
 **/monitoring/
+
+# For the script to compare source files
+# and only recompile when necessary.
+**/compiled/
