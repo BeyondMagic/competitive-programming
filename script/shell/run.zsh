@@ -139,8 +139,7 @@ function _set_tests () {
 function build_typescript () {
 }
 
-function _build_bear_cpp_c ()
-{
+function _build_bear_cpp_c () {
   compile_file='compile_commands.json'
 
   export root="$1"
@@ -242,13 +241,11 @@ function build () {
         if [ -f "$COMPILED_FOLDER/$filename" ]; then
           last_file_content="$(cat "$COMPILED_FOLDER/$filename" | awk '{$1=$1};1' | tr -d '\r\n')"
           if [ "$file_content" = "$last_file_content" ]; then
-            ___log_bold "Built file already."
+            #___log_bold "Built file already."
             exit 0
           fi
-          cp -rf "$filename" "$COMPILED_FOLDER/$filename"
-        else
-          cp -rf "$filename" "$COMPILED_FOLDER/$filename"
         fi
+        cp -rf "$filename" "$COMPILED_FOLDER/$filename"
       }
       #cd "$ROOT"
       build $language "$problem_root" "$filename"
@@ -306,14 +303,23 @@ function build () {
       _is_not_in_root
       _has_folder 'tests'
 
+      echo "\033[46;1;38;5;15m JUDGE \033[0;2m $(basename "$PWD")/tests/ \033[0m\n "
+      _START_TIME="$(date +"%T.%3N")"
+
       # Discover the quantity of tests in the root folder of the problem.
-      quantity=$(fd --base-directory tests/ --extension in --size +1b | wc -l)
+      quantity=$(fd --base-directory tests/ --extension in | wc -l)
 
       if [[ "$tests" ]] && [[ "$tests" -gt $quantity ]]; then
         ___log "There are not that many tests."
       fi
 
       failed=false
+      _COMMANDS_READING=()
+      _FILES_TO_TEST=0
+      _TESTS_RESULT=()
+      _COMMANDS_DURATION=()
+      _FAILED=0
+      results=()
 
       # Run over each one.
       for a in {1..$quantity}; do
@@ -321,55 +327,70 @@ function build () {
         filename="./tests/$a.in"
 
         if [ ! -s "$filename" ]; then
-          ___log "Input file $a is empty."
+          #echo "             \033[2m$a.in \033[0;90mempty\033[0m"
+          _COMMANDS_READING+=('empty')
+          _COMMANDS_DURATION+=('?')
           continue
         fi
 
+        _COMMANDS_READING+=("$(du -sh $filename | awk '{print $1}')")
+        ((_FILES_TO_TEST++))
+
         input="$(cat "./tests/$a.in")"
-        result="$("./binary" < "./tests/$a.in")"
+        _COMMAND_START="$(date +"%S.%3N")"
+        results+=("$("./binary" < "./tests/$a.in")")
+        _COMMANDS_DURATION+=("$(($(date +"%S.%3N") - $_COMMAND_START))")
         expected="$(cat "./tests/$a.out")"
 
         if [ $? -eq 0 ]; then
-          if [ "$result" = "$expected" ]; then
-            ___log_success "$a. $result"
+          if [ "$results[$a]" = "$expected" ]; then
+            #echo "             \033[92m$a.in \033[2mpassed\033[0m"
+            _TESTS_RESULT+=('passed')
             continue
           fi
 
-          min_result="$(echo "$result" | awk '{$1=$1};1')"
+          min_result="$(echo "$results[$a]" | awk '{$1=$1};1')"
           min_expected="$(echo "$expected" | awk '{$1=$1};1')"
 
           if [ "$min_result" = "$min_expected" ]; then
-            ___log "Had to remove leading and trailing spaces."
-            ___log_warning "$a. $result"
+            _TESTS_RESULT+=('min_warning')
+            #echo "             \033[33m$a.in \033[2mpassed\033[0m"
+            #___log "Had to remove leading and trailing spaces."
+            #___log_warning "$a. $result"
             continue
           fi
 
           min_result="$(echo "$min_result" | tr -d '\r\n')"
           min_expected="$(echo "$min_expected" | tr -d '\r\n')"
           if [ "$min_result" = "$min_expected" ]; then
-            ___log "Had to remove newlines, leading and trailing spaces."
-            ___log_warning "$a. $result"
+            _TESTS_RESULT+=('max_warning')
+            #echo "             \033[93m$a.in \033[33mpassed\033[0m"
+            #___log "Had to remove newlines, leading and trailing spaces."
+            #___log_warning "$a. $result"
             continue
           fi
         fi
 
         # If it got here, it failed.
-        ___log_bold "$a.  INPUT:"
-        ___log "$input"
+        #___log_bold "$a.  INPUT:"
+        #___log "$input"
 
-        ___log_bold "$a.   RESULT:"
-        ___log_error "$result"
+        #___log_bold "$a.   RESULT:"
+        #___log_error "$result"
+        
+        _TESTS_RESULT+=('failed')
+        ((_FAILED))
 
         if [ "$diff" ]; then
           mkdir -p './failed'
-          echo "$result" > "./failed/$a.result"
+          echo "$results[$a]" > "./failed/$a.result"
           diff "./failed/$a.result" "./tests/$a.out"  --unified=0 > "./failed/$a.diff"
           rm -f "./failed/$a.result"
           failed=true
         fi
 
-        ___log_bold "    EXPECTED:"
-        ___log "$expected"
+        #___log_bold "    EXPECTED:"
+        #___log "$expected"
 
         echo
       done
@@ -377,6 +398,61 @@ function build () {
       if [ "$diff" ]; then
         _see_errors "$failed"
       fi
+
+      printf " \e[2mTest Files\e[0m  %d total    \e[1m(%d)\e[0m\n" $quantity $_FILES_TO_TEST
+      for i in {1..$quantity}; do
+        printf '             '
+        if [ "$_COMMANDS_READING[$i]" = 'empty' ]; then
+paste file1 file2 | awk '{print $1,$2,$3,$5}'
+          printf "\e[0;2m%s \e[90m%s" $i.in 'empty'
+        else
+          printf "\e[90m%s \e[2m%s" $i.in $_COMMANDS_READING[$i]
+        fi
+        printf "\e[0m\n"
+      done
+
+      printf " \e[2m     Tests\e[0m  %d passed \e[1m(%d)\e[0m\n" $_FILES_TO_TEST $(($_FILES_TO_TEST - $_FAILED))
+      for i in {1..$quantity}; do
+        printf '            '
+        case "$_TESTS_RESULT[$i]" in
+
+          'failed' )
+            printf "\e[31m %s\t\t%s\n" $i.in $i.out
+            #echo "\n$results[$i]" | sed 's_^_       _'
+            paste tests/$i.in tests/$i.out | column -s $'\t' -t | sed 's_^_             _'
+            printf "             \e[2m"
+          ;;
+
+          'passed' )
+            printf "\e[92m %s \e[2m" $i.in
+          ;;
+
+          'min_warning' )
+            _TESTS_RESULT[$i]='passed'
+            printf "\e[33m %s \e[2m" $i.in
+          ;;
+
+          'max_warning' )
+            _TESTS_RESULT[$i]='passed'
+            printf "\e[93m %s \e[33m" $i.in
+          ;;
+        esac
+        printf "%s\e[0m\n" $_TESTS_RESULT[$i]
+      done
+      #echo " \033[2m  Start at\033[0m  $_START_TIME"
+      printf " \e[2m  Duration\e[0m  1 passed\n"
+
+      for i in {1..$quantity}; do
+        printf "             \e[90m%s\e[1m " $i.in
+        if [ ! "$_COMMANDS_DURATION[$i]" = '?' ]; then
+          printf "%gs" $_COMMANDS_DURATION[$i]
+        else
+          printf "-"
+        fi
+        printf "\e[0m\n"
+      done
+
+      echo
 
     ;;
 
@@ -387,7 +463,6 @@ function build () {
       "$0" test
 
     ;;
-
 
   esac
 }
