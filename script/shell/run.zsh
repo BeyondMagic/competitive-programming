@@ -245,6 +245,7 @@ function build () {
             ___log_bold "Built file already."
             exit 0
           fi
+          cp -rf "$filename" "$COMPILED_FOLDER/$filename"
         else
           cp -rf "$filename" "$COMPILED_FOLDER/$filename"
         fi
