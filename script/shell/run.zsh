@@ -23,23 +23,23 @@
 SCRIPT="$(basename $0)"
 SCRIPT_FOLDER="$(dirname "$0")"
 SOURCE='source'
-ROOT="$SCRIPT_FOLDER/.."
-TEMPLATES="$ROOT/templates"
-BUILDS="$ROOT/build"
+ROOT="$(git rev-parse --show-cdup)"
+TEMPLATES="${ROOT}templates"
+BUILDS="${ROOT}build"
 PROBLEM='problem.pdf'
 
 source "$SCRIPT_FOLDER"/_logging.sh
 
 # Auxialiary functions to reduce code.
 function _is_in_root () {
-  if [ ! -f "./$SCRIPT" ]; then
+  if [ ! -d "./.git" ]; then
     ___log_error "You have to be on the root path of the project to create a problem's folder."
     exit 1
   fi
 }
 
 function _is_not_in_root () {
-  if [ -f "./$SCRIPT" ]; then
+  if [ -d "./.git" ]; then
     ___log_error "You have to be on a folder's problem."
     exit 1
   fi
@@ -228,15 +228,31 @@ function build () {
       filename="$1"
       [ "$1" ] && shift
 
-      language="$(echo "$filename" | awk -F '[.]' '{print $NF}')"
-
       if [ ! -f "$filename" ]; then
         filename="$(echo source.*)"
       fi
 
-      cd $ROOT
-      build $language "$root" "$filename"
+      language="$(echo "$filename" | awk -F '[.]' '{print $NF}')"
+
+      # Exit if source file is the same as the last.
+      {
+        COMPILED_FOLDER="./compiled"
+        file_content="$(cat "$filename" | awk '{$1=$1};1' | tr -d '\r\n')"
+        mkdir -p compiled
+        if [ -f "$COMPILED_FOLDER/$filename" ]; then
+          last_file_content="$(cat "$COMPILED_FOLDER/$filename" | awk '{$1=$1};1' | tr -d '\r\n')"
+          if [ "$file_content" = "$last_file_content" ]; then
+            ___log_bold "Built file already."
+            exit 0
+          fi
+        else
+          cp -rf "$filename" "$COMPILED_FOLDER/$filename"
+        fi
+      }
+      #cd "$ROOT"
+      build $language "$problem_root" "$filename"
       cd "$problem_root"
+
     ;;
 
     # @param string: create or r
@@ -267,7 +283,7 @@ function build () {
       touch "$folder/$SOURCE.$extension"
       cd "$folder"
 
-      "$(git rev-parse --show-cdup)$SCRIPT" run
+      "$ROOT$SCRIPT" run
       _set_tests "$tests"
 
       _open_editor
