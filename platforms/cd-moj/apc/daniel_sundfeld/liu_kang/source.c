@@ -4,31 +4,34 @@
 #include <math.h>
 #include <stdbool.h>
 
+#define IS_EVEN(integer) ((long long) (integer) % 2)
+#define IS_ODD(integer) (!(IS_EVEN(integer)))
+
 /* calculation */
-void solve (size_t t, size_t g)
+void solve (double t, size_t g)
 {
-  for (size_t i = 1; i <= g; i++) {
-    size_t n = (size_t) sqrt( (double) t);
+  while (g--)
+  {
+    double n = sqrt(t);
 
     // Se o tempo atual e par.
-    if (!(t % 2)) {
-        t = ( n - 1 ) * ( n - 1 );
-    }
+    if (IS_ODD(t))
+        t = pow(n - 1, 2);
 
     // Caso contrario, o tempo atual e impar.
-    else {
-      t = ( 2 * n - 1 ) * ( 2 * n - 1 );
-    }
+    else
+      t = pow(2 * n - 1, 2);
 
-    printf("%zu\n", t);
+    printf("%.0lf\n", t);
   }
 }
 
 int main(void)
 {
   /* input */
-  size_t a, b;
-  scanf("%zu %zu", &a, &b);
+  double a;
+  size_t b;
+  scanf("%lf %zu", &a, &b);
 
   /* output */
   solve(a, b);
