@@ -12,7 +12,7 @@
 using namespace std;
 
 /* calculation */
-int solve (int a)
+auto solve (int a)
 {
   return a * 2;
 }
