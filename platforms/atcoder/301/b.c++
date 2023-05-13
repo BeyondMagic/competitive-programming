@@ -9,6 +9,7 @@ int main()
     cin >> n;
     vector<int> par(n), par_ordenado(n);
     cin >> par[0];
+    par_ordenado[0] = par[0];
     for (int i = 1; i < n; i++)
     {
         cin >> par[i];
@@ -17,19 +18,22 @@ int main()
 
     for (int i = 0; i < n - 1; i++)
     {
-        if (abs(par[i] - par[i + 1]) != 1)
+        const auto first = par[i];
+        const auto last  = par[i+1];
+
+        if (abs(first - last) != 1)
         {
-            if (par[i] < par[i + 1])
+            if (first < last)
+                for (int s = first + 1, si = 0; s < last; s++, si++)
+                    par_ordenado.insert(par_ordenado.begin() + i + si + 1, s);
+            else if (first > last)
             {
-                for (int s = par[i], si = 0; s < par[i+1]; s++, si++)
+                cout << "AAAAAA\n";
+                for (int s = last - 1, si = 0; s > first; s--, si++)
                 {
-                    par_ordenado.insert(par_ordenado.begin() + i + si, s);
+                    cout << "valor aaa: " << s << "\n";
+                    par_ordenado.insert(par_ordenado.begin() + i + si + 1, s);
                 }
-            }
-            else if (par[i] > par[i + 1])
-            {
-                for (int s = par[i+1], si = 0; s > par[i]; s--, si++)
-                    par_ordenado.insert(par_ordenado.begin() + i + si, s);
             }
         }
     }
