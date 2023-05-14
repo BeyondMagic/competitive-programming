@@ -32,7 +32,8 @@ int main (void)
     if (j < 0)
       putchar(frase[i]); // printf("%c", frase[i]);
 
-    else {
+    else
+    {
       i += j - 1;
       printf("%s", trocar);
     }
