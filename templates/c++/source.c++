@@ -176,6 +176,52 @@ namespace math
       return in_base;
     }
   }
+
+  namespace matrix
+  {
+    using matrix = vector<string>;
+
+    bool is_equal (matrix &a, matrix &b)
+    {
+      const auto size = a.size();
+
+      if (size not_eq b.size())
+        return false;
+
+      for (size_t i = 0; i < size; ++i)
+        if (a.at(i) not_eq b.at(i))
+          return false;
+
+      return true;
+    }
+
+    // TODO: Implement sum of matrix.
+
+    namespace shift
+    {
+      inline void down (matrix &matrix)
+      {
+        rotate(matrix.begin(), matrix.begin() + long(matrix.size()) - 1, matrix.end());
+      }
+
+      inline void up (matrix &matrix)
+      {
+        rotate(matrix.begin(), matrix.begin() + 1, matrix.end());
+      }
+
+      inline void left (matrix &matrix)
+      {
+        for (auto &column: matrix)
+          rotate(column.begin(), column.begin() + 1, column.end());
+      }
+
+      inline void right (matrix &matrix)
+      {
+        for (auto &column : matrix)
+          rotate(column.begin(), column.begin() + long(column.size()) - 1, column.end());
+      }
+    }
+  }
 }
 
 /* calculation */
