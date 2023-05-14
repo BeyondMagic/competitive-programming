@@ -1,37 +1,31 @@
 #include <stdio.h>
-#include <limits.h> // INT_MAX
-
-/* calculation */
-void solve (int n)
-{
-  int a, m[3] = { INT_MAX, INT_MAX, INT_MAX };
-
-  while (n--)
-  {
-    scanf("%d", &a);
-    if (a < m[0])
-    {
-      m[2] = m[1];
-      m[1] = m[0];
-      m[0] = a;
-    }
-    else if (a < m[1])
-    {
-      m[2] = m[1];
-      m[1] = a;
-    } else if (a < m[2])
-      m[2] = a;
-  }
-
-  printf("%d\n%d\n", m[1], m[2]);
-}
+#include <limits.h>
 
 int main(void)
 {
   /* input */
-  int a;
-  scanf("%d", &a);
+  int n;
+  scanf("%d", &n);
 
   /* output */
-  solve(a);
+  int value, m[3] = { INT_MAX, INT_MAX, INT_MAX };
+
+  while (n--)
+  {
+    scanf("%d", &value);
+    if (value < m[0])
+    {
+      m[2] = m[1];
+      m[1] = m[0];
+      m[0] = value;
+    }
+    else if (value < m[1])
+    {
+      m[2] = m[1];
+      m[1] = value;
+    } else if (value < m[2])
+      m[2] = value;
+  }
+
+  printf("%d\n%d\n", m[1], m[2]);
 }
