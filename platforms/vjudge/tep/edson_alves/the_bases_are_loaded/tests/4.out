@@ -1,4 +1,4 @@
-10 13 A9
-9 14 99
-8 12 77
-1 4 1010
+A9 is an illegal base 10 number
+99 is an illegal base 9 number
+77 base 8 = 53 base 12
+1010 is an illegal base 1 number

@@ -105,7 +105,12 @@ namespace math
 /* calculation */
 auto solve (int64_t from, int64_t to, string value)
 {
-  auto result = math::from_base_to_base(from, to, value);
+  string result;
+  if (size_t(count(value.begin(), value.end(), '0')) == value.size())
+    result = "0";
+  else
+    result = math::from_base_to_base(from, to, value);
+
   if (result.empty())
   {
     cout << value << " is an illegal base " << from << " number" << endl;
