@@ -11,6 +11,12 @@
 
 using namespace std;
 
+/* calculation */
+auto solve (int n, int k)
+{
+  return a * 2;
+}
+
 int main()
 {
   /* desynchronize C and C++ io */
@@ -19,28 +25,12 @@ int main()
   /* untie cin from cout */
   cin.tie(NULL);
 
-  long long x = 0;
+  /* output rules */
+  cout << fixed << setprecision(3);
 
-  int n, k;
-  cin >> n >> k;
-
-  vector<int> as(n);
-
-  for (int i = 0; i < n; ++i)
-    cin >> as[i];
-
-  for (int i = 60; i >= 0; --i)
-  {
-    auto mask = 1 << i;
-    int z = 0, o = 0;
-
-    for (auto a : as)
-      a & mask ? ++o : ++z;
-
-    if (z > 0 and (x | mask) <= k)
-      x |= mask;
-
-  }
-
-  cout << x << endl;
+  /* input */
+  int a, b;
+  while (cin >> a >> b)
+    /* output */
+    cout << solve(a, b) << endl;
 }
