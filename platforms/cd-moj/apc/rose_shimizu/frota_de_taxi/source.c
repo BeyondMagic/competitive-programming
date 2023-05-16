@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 /* */
-#define CLOSE_EQUAL_DECIMAL(a, b, epsilon) (fabs((a) - (b)) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * (epsilon)))
+#define CLOSE_EQUAL_DECIMAL(a, b, epsilon)       (fabs((a) - (b)) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * (epsilon)))
 #define ESSENTIALLY_EQUAL_DECIMAL(a, b, epsilon) (fabs((a) - (b)) <= ( (fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * (epsilon)))
 
 /* */

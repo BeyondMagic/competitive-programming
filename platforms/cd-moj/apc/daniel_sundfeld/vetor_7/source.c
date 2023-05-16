@@ -32,9 +32,6 @@ bool solve (int n, int array_1[], int array_2[])
 
 int main(void)
 {
-  /* output rules */
-  // precision: 3
-
   /* input */
   int a;
   scanf("%d", &a);

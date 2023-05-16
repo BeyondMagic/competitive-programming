@@ -8,22 +8,26 @@ int main(void)
   scanf("%d", &n);
 
   /* output */
-  int value, m[3] = { INT_MAX, INT_MAX, INT_MAX };
+  int value, m[3];
+  scanf("%d", &m[0]);
+  --n;
+
+  m[2] = m[1] = m[0];
 
   while (n--)
   {
     scanf("%d", &value);
-    if (value < m[0])
+    if (value <= m[0])
     {
       m[2] = m[1];
       m[1] = m[0];
       m[0] = value;
     }
-    else if (value < m[1])
+    else if (value <= m[1])
     {
       m[2] = m[1];
       m[1] = value;
-    } else if (value < m[2])
+    } else if (value <= m[2])
       m[2] = value;
   }
 
