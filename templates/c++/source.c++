@@ -37,6 +37,9 @@
 #define MAX_DECIMAL(a, b, epsilon) (GREATER_DECIMAL(a, b, epsilon) ? (a) : (b)))
 #define MIN_DECIMAL(a, b, epsilon) (LESS_DECIMAL(a, b, epsilon) ? (a) : (b)))
 
+/* Thanks https://vjudge.net/user/Thalisson for the macro definition. */
+#define all(list) list.begin(), list.end()
+
 /* No more std:: */
 using namespace std;
 
@@ -52,6 +55,9 @@ namespace line
 /* For mathematical structures and methods. */
 namespace math
 {
+  // TODO: Implement my own root algorithgm
+  long double root (long double number, int64_t nth);
+
   namespace polynomial
   {
 
