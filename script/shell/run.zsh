@@ -148,7 +148,7 @@ function _build_bear_cpp_c () {
   export filename="$1"
   shift
 
-  bear -- make build -s
+  bear -- make build -s || exit 1
   #if [ ! -f "$root/$compile_file" ]; then
     mv -f "$compile_file" "$root/$compile_file"
   #fi
@@ -207,7 +207,7 @@ function build () {
       cd "./$folder/"
       _set_tests "$tests"
 
-      [ -f "./$PROBLEM" ] && $READER "$PROBLEM" & disown
+      [ -f "./$PROBLEM" ] && $READER "$PROBLEM" > /dev/null & disown
 
       _open_editor
 
@@ -235,20 +235,23 @@ function build () {
 
       # Exit if source file is the same as the last.
       {
-        COMPILED_FOLDER="./compiled"
+        COMPILED_FOLDER="./compiled/$(dirname "$filename")"
+        #printf "FOLDER of: %s\n" "$COMPILED_FOLDER"
         file_content="$(cat "$filename" | awk '{$1=$1};1' | tr -d '\r\n')"
-        mkdir -p compiled
+        original_filename="$filename"
+        filename="$(basename $filename)"
+        mkdir -p "$COMPILED_FOLDER"
         if [ -f "$COMPILED_FOLDER/$filename" ]; then
           last_file_content="$(cat "$COMPILED_FOLDER/$filename" | awk '{$1=$1};1' | tr -d '\r\n')"
           if [ "$file_content" = "$last_file_content" ]; then
             #___log_bold "Built file already."
-            exit 0
+            exit 1
           fi
         fi
-        cp -rf "$filename" "$COMPILED_FOLDER/$filename"
+        cp -rf "$original_filename" "$COMPILED_FOLDER/$filename"
       }
       #cd "$ROOT"
-      build $language "$problem_root" "$filename"
+      build $language "$problem_root" "$COMPILED_FOLDER/$filename"
       cd "$problem_root"
 
     ;;
@@ -269,11 +272,13 @@ function build () {
 
       _has_template "$extension"
 
-      # TODO: Pass link as next argument to download the problems' PDF.
-
       tests="$1"
       [ "$1" ] && shift \
                || ___log 'Not set quantity of tests. Default is none.'
+
+      pdf_link="$1"
+      [ "$1" ] && shift \
+               || ___log 'Not set a PDF link to download.'
 
       _hasnt_folder "$folder"
 
@@ -281,8 +286,14 @@ function build () {
       touch "$folder/$SOURCE.$extension"
       cd "$folder"
 
+      curl "$pdf_link" -o "$PROBLEM"
+
       "$ROOT$SCRIPT" run
       _set_tests "$tests"
+
+      #echo "PWD: $PWD"
+
+      [ -f "$PROBLEM" ] && $READER "$PROBLEM" > /dev/null & disown
 
       _open_editor
 
@@ -417,10 +428,14 @@ paste file1 file2 | awk '{print $1,$2,$3,$5}'
         case "$_TESTS_RESULT[$i]" in
 
           'failed' )
-            printf "\e[31m %s\t\t%s\n" $i.in $i.out
+            printf "\e[31m %s\t\t\t%s\t\t\t%s\n\e[90;1m" $i.in $i.out 'failed'
             #echo "\n$results[$i]" | sed 's_^_       _'
-            paste tests/$i.in tests/$i.out | column -s $'\t' -t | sed 's_^_             _'
-            printf "             \e[2m"
+            # echo "1 1 1 0 0 0 0 0 0 0\n2 5 3 1 1 1 1 1 1 1" | paste 1.in 1.out - | column -s $'\t' -t
+            #printf "%s"paste tests/$i.in tests/$i.out | column -s $'\t' -t | sed 's_^_             _'
+            results[$i]="$(printf "$results[$i]" | sed -e 's_^_\\e[0;31;1m_' -e 's_$_\\e[0;90;1m_')"
+            printf $results[$i] | paste tests/$i.in tests/$i.out - | column -s $'\t' -t | sed 's_^_             _'
+            printf "             \e[0;31;2m"
+            _TESTS_RESULT[$i]=''
           ;;
 
           'passed' )
