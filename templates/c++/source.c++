@@ -231,7 +231,7 @@ namespace math
 }
 
 /* calculation */
-auto solve (int a)
+auto solve (int64_t a)
 {
   return a * 2;
 }
