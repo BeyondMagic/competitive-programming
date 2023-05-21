@@ -169,17 +169,17 @@ auto solve4 (ll a, ll b, ll c)
     else if (not b)
       cout << 0 << endl;
     else
-      cout << 1 << endl << - (double) c / (double) b << endl;
+      cout << 1 << endl << - double(c) / double(b) << endl;
   }
   else
   {
     if (b * b == 4 * a * c)
-      cout << 1 << endl << -1.0 * (double) b / (2.0 * (double) a);
+      cout << 1 << endl << -1.0 * double(b) / (2.0 * double(a));
     else
     {
       cout << 2 << endl;
-      double x1 = (-1.0 * (double) b + sqrt(double(b * b - 4 * a * c))) / (2.0 * (double) a);
-      double x2 = (-1.0 * (double) b - sqrt(double(b * b - 4 * a * c))) / (2.0 * (double) a);
+      double x1 = (-1.0 * double(b) + sqrt(double(b * b - 4 * a * c))) / (2.0 * double(a));
+      double x2 = (-1.0 * double(b) - sqrt(double(b * b - 4 * a * c))) / (2.0 * double(a));
       cout << min(x1, x2) << endl;
       cout << max(x1, x2) << endl;
     }
