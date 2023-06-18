@@ -56,31 +56,7 @@ namespace line
 namespace math
 {
   // TODO: Implement my own root algorithgm
-  long double root (int64_t number, int64_t nth);
-
-  // Recursive function to return gcd of a and b
-  auto gcd(size_t a, size_t b)
-  {
-    // Everything divides 0
-    if (a == 0)
-      return b;
-    if (b == 0)
-      return a;
-
-    // Base case
-    if (a == b)
-        return a;
-
-    // a is greater
-    if (a > b) {
-      if (a % b == 0)
-          return b;
-      return gcd(a - b, b);
-    }
-    if (b % a == 0)
-        return a;
-    return gcd(a, b - a);
-  }
+  long double root (long double number, int64_t nth);
 
   namespace polynomial
   {
@@ -255,33 +231,24 @@ namespace math
 }
 
 /* calculation */
-auto solve ()
+auto solve (uint64_t a, uint64_t b, uint64_t x)
 {
-  string line;
-  getline(cin, line);
-  istringstream is(line);
+  // obtain total count of all numbers [1, b] divisible by 'x'
+  uint64_t divisors_b = max(a, b) / x,
+           // obtain total count of all numbers [1, a] divisible by 'x'
+           // note: -1 because 'a' itself is not part of the range!
+           divisors_a = (min(a, b) - 1) / x;
 
-  set<pair<size_t, size_t>, greater<>> pairs;
-  vector<size_t> numbers;
-  size_t a;
-  while (is >> a)
-    numbers.emplace_back(a);
-  const auto numbers_q = numbers.size();
-  for (size_t i = 0; i < numbers_q; ++i)
-    for (size_t j = 0; j < numbers_q; ++j)
-      if (i not_eq j)
-        pairs.emplace(min(numbers[i], numbers[j]), max(numbers[i], numbers[j]));
+  // total divisors of [a, b]
+  return divisors_b - divisors_a;
+}
 
-  size_t ans = 1;
-  //const auto p = numbers_q * (numbers_q - 1) / 2;
-  for (const auto &p : pairs)
-  {
-    const auto gcd = math::gcd(p.first, p.second);
-    if (gcd > ans)
-      ans = gcd;
-  }
-
-  return ans;
+auto solve2 (uint64_t a, uint64_t b, uint64_t x)
+{
+  if (a % x)
+    return b / x - a / x;
+  else
+    return b / x - a / x + 1;
 }
 
 int main()
@@ -290,12 +257,9 @@ int main()
   OUT_PRECISION(6);
 
   /* input */
-  int64_t a;
-  cin >> a;
-  string line;
-  getline(cin, line);
+  uint64_t a, b, c;
+  cin >> a >> b >> c;
 
   /* output */
-  while (a--)
-    cout << solve() << endl;
+  cout << solve2(a,b,c) << endl;
 }

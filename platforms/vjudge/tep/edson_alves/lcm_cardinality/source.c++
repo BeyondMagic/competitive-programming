@@ -56,31 +56,7 @@ namespace line
 namespace math
 {
   // TODO: Implement my own root algorithgm
-  long double root (int64_t number, int64_t nth);
-
-  // Recursive function to return gcd of a and b
-  auto gcd(size_t a, size_t b)
-  {
-    // Everything divides 0
-    if (a == 0)
-      return b;
-    if (b == 0)
-      return a;
-
-    // Base case
-    if (a == b)
-        return a;
-
-    // a is greater
-    if (a > b) {
-      if (a % b == 0)
-          return b;
-      return gcd(a - b, b);
-    }
-    if (b % a == 0)
-        return a;
-    return gcd(a, b - a);
-  }
+  long double root (long double number, int64_t nth);
 
   namespace polynomial
   {
@@ -255,33 +231,33 @@ namespace math
 }
 
 /* calculation */
-auto solve ()
+auto solve (size_t a)
 {
-  string line;
-  getline(cin, line);
-  istringstream is(line);
-
-  set<pair<size_t, size_t>, greater<>> pairs;
   vector<size_t> numbers;
-  size_t a;
-  while (is >> a)
-    numbers.emplace_back(a);
-  const auto numbers_q = numbers.size();
-  for (size_t i = 0; i < numbers_q; ++i)
-    for (size_t j = 0; j < numbers_q; ++j)
-      if (i not_eq j)
-        pairs.emplace(min(numbers[i], numbers[j]), max(numbers[i], numbers[j]));
-
-  size_t ans = 1;
-  //const auto p = numbers_q * (numbers_q - 1) / 2;
-  for (const auto &p : pairs)
+  // pairs with second as biggest number
+  for (size_t i = 1; i <= a; ++i)
   {
-    const auto gcd = math::gcd(p.first, p.second);
-    if (gcd > ans)
-      ans = gcd;
+    if (not (a % i))
+    {
+      numbers.emplace_back(i);
+      //cout << "pair = { " << i << ", " << a << " }" << endl;
+    }
   }
 
-  return ans;
+  const auto n = numbers.size();
+  size_t np = 0;
+  for (size_t i = 1; i < n/2; ++i)
+  {
+    const auto l = n - i - 1;
+    if (not (a % (numbers[i] * numbers[l])))
+    {
+      //cout << "pair = { " << numbers[i] << ", " << numbers[l] << " }" << endl;
+      ++np;
+    }
+  }
+
+  return n + np;
+  //return n + n/2 - 1;
 }
 
 int main()
@@ -290,12 +266,8 @@ int main()
   OUT_PRECISION(6);
 
   /* input */
-  int64_t a;
-  cin >> a;
-  string line;
-  getline(cin, line);
-
-  /* output */
-  while (a--)
-    cout << solve() << endl;
+  size_t a;
+  while (cin >> a and a)
+    /* output */
+    cout << a << ' ' << solve(a) << endl;
 }
