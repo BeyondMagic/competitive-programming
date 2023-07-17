@@ -67,7 +67,7 @@ namespace math
 
     // Algorithm: Sieve of Eratosthenes.
     // Complexity: O(n log(log(N)))
-    template <size_t N>
+    template <size_t N> // para deduzir tipo
     struct Sieve_of_Eratosthenes
     {
       constexpr Sieve_of_Eratosthenes() : table()
