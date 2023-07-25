@@ -13,7 +13,7 @@ endif
 #---------------------------------------------
 # C++ standard version
 
-FLAGS := $(FLAGS) -std=c++2b
+FLAGS := $(FLAGS) -std=c++20 # Codeforces
 
 #---------------------------------------------
 # Libraries
@@ -23,30 +23,30 @@ FLAGS := $(FLAGS) -std=c++2b
 #---------------------------------------------
 # -- Debugging.
 
-#FLAGS := -ggdb
+FLAGS := -ggdb
 
 #---------------------------------------------
 # -- Warnings we *need* to see.
 
-FLAGS := $(FLAGS) -O3
+# FLAGS := $(FLAGS) -O3
+# 
+ FLAGS := $(FLAGS) -Wall
+# 
+ FLAGS := $(FLAGS) -Werror
+# 
+ FLAGS := $(FLAGS) -Wextra
+# 
+ FLAGS := $(FLAGS) -pedantic
+# 
+ FLAGS := $(FLAGS) -Wconversion
 
-FLAGS := $(FLAGS) -Wall
-
-FLAGS := $(FLAGS) -Werror
-
-FLAGS := $(FLAGS) -Wextra
-
-FLAGS := $(FLAGS) -pedantic
-
-FLAGS := $(FLAGS) -Wconversion
-
-FLAGS := $(FLAGS) -Wsign-conversion
+ FLAGS := $(FLAGS) -Wsign-conversion
 
 # Signed integer overflow is defined to wrap-around (behavior of Java, release-mode Rust, and unchecked C#). GCC and Clang provide non-standard settings to do this already
-FLAGS := $(FLAGS) -fwrapv
+# FLAGS := $(FLAGS) -fwrapv
 
 # All uninitialized variables of automatic storage duration and fundamental or trivially-constructible types are zero-initialized, and all other variables of automatic storage storage and initialized via a defaulted constructor will be initialized by applying this same rule to their non-static data members. All uninitialized pointers will be initialized to nullptr. (approximately the behavior of Java). State of padding is unspecified. GCC and Clang have a similar setting available now
-FLAGS := $(FLAGS) -ftrivial-auto-var-init=zero
+# FLAGS := $(FLAGS) -ftrivial-auto-var-init=zero
 
 # Direct use of any form new, delete, std::construct_at, std::uninitialized_move, manual destructor calls, etc are prohibited. Manual memory and object lifetime management is relegated to unsafe code.
 
@@ -63,14 +63,19 @@ FLAGS := $(FLAGS) -ftrivial-auto-var-init=zero
 # no implicit narrowing conversions allowed (static_cast is required there)
 
 #------------------------------------------------
+# -- Constexpr
+
+# EXTRA := $(EXTrA) -fconstexpr-ops-limit=1000000000
+
+#------------------------------------------------
 # -- Sanitisers.
 
-EXTRA := $(EXTRA) -fsanitize-undefined-trap-on-error
-
-EXTRA := $(EXTRA) -fsanitize-address-use-after-scope
-
-EXTRA := $(EXTRA) -fsanitize=address
-EXTRA := $(EXTRA),undefined
+ EXTRA := $(EXTRA) -fsanitize-undefined-trap-on-error
+# 
+ EXTRA := $(EXTRA) -fsanitize-address-use-after-scope
+# 
+ EXTRA := $(EXTRA) -fsanitize=address
+ EXTRA := $(EXTRA),undefined
 
 # Those are only for clang++.
 #EXTRA := $(EXTRA),nullability
