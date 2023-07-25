@@ -1,0 +1,13 @@
+#include <iostream>
+
+using namespace std;
+
+#define endl '\n'
+
+int main()
+{
+	string s;
+	cin >> s;
+	s[0] = char(toupper(s[0]));
+	cout << s << endl;
+}
