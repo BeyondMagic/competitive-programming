@@ -1,0 +1,38 @@
+#include <iostream>
+#include <algorithm>
+#include <numeric>
+#include <vector>
+
+using namespace std;
+
+#define endl '\n'
+
+vector<size_t> phis(size_t N)
+{
+	vector<size_t> ans(N + 1);
+	iota(ans.begin(), ans.end(), 0);
+	for (size_t i = 2; i <= N; ++i)
+		if (ans[i] == i)
+			for (size_t j = i; j <= N; j += i)
+			{
+				ans[j] /= i;
+				ans[j] *= (i - 1);
+			}
+
+	return ans;
+}
+
+vector<int> solve(int N)
+{
+	auto p = phis(N);
+}
+
+int main()
+{
+	size_t N;
+	cin >> N;
+
+	auto ans = phis(N);
+	for (int i = 1; i < N; i++)
+		cout << ans[i] << endl;
+}
