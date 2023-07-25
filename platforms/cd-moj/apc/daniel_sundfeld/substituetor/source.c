@@ -18,7 +18,7 @@ int main (void)
   scanf("%s\n%s", achar, trocar);
 
   // Ler a frase do inicio ao fim.
-  for (int i = 0; frase[i]; ++i)
+  for (int i = 0; i <frase; ++i)
   {
     int j = 0;
 
