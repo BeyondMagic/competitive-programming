@@ -11,25 +11,15 @@ int main()
 	cin >> n >> t;
 	while (t--)
 	{
-		const auto c = size_t(n.back()) - '0';
+		auto c = size_t(n.back()) - '0';
 		if (not c)
 			n.pop_back();
-		else if (c == t)
+		else
 		{
-			n.back() = 0;
-			break;
+			--c;
+			n.back() = char(c) + '0';
 		}
-		else if (c < t)
-		{
-			cout << 1 << endl;
-			n.back() = 0;
-			t -= c;
-		}
-		else if (c > t)
-		{
-			n.back() = char(c - t) + '0';
-			break;
-		}
+		
 	}
 	cout << n;
 }
