@@ -1,25 +1,25 @@
 #include <iostream>
+#include <map>
 
 using namespace std;
 
-static size_t memoir[46] = { 1, 1 };
-
-size_t solve(size_t n)
+size_t fibonacci(size_t n)
 {
-  if (!n)
-    return 0;
+	static std::map<size_t, size_t> cache{{0, 0}, {1, 1}};
 
-  if (!memoir[n-1])
-    memoir[n-1] = memoir[n-2] + memoir[n-3];
+	auto found = cache.find(n);
 
-  return memoir[n-1];
+	if (found != std::end(cache))
+		return found->second;
+
+	size_t result = fibonacci(n - 1) + fibonacci(n - 2);
+	cache[n] = result;
+	return result;
 }
-
 int main ()
 {
-  size_t n;
-  cin >> n;
-  for (size_t i = 0; i < n; i++)
-    cout << solve(i) << ' ';
-  cout << '\n';
+	size_t n;
+	cin >> n;
+	for (size_t i = 0; i < n; ++i)
+		cout << fibonacci(i) << (i == n - 1 ? '\n' : ' ');
 }
