@@ -18,14 +18,9 @@ void solve()
 	long long n;
 	cin >> n;
 	long long b = 0;
-	long long p[5] = { 100, 20, 10, 5, 1};
-	for (size_t i = 0; i < 5; ++i)
-	{
-		b += n / p[i];
-		debug(b);
-		n = n % p[i];
-		debug(n);
-	}
+	static const long long p[5] = { 100, 20, 10, 5, 1};
+	for (auto &i : p)
+		b += n / i, n = n % i;
 
 	cout << b << endl;
 }
