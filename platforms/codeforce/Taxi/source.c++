@@ -13,7 +13,7 @@ using namespace std;
 
 #define endl '\n'
 
-array<size_t, 5> groups{0};
+array<int, 5> groups{0};
 
 int solve()
 {
@@ -23,41 +23,17 @@ int solve()
 		cin >> a, ++groups[a];
 
 	// 1 to 3
-	if (groups[1] >= 4)
-	{
-		groups[4] += groups[1] / 4;
-		groups[1] = groups[1] % 4;
-	}
-	debug(groups);
+	int total = groups[4] + groups[3] + groups[2] / 2;
+	groups[1] -= groups[3];
 
-	// 1 to 3
-	if (groups[3] and groups[1])
-	{
-		size_t delta = min(groups[3], groups[1]);
-		groups[3] -= delta;
-		groups[1] -= delta;
-		groups[4] += delta;
-	}
-	debug(groups);
+	// there is one two left
+	if (groups[2] % 2 == 1)
+		total += 1, groups[1] -= 2;
 
-	// 1 to 2
-	if (groups[1])
-	{
-		size_t delta = groups[1] / 2;
-		groups[1] -= delta;
-		groups[2] += delta;
-	}
-	debug(groups);
+	if (groups[1] > 0)
+		total += (groups[1] + 3) / 4;
 
-	// 2 to 4
-	if (groups[2] >= 2)
-	{
-		size_t delta = groups[2] & 1 ? groups[2] - 1 : groups[2];
-		groups[2] -= delta;
-		groups[4] += delta / 2;
-	}
-	debug(groups);
-	return cout << accumulate(begin(groups), end(groups), 0) << endl, 0;
+	return cout << total << endl, 0;
 }
 
 int main()
