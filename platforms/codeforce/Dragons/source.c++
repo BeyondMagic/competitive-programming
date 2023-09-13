@@ -2,6 +2,7 @@
 	*	author:		beyondmagic
 **/
 #include <bits/stdc++.h>
+#include <ranges>
 
 #ifdef LOCAL
 #include "debug.h"
@@ -17,12 +18,24 @@ int solve()
 {
 	size_t s, n;
 	cin >> s >> n;
-	while (n--)
-	{
-		
-	}
+	vector<pair<size_t, size_t>> monsters(n);
+	for (auto &m : monsters)
+		cin >> m.first >> m.second;
+	/*ranges::sort(monsters, [](const auto &a, const auto &b) {
+		if (a.first <= b.first)
+			return a.second < b.second;
+		else
+			return false;
+	});*/
+	ranges::sort(monsters);
 
-	return 0;
+	for (const auto &m : monsters)
+		if (s > m.first)
+			s += m.second;
+		else
+			return puts("NO"), 0;
+
+	return puts("YES"), 0;
 }
 
 int main()
