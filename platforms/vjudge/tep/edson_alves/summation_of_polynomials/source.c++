@@ -31,7 +31,6 @@
 #define MAX_DECIMAL(a, b, epsilon) (GREATER_DECIMAL(a, b, epsilon) ? (a) : (b)))
 #define MIN_DECIMAL(a, b, epsilon) (LESS_DECIMAL(a, b, epsilon) ? (a) : (b)))
 
-
 /* No more std:: */
 using namespace std;
 
