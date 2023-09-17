@@ -19,7 +19,7 @@ size_t limit;
 #define MIN 10
 #define MAX 100'000 + MIN
 bitset<MAX> visited;
-size_t restaurants = 0, b;
+size_t restaurants = 0;
 
 void dfs1 (size_t root, Graph &graph, size_t &count)
 {
