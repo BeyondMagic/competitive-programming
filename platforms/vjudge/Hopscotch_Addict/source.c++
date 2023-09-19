@@ -13,45 +13,53 @@ using namespace std;
 
 #define endl '\n'
 
-#define MIN 10
-#define MAX 100'000 + MIN
+#define oo SIZE_MAX / 2
 
-bitset<MAX> visited;
-
-typedef vector<vector<size_t>> Graph;
-
-void dfs(size_t &s, size_t &t, Graph &graph, size_t &ans)
+size_t breadth_first_search (vector<vector<size_t>> &graph, size_t &start, size_t &destiny)
 {
-	if (visited[s])
-		return;
+	vector<vector<size_t>> dist(graph.size(), vector<size_t>(3, oo));
+	dist[start][0] = 0;
 
-	visited = true;
-
-	for (auto &next : graph[s])
+	queue<pair<size_t, size_t>> fila;
+	fila.push({start, 0});
+	
+	while (not fila.empty())
 	{
-		dfs(graph[], t, 
+		const auto [u, d] = fila.front(); fila.pop();
+
+		for (auto next : graph[u])
+		{
+			size_t normalised = (d + 1) % 3;
+
+			if (dist[next][normalised] == oo)
+			{
+				dist[next][normalised] = dist[u][d] + 1;
+				fila.push({next, normalised});
+			}
+		}
 	}
+
+	size_t total = dist[destiny][0];
+
+	return total == oo ? total : total / 3;
 }
 
 int solve()
 {
 	size_t n, m;
 	cin >> n >> m;
-	vector<vector<size_t>> adjs(n + 1);
-	for (size_t i = 1, u, v; i + 1<= n; ++i)
-	{
-		cin >> u >> v;
-		adjs[u].emplace_back(v);
-		adjs[v].emplace_back(u);
-	}
-	size_t s, t;
-	cin >> s >> t;
-	debug(s, t);
+	vector<vector<size_t>> graph(n + 1);
 
-	size_t p = 0;
-	dfs(s, t, adjs, p);
+	for (size_t u, v; m--;)
+		cin >> u >> v, graph[u].emplace_back(v);
 
-	return cout << p << endl, 0;
+	size_t start, destiny;
+	cin >> start >> destiny;
+
+	const auto ans = breadth_first_search(graph, start, destiny);
+	if (ans == oo)
+		return puts("-1"), 0;
+	return cout << ans << endl, 0;
 }
 
 int main()
@@ -59,8 +67,8 @@ int main()
 	ios::sync_with_stdio(false);
 	cin.tie(nullptr);
 
-	size_t t = 1;
+	size_t u = 1;
 	// cin >> t;
-	while (t--)
+	while (u--)
 		solve();
 }
