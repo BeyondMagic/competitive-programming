@@ -1,0 +1,105 @@
+#include <stdio.h>
+#include <stdlib.h>
+// #include <stdbool.h>
+// #include <limits.h>
+
+typedef struct celula {
+	int dado;
+	struct celula *prox;
+} celula;
+
+/*
+void imprime (celula *le)
+{
+	while (le && le->prox)
+		printf("%d -> ", le->prox->dado), le = le->prox;
+	puts("NULL");
+}
+
+void imprime_rec (celula *le)
+{
+	if (!le || !le->prox)
+	{
+		puts("NULL");
+		return;
+	}
+
+	printf("%d -> ", le->prox->dado), imprime_rec(le->prox);
+}
+
+void insere_inicio (celula *le, int x)
+{
+	celula *nova = malloc(sizeof(celula));
+	nova->dado = x;
+	nova->prox = le->prox;
+	le->prox = nova;
+}
+
+void insere_antes (celula *le, int x, int y)
+{
+	while (le && le->prox && le->prox->dado != y)
+		le = le->prox;
+
+	insere_inicio(le, x);
+}*/
+
+int remove_depois (celula *p)
+{
+	if (!p || !p->prox)
+		return 1;
+	celula *after = p->prox;
+	int after_data = after->dado;
+
+	if (p->prox->prox)
+		p->prox = p->prox->prox;
+	else
+		p->prox = NULL;
+
+	return free(after), after_data;
+}
+
+void remove_elemento (celula *le, int x)
+{
+	while (le && le->prox && le->prox->dado != x)
+		le = le->prox;
+	remove_depois(le);
+}
+
+void remove_todos_elementos (celula *le, int x)
+{
+	while (le && le->prox)
+		if (le->prox->dado == x)
+			remove_depois(le);
+		else
+			le = le->prox;
+}
+
+/*int main(void)
+{
+	celula c = { 4, NULL };
+	celula b = { 2, &c };
+	celula a = { 1, &b };
+	celula head = { INT_MIN, &a };
+	// inserção
+	// insere_inicio(&head, 4);
+	// insere_inicio(&head, 2);
+	// insere_inicio(&head, 1);
+	insere_inicio(&head, 0);
+	insere_antes(&head, -1, 0); // inicio
+	insere_antes(&head, 3, 4); // antes do 4 insiro o tres
+	insere_antes(&head, 5, 5); // inserir no final ja que nao tem 5
+	insere_antes(&head, 5, 5); // inserir no final ja que nao tem 5
+	insere_antes(&head, 5, 5); // inserir no final ja que nao tem 5
+
+	imprime_rec(&head);
+
+	// remoção
+	int oq = remove_depois(&c); // inserir no final ja que nao tem 5
+	printf("Foi removido um %d.\n", oq);
+	remove_elemento(&head, 3);
+	puts("Foi removido um 3.");
+
+	remove_todos_elementos(&head, 5);
+	puts("Foi removido todos 5s.");
+	imprime_rec(&head);
+}*/

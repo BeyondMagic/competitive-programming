@@ -3,7 +3,8 @@
 #include <stdbool.h>
 #include <string.h>
 
-#define MAX 100 + 1
+#define MIN 10000
+#define MAX 100 + MIN
 #define DATA_TYPE char *
 
 struct Node
@@ -76,20 +77,15 @@ void stack_destroy(struct Stack *stack)
 
 int main(void)
 {
-	char c, // comando
-		 str[MAX]; // frase
+	char str[MAX]; // frase
 
 	struct Stack *stack = stack_initialise();
 
-	while (scanf("%c", &c) != EOF)
+	while (scanf("%s", str) != EOF)
 	{
 		// desfazer
-		if (c == 'd')
+		if (str[0] == 'd')
 		{
-			// discard rest of word
-			scanf("%*s");
-			while ((getchar()) != '\n');
-
 			if (stack_is_empty(stack))
 			{
 				puts("NULL");
@@ -102,14 +98,13 @@ int main(void)
 			stack_pop(stack);
 
 			continue;
+		} else {
+			// inserir
+			// read rest of line
+			scanf(" %[^\n]s", str);
+			stack_push(stack, str);
 		}
-
-		// inserir
-		// read rest of line
-		scanf("%*s %[^\n]s", str);
-		while ((getchar()) != '\n');
-		stack_push(stack, str);
 	}
 
-	stack_destroy(stack);
+	// stack_destroy(stack);
 }

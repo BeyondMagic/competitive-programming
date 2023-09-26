@@ -4,35 +4,38 @@
 #include <math.h>
 #include <stdbool.h>
 
-/* Comparing operations to be used only with real numbers. */
-#define EQUAL_DECIMAL(a, b, epsilon)   (fabs((a) - (b)) <= ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * (epsilon)))
-#define GREATER_DECIMAL(a, b, epsilon) (((a) - (b)) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * (epsilon)))
-#define LESS_DECIMAL(a, b, epsilon)    (((b) - (a)) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * (epsilon)))
-
-/* Maximum number from two doubles. */
-#define MAX_DECIMAL(a, b, epsilon) (GREATER_DECIMAL(a, b, epsilon) ? (a) : (b)))
-#define MIN_DECIMAL(a, b, epsilon) (LESS_DECIMAL(a, b, epsilon) ? (a) : (b)))
-
-/* Maximum number from two integers. */
-#define MAX_INT(a, b) (((a) > (b)) ? (a) : (b))
-#define MIN_INT(a, b) (((a) < (b)) ? (a) : (b))
-
-/* Basic mathematical logics. */
-#define IS_EVEN(integer) ((long long) (integer) % 2)
-#define IS_ODD(integer) (!(IS_EVEN(integer)))
-
-/* calculation */
-int solve (int a)
+int main ()
 {
-  return a * 2;
-}
+	int Cv, Ce, Cs, Fv, Fe, Fs;
+	scanf ("%d %d %d %d %d %d", &Cv, &Ce, &Cs, &Fv, &Fe, &Fs);
 
-int main(void)
-{
-  /* input */
-  int a;
-  scanf("%d", &a);
+	int pontosc;
+	int pontosf;
 
-  /* output */
-  printf("%d\n", solve(a));
+	pontosc = (Cv*3) + (Ce*1);
+	pontosf = (Fv*3) + (Fe*1);
+
+	if (pontosc > pontosf) // se a pontuação de C for MAIOR que F 
+	{
+		printf ("C\n"); // imprima C
+	}
+
+	if (pontosf > pontosc)
+	{
+		printf ("F\n");
+	}
+
+	if (pontosc == pontosf && Cs > Fs)
+	{
+		printf ("C\n");
+	}
+
+	if (pontosc == pontosf && Fs > Cs)
+	{
+		printf ("F\n");
+	}
+	if (pontosc == pontosf && Cs == Fs) // se a pontuação de C e F forem iguais
+	{
+		printf ("=\n"); //imprima =
+	}
 }

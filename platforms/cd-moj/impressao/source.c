@@ -1,0 +1,30 @@
+#include <stdio.h>
+// #include <stdlib.h>
+// #include <stdbool.h>
+
+int puts(const char *str);
+int printf(const char *restrict format, ...);
+
+typedef struct celula {
+	int dado;
+	struct celula *prox;
+} celula;
+
+void imprime (celula *le)
+{
+	while (le && le->prox)
+		printf("%d -> ", le->prox->dado), le = le->prox;
+	puts("NULL");
+}
+
+void imprime_rec (celula *le)
+{
+	if (!le || !le->prox)
+	{
+		puts("NULL");
+		return;
+	}
+
+	printf("%d -> ", le->prox->dado), imprime_rec(le->prox);
+}
+
