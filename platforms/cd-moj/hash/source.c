@@ -1,3 +1,4 @@
+#define _DEFAULT_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -325,11 +326,11 @@ int main(void)
 
 	celula *node = NULL;
 
-	TH *hash_table = hash_table_create(196613);
+	TH *hash_table = hash_table_create(24593);
 
 	while (scanf("%s", command) != EOF)
 	{
-		scanf("%*c"); // limpar espaço.
+		// scanf("%*c"); // limpar espaço.
 		switch (command[0])
 		{
 			// add
