@@ -83,32 +83,32 @@ struct UnionFind
 	}
 };
 
-// vector<size_t> breadth_first_search(vector<vector<size_t>> &graph, size_t &source)
-// {
-// 	const auto N = graph.size();
-// 
-// 	vector<size_t> dist(N, oo);
-// 	dist[source] = 0;
-// 	
-// 	queue<size_t> fila;
-// 	fila.push(source);
-// 
-// 	while (not fila.empty())
-// 	{
-// 		auto root = fila.front(); fila.pop();
-// 
-// 		for (auto next : graph[root])
-// 		{
-// 			if (dist[next] == oo)
-// 			{
-// 				dist[next] = dist[root] + 1;
-// 				fila.push(next);
-// 			}
-// 		}
-// 	}
-// 
-// 	return dist;
-// }
+vector<size_t> breadth_first_search(vector<vector<size_t>> &graph, size_t &source)
+{
+	const auto N = graph.size();
+
+	vector<size_t> dist(N, oo);
+	dist[source] = 0;
+	
+	queue<size_t> fila;
+	fila.push(source);
+
+	while (not fila.empty())
+	{
+		auto root = fila.front(); fila.pop();
+
+		for (auto next : graph[root])
+		{
+			if (dist[next] == oo)
+			{
+				dist[next] = dist[root] + 1;
+				fila.push(next);
+			}
+		}
+	}
+
+	return dist;
+}
 
 // Ideia: juntamos em uma "arvore" onde escolhemos um elemento aleatório para ser a cabeça de um componente
 //        para cada vertice, dizemos qual é cabeça comum, MENOS se ele estiver sozinho.

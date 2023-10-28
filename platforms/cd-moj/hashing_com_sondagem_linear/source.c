@@ -142,7 +142,7 @@ int hash_array_add (int *tb, const int x, const int M)
 void hash_table_realloc (TH *ht)
 {
 	// achar novo M
-	const int M = aumentaTamanho(ht->M);
+	const int M = aumentaTamanho1(ht->M);
 
 	// ja chegou no limite
 	if (M == ht->M)
@@ -218,6 +218,36 @@ int THremove (TH *h, int ch)
 	}
 
 	return 0;
+}
+
+int main(void)
+{
+	TH *table = hash_table_create(2);
+
+	THinsere(table, 153421);
+	THinsere(table, 22123);
+	THinsere(table, 3);
+	THinsere(table, 4);
+	THinsere(table, 1342);
+	THinsere(table, 4232);
+	THinsere(table, 321989);
+	THinsere(table, 3289);
+	THinsere(table, 721989);
+	THinsere(table, 3219329);
+	THinsere(table, 289);
+	THinsere(table, 321989);
+	THinsere(table, 989);
+
+	printf("%d", THbusca(table, 1));
+	printf("%d", THbusca(table, 6));
+	printf("%d", THbusca(table, 3));
+	printf("\n");
+
+	hash_table_print(table);
+
+	printf("r: %d\n",THremove(table, 3));
+
+	hash_table_print(table);
 }
 
 /*int main(void)

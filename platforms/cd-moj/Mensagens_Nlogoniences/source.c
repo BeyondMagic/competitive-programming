@@ -29,7 +29,7 @@ typedef struct HT
 HT hash_table_create(void)
 {
 	register HT ht = {.size = 0};
-	ht.v = (celula **)malloc(M * sizeof(celula *));
+	ht.v = malloc(M * sizeof(celula *));
 	return ht;
 }
 
@@ -39,7 +39,7 @@ bool hash_table_insert(register HT *ht, register unsigned x, register char c)
 	register unsigned id = x % M;
 	if (!ht->v[id])
 	{
-		ht->v[id] = (celula *)malloc(sizeof(celula));
+		ht->v[id] = malloc(sizeof(celula));
 		*ht->v[id] = (celula){.next = NULL, .c = c, .id = x};
 		return true;
 	}

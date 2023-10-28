@@ -1,7 +1,3 @@
-#include <stdio.h>
-// #include <stdlib.h>
-// #include <stdbool.h>
-
 int puts(const char *str);
 int printf(const char *restrict format, ...);
 
@@ -24,7 +20,5 @@ void imprime_rec (celula *le)
 		puts("NULL");
 		return;
 	}
-
 	printf("%d -> ", le->prox->dado), imprime_rec(le->prox);
 }
-
