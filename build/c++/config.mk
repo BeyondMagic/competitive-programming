@@ -13,7 +13,7 @@ endif
 #---------------------------------------------
 # C++ standard version
 
-FLAGS := $(FLAGS) -std=c++20 # Codeforces
+FLAGS := --std=c++20
 
 #---------------------------------------------
 # Libraries
@@ -23,24 +23,33 @@ FLAGS := $(FLAGS) -std=c++20 # Codeforces
 #---------------------------------------------
 # -- Debugging.
 
-FLAGS := -ggdb
+FLAGS := $(FLAGS) -ggdb
+FLAGS := $(FLAGS) -DLOCAL
 
 #---------------------------------------------
 # -- Warnings we *need* to see.
 
 # FLAGS := $(FLAGS) -O3
 # 
- FLAGS := $(FLAGS) -Wall
+FLAGS := $(FLAGS) -Wall
 # 
- FLAGS := $(FLAGS) -Werror
-# 
- FLAGS := $(FLAGS) -Wextra
+FLAGS := $(FLAGS) -Werror
+## 
+#FLAGS := $(FLAGS) -Wextra
 # 
  FLAGS := $(FLAGS) -pedantic
 # 
- FLAGS := $(FLAGS) -Wconversion
+#FLAGS := $(FLAGS) -Wconversion
 
- FLAGS := $(FLAGS) -Wsign-conversion
+#FLAGS := $(FLAGS) -w
+
+# FLAGS := $(FLAGS) -Wsign-conversion
+
+# Variable shadowing/repeating names of variables in same context.
+ FLAGS := $(FLAGS) -Wshadow
+
+# Disable bothering warning of conversion of types.
+FLAGS := $(FLAGS) -Wno-error=sign-compare
 
 # Signed integer overflow is defined to wrap-around (behavior of Java, release-mode Rust, and unchecked C#). GCC and Clang provide non-standard settings to do this already
 # FLAGS := $(FLAGS) -fwrapv

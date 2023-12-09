@@ -18,4 +18,9 @@ int main ()
 {
 	ios::sync_with_stdio(false);
 	cin.tie(nullptr);
+	int t, a;
+	cin >> t;
+	while (t--)
+		cin >> a,
+		puts(a >= 111 * (a % 11) ? "YES" : "NO");
 }

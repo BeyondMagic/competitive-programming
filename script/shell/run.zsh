@@ -148,7 +148,7 @@ function _build_bear_cpp_c () {
   export filename="$1"
   shift
 
-  bear -- make build -s || exit 1
+  bear -- make build || exit 1
   #if [ ! -f "$root/$compile_file" ]; then
     mv -f "$compile_file" "$root/$compile_file"
   #fi
@@ -249,12 +249,23 @@ function build () {
           fi
         fi
         cp -rf "$original_filename" "$COMPILED_FOLDER/$filename"
+
+		# Copy debug file if there is one.
+		[ -f 'debug.h' ] && cp -f "$COMPILED_FOLDER/../debug.h" "$COMPILED_FOLDER/debug.h"
       }
       #cd "$ROOT"
       build $language "$problem_root" "$COMPILED_FOLDER/$filename"
       cd "$problem_root"
 
     ;;
+
+	#
+	'run_clean' | 'rc' )
+	
+		rm -rf "./compiled"
+		exec $0 run
+
+	;;
 
     # @param string: create or r
     #   @param string: name of project to be created.
@@ -289,7 +300,7 @@ function build () {
       curl "$pdf_link" -o "$PROBLEM"
 
       "$ROOT$SCRIPT" run
-      _set_tests "$tests"
+      [ "$tests" ] && _set_tests "$tests"
 
       #echo "PWD: $PWD"
 

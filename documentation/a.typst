@@ -1,0 +1,47 @@
+// General settings:
+#set page(
+  paper: "a6",
+  numbering: "Fol. 1/1",
+  header: [
+    #set text(8pt)
+    #smallcaps[UnB - FGA]
+    #h(1fr) Métodos Numéricos para Engenharia
+  ],
+  footer: [
+    #set text(8pt)
+    #smallcaps[Revisado pelo Prof. Manuel],
+    #h(1fr) Autor: João Farias
+  ]
+)
+#set par(
+  justify: true,
+  first-line-indent: 1cm,
+)
+
+#set text(
+  font: "Linux Libertine",
+  size: 11pt,
+  lang: "por",
+)
+
+#line(length: 100%)
+
+$
+overline(x) = (2 r sin theta)/(3 theta)
+$
+
+Seja $overline(x) := r/2$
+
+$
+overline(x) = r/2 = (2 r sin theta)/(3 theta) \
+=> \
+r/2 times 1/r = (2 r sin theta)/(3 theta) times 1/r \
+=> \
+1/2 = (2 sin theta)/(3 theta) \
+=> \
+dots \
+=> \
+f(theta) := cos theta - 3/4 theta = 0
+$
+
+#line(length: 100%)

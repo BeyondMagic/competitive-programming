@@ -15,6 +15,7 @@ using namespace std;
 #define endl '\n'
 
 using point = tuple<int, int, int, int>;
+using ii = pair<int, int>;
 
 struct UFDS
 {
@@ -61,11 +62,21 @@ int main ()
 	cin >> n >> c;
 
 	vector<point> lines(n);
-	for (auto &[y1, y2, x1, x2] : lines)
+	vector<pair<int, int>> lines_xs(n);
+	map<pair<int, int>, pair<int, int>> M;
+
+	for (int i = 0; i < n; ++i)
 	{
+		auto &[y1, y2, x1, x2] = lines[i];
 		cin >> x1 >> y1 >> x2 >> y2;
+
 		if (x1 > x2)
 			swap(x1, x2), swap(y1, y2);
+
+		auto &[xi, xf] = lines_xs[i];
+		xi = x1;
+		xf = x2;
+		M[make_pair(xi, xf)] = make_pair(x1, x2);
 	}
 
 	ranges::sort(lines);
@@ -109,23 +120,22 @@ int main ()
 		}
 	}
 
-	debug(lines);
-	auto compare_xs = [](point a, point b) -> bool {
-		auto &[ay1, ay2, ax1, ax2] = a;
-		auto &[by1, by2, bx1, bx2] = b;
-		if (ax1 < bx1)
-			return true;
-		else if (ax1 > bx1)
-			return false;
-		else if (ax2 < bx2)
-			return true;
-		return false;
-	};
+	ranges::sort(lines_xs);
+	debug(lines_xs);
 
 	constexpr int x = 4;
-	auto p = point(9999, 9999, x, x);
-	auto r = lower_bound(begin(lines), end(lines), p, compare_xs) - begin(lines);
-	debug(r);
+	pair<int, int> p{x, x};
+
+	auto r = lower_bound(begin(lines_xs), end(lines_xs), p);
+	if (r == end(lines_xs))
+		return puts("NOT FOUND"), 0;
+	else
+	{
+		auto position = r - begin(lines_xs) - 1;
+		debug(lines_xs);
+		debug(p);
+		debug(position);
+	}
 
 	// for (int d; cin >> d; )
 	// {

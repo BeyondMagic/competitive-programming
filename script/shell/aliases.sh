@@ -14,9 +14,9 @@ NAME_FOLDER="$(basename "$SCRIPT_FOLDER")"
 # Execute main script no matter which subfolder user is in.
 run ()
 {
-  git ls-remote --get-url > /dev/null && {
-    root="$(git rev-parse --show-cdup)script/$NAME_FOLDER"
-    #___log "./${root}/run.zsh $@"
-    ./${root}/run.zsh $@
-  }
+	git ls-remote --get-url > /dev/null && {
+		root="$(git rev-parse --show-cdup)script/$NAME_FOLDER"
+			#___log "./${root}/run.zsh $@"
+			./${root}/run.zsh $@
+	}
 }
