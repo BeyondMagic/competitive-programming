@@ -1,0 +1,15 @@
+l → rotacionar 90º para a esquerda (sentido anti-horário).
+
+r → rotacionar 90º para a direita (sentido horário).
+
+w → caminhar para frente. (anda uma casa)
+
+j → corridinha para frente. (anda duas casas)
+
+R → correr para frente. (anda três casas)
+
+s → correr ao máximo para frente. (anda quatro casas)
+
+c → ativar sensor de paredes próximas.
+
+d → ativar sensor de proximidade do objetivo.
