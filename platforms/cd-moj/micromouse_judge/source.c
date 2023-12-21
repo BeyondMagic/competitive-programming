@@ -389,13 +389,10 @@ struct List *positions_passed, *possible_cheese;
 // list<position> possible_cheese;
 
 // If this was a possible place for a cheese, remove it.
-void remove_possible_cheese(node *block)
-{
-	position P = {.x = block->x, .y = block->y};
-	struct Node_List *N = list_find(possible_cheese, P);
-	if (N)
-		list_erase(possible_cheese, P);
-}
+//void remove_possible_cheese(position P)
+//{
+//	list_erase(possible_cheese, P);
+//}
 
 // ------------------------------------------
 // Relevant code about the algorithm down.
@@ -1403,87 +1400,6 @@ bool bias_direction(node *block, position bias)
 			}
 		}
 
-	// X is negative or positive.
-	} else if (bias.x != 0) {
-		// go right
-		if (bias.x < 0)
-		{
-			if (block->rightt->state == blank)
-			{
-				change_direction(rightt);
-				return true;
-			// go up
-			} else if (bias.y < 0) {
-				if (block->up->state == blank)
-				{
-					change_direction(up);
-					return true;
-				} else if (block->down->state == blank)
-				{
-					change_direction(down);
-					return true;
-				} else if (block->leftt->state == blank)
-				{
-					change_direction(leftt);
-					return true;
-				}
-			// go down
-			} else {
-				if (block->down->state == blank)
-				{
-					change_direction(down);
-					return true;
-				} else if (block->up->state == blank)
-				{
-					change_direction(up);
-					return true;
-				} else if (block->leftt->state == blank)
-				{
-					change_direction(leftt);
-					return true;
-				}
-			}
-		// go left
-		} else {
-			if (block->leftt->state == blank)
-			{
-				change_direction(leftt);
-				return true;
-			// go up
-			} else if (bias.y < 0) {
-				// fprintf(stderr, "Caiu aqui!\n");
-				// fprintf(stderr, "\t\tblock->up->state eh %d!\n", block->up->state);
-				if (block->up->state == blank)
-				{
-					change_direction(up);
-					return true;
-				} else if (block->down->state == blank)
-				{
-					change_direction(down);
-					return true;
-				} else if (block->rightt->state == blank)
-				{
-					change_direction(rightt);
-					return true;
-				}
-			// go down
-			} else {
-				if (block->down->state == blank)
-				{
-					change_direction(down);
-					return true;
-				} else if (block->up->state == blank)
-				{
-					change_direction(up);
-					return true;
-				} else if (block->rightt->state == blank)
-				{
-					change_direction(rightt);
-					return true;
-				}
-			}
-		}
-
 	// Y is negative or positive.
 	} else if (bias.y != 0) {
 		// go up
@@ -1514,9 +1430,9 @@ bool bias_direction(node *block, position bias)
 				{
 					change_direction(leftt);
 					return true;
-				} else if (block->leftt->state == blank)
+				} else if (block->rightt->state == blank)
 				{
-					change_direction(leftt);
+					change_direction(rightt);
 					return true;
 				} else if (block->down->state == blank)
 				{
@@ -1551,9 +1467,9 @@ bool bias_direction(node *block, position bias)
 				{
 					change_direction(leftt);
 					return true;
-				} else if (block->leftt->state == blank)
+				} else if (block->rightt->state == blank)
 				{
-					change_direction(leftt);
+					change_direction(rightt);
 					return true;
 				} else if (block->up->state == blank)
 				{
@@ -1680,6 +1596,7 @@ node *misser_hitter(node *block)
 					break;
 			}
 			// fprintf(stderr, "[debug:print_list] to search (%d, %d)\n", P.x, P.y);
+			list_erase(possible_cheese, P);
 			struct Node_List *N = list_find(positions_passed, P);
 			// -----------------------------------------------
 
@@ -1730,6 +1647,7 @@ node *misser_hitter(node *block)
 				pce.c = WALK;
 				pce.es = player.state;
 				stack_pce_push(S, pce);
+
 				// S.push(make_pair(WALK, player.state));
 
 				break;
@@ -1738,6 +1656,7 @@ node *misser_hitter(node *block)
 				// Save all the walks and its directions.
 				pce.c = WALK;
 				pce.es = player.state;
+
 				stack_pce_push(S, pce);
 
 				// S.push(make_pair(WALK, player.state));
@@ -1753,8 +1672,32 @@ node *misser_hitter(node *block)
 
 			block = aux;
 			block->state = visited;
-			remove_possible_cheese(block);
+			list_erase(possible_cheese, (position){.x = block->x, .y = block->y});
+			// remove_possible_cheese(block);
 			// print_grid(block);
+
+			// Is it good to verify the way?
+			if (not block->up or not block->rightt or not block->down or not block->leftt or not block->up or 
+				(block->up and block->up->state == unknown) or
+				(block->rightt and block->rightt->state == unknown) or
+				(block->down and block->down->state == unknown) or
+				(block->leftt and block->leftt->state == unknown)
+				)
+			{
+				send_command(SENSOR_WALL);
+				read_sensor(player.state, block, result);
+				// print_grid(block);
+				// count_zeroes();
+			}
+
+			// if (player.state == up and block->up->state == blank) continue;
+			// else if (player.state == rightt and block->rightt->state == blank) continue;
+			// else if (player.state == down and block->down->state == blank) continue;
+			// else if (player.state == leftt and block->leftt->state == blank) continue;
+
+			if (bias_direction(block, bias_calculator()))
+				continue;
+
 		}
 
 		position bias;
@@ -1813,7 +1756,8 @@ node *misser_hitter(node *block)
 				return block;
 
 			// print_list(possible_cheese);
-			remove_possible_cheese(block);
+			list_erase(possible_cheese, (position){.x = block->x, .y = block->y});
+			// remove_possible_cheese(block);
 			// print_list(possible_cheese);
 
 			// Already sensored.
