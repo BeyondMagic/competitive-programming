@@ -1100,23 +1100,6 @@ node *detector(node *grid)
 				sense_leftt();
 				// grid = walk(grid, rightt).first;
 			}
-		} else if (grid->leftt->state != wall) {
-			sense_leftt();
-			grid = walk(grid, rightt).first;
-
-			if (grid->up->state != wall) {
-				sense_up();
-				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = up});
-				// grid = walk(grid, down).first;
-			} else if (grid->rightt->state != wall) {
-				sense_rightt();
-				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = rightt});
-				// grid = walk(grid, leftt).first;
-			} else if (grid->down->state != wall) {
-				sense_down();
-				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = down});
-				// grid = walk(grid, up).first;
-			}
 
 		} else if (grid->down->state != wall) {
 			sense_down();
@@ -1134,6 +1117,23 @@ node *detector(node *grid)
 				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = leftt});
 				sense_leftt();
 				// grid = walk(grid, rightt).first;
+			}
+		} else if (grid->leftt->state != wall) {
+			sense_leftt();
+			grid = walk(grid, rightt).first;
+
+			if (grid->up->state != wall) {
+				sense_up();
+				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = up});
+				// grid = walk(grid, down).first;
+			} else if (grid->rightt->state != wall) {
+				sense_rightt();
+				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = rightt});
+				// grid = walk(grid, leftt).first;
+			} else if (grid->down->state != wall) {
+				sense_down();
+				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = down});
+				// grid = walk(grid, up).first;
 			}
 		}
 
@@ -1503,6 +1503,85 @@ bool bias_direction(node *block, position bias)
 			}
 		}
 
+	// X is negative or positive.
+	} else if (bias.x != 0) {
+		// go right
+		if (bias.x < 0)
+		{
+			if (block->rightt->state == blank)
+			{
+				change_direction(rightt);
+				return true;
+			// go up
+			} else if (bias.y < 0) {
+				if (block->up->state == blank)
+				{
+					change_direction(up);
+					return true;
+				} else if (block->down->state == blank)
+				{
+					change_direction(down);
+					return true;
+				} else if (block->leftt->state == blank)
+				{
+					change_direction(down);
+					return true;
+				}
+			// go down
+			} else {
+				if (block->down->state == blank)
+				{
+					change_direction(down);
+					return true;
+				} else if (block->up->state == blank)
+				{
+					change_direction(up);
+					return true;
+				} else if (block->leftt->state == blank)
+				{
+					change_direction(down);
+					return true;
+				}
+			}
+		// go left
+		} else {
+			if (block->leftt->state == blank)
+			{
+				change_direction(leftt);
+				return true;
+			// go right
+			} else if (bias.y < 0) {
+				if (block->up->state == blank)
+				{
+					change_direction(up);
+					return true;
+				} else if (block->down->state == blank)
+				{
+					change_direction(down);
+					return true;
+				} else if (block->rightt->state == blank)
+				{
+					change_direction(rightt);
+					return true;
+				}
+			// go left
+			} else {
+				if (block->down->state == blank)
+				{
+					change_direction(down);
+					return true;
+				} else if (block->up->state == blank)
+				{
+					change_direction(up);
+					return true;
+				} else if (block->rightt->state == blank)
+				{
+					change_direction(up);
+					return true;
+				}
+			}
+		}
+
 	// Y is negative or positive.
 	} else if (bias.y != 0) {
 		// go up
@@ -1577,85 +1656,6 @@ bool bias_direction(node *block, position bias)
 				} else if (block->up->state == blank)
 				{
 					change_direction(up);
-					return true;
-				}
-			}
-		}
-
-	// X is negative or positive.
-	} else if (bias.x != 0) {
-		// go right
-		if (bias.x < 0)
-		{
-			if (block->rightt->state == blank)
-			{
-				change_direction(rightt);
-				return true;
-			// go up
-			} else if (bias.y < 0) {
-				if (block->up->state == blank)
-				{
-					change_direction(up);
-					return true;
-				} else if (block->down->state == blank)
-				{
-					change_direction(down);
-					return true;
-				} else if (block->leftt->state == blank)
-				{
-					change_direction(leftt);
-					return true;
-				}
-			// go down
-			} else {
-				if (block->down->state == blank)
-				{
-					change_direction(down);
-					return true;
-				} else if (block->up->state == blank)
-				{
-					change_direction(up);
-					return true;
-				} else if (block->leftt->state == blank)
-				{
-					change_direction(leftt);
-					return true;
-				}
-			}
-		// go leftt
-		} else {
-			if (block->leftt->state == blank)
-			{
-				change_direction(leftt);
-				return true;
-			// go up
-			} else if (bias.y < 0) {
-				if (block->up->state == blank)
-				{
-					change_direction(up);
-					return true;
-				} else if (block->down->state == blank)
-				{
-					change_direction(down);
-					return true;
-				} else if (block->rightt->state == blank)
-				{
-					change_direction(rightt);
-					return true;
-				}
-			// go down
-			} else {
-				if (block->down->state == blank)
-				{
-					change_direction(down);
-					return true;
-				} else if (block->up->state == blank)
-				{
-					change_direction(up);
-					return true;
-				} else if (block->rightt->state == blank)
-				{
-					change_direction(rightt);
 					return true;
 				}
 			}
@@ -2414,7 +2414,7 @@ node *explore(node *grid)
 		is_detecting_now = true;
 		fprintf(stderr, "[debug] before detector\n");
 		print_stack(S);
-		/// grid = detector(grid);
+		grid = detector(grid);
 		is_detecting_now = false;
 		if (grid->state != cheese)
 		{

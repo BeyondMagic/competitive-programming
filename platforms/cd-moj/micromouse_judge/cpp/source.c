@@ -6,9 +6,6 @@
 #include <stdbool.h>
 #include <assert.h>
 
-#define debug(s) fprintf(stderr, s)
-#define debug_(s, ...) fprintf(stderr, s, __VA_ARGS__)
-
 // ------------------------------------------
 // Logic
 // ------------------------------------------
@@ -44,10 +41,10 @@
 #define START 'o'
 
 enum node_state {
-	blank, // 0
-	wall, // 1 
-	cheese, // 2
-	visited, // 3
+	blank,
+	wall,
+	cheese,
+	visited,
 	unknown,
 	_free,
 };
@@ -118,28 +115,25 @@ struct Stack_PCE {
 
 struct Stack_PCE *stack_pce_initialise()
 {
-	struct Stack_PCE *stack = malloc(sizeof(struct Stack_PCE));
-	stack->top = NULL;
-	return stack;
+	struct Stack_PCE *S = malloc(sizeof(struct Stack_PCE));
+	S->top = NULL;
+	return S;
 }
 
-bool stack_pce_is_empty(struct Stack_PCE *stack)
+bool stack_pce_is_empty(struct Stack_PCE *S)
 {
-	return stack->top == NULL;
+	return S->top == NULL;
 }
 
-pair_char_entity stack_pce_top(struct Stack_PCE *stack)
+pair_char_entity stack_pce_top(struct Stack_PCE *S)
 {
-	if (!stack->top)
+	if (!S->top)
 		return (pair_char_entity){.c = '\0', .es = unknownn};
-	return stack->top->data;
+	return S->top->data;
 }
 
-bool stack_pce_push(struct Stack_PCE *stack, const pair_char_entity data)
+bool stack_pce_push(struct Stack_PCE *S, const pair_char_entity data)
 {
-	if (not stack)
-		return false;
-
 	struct Node_PCE *temp = malloc(sizeof(struct Node_PCE));
 
 	if (not temp)
@@ -147,8 +141,8 @@ bool stack_pce_push(struct Stack_PCE *stack, const pair_char_entity data)
 
 	temp->data.c = data.c;
 	temp->data.es = data.es;
-	temp->link = stack->top;
-	stack->top = temp;
+	temp->link = S->top;
+	S->top = temp;
 
 	return true;
 }
@@ -324,22 +318,6 @@ bool list_is_empty (struct List *L)
 	return L->front == NULL;
 }
 
-void list_push_front (struct List *L, position P)
-{
-	struct Node_List *N = malloc(sizeof(struct Node_List));
-
-	N->data.x = P.x;
-	N->data.y = P.y;
-
-	N->next = L->front;
-	N->prev = NULL;
-
-	if (L->front)
-		L->front->prev = N;
-
-	L->front = N;
-}
-
 struct Node_List *list_find (struct List *L, position P)
 {
 	struct Node_List *N = L->front;
@@ -355,6 +333,25 @@ struct Node_List *list_find (struct List *L, position P)
 	return N;
 }
 
+void list_push_front (struct List *L, position P)
+{
+	if (list_find(L, P))
+		return;
+
+	struct Node_List *N = malloc(sizeof(struct Node_List));
+
+	N->data.x = P.x;
+	N->data.y = P.y;
+
+	N->next = L->front;
+	N->prev = NULL;
+
+	if (L->front)
+		L->front->prev = N;
+
+	L->front = N;
+}
+
 struct Node_List *list_find_ignore_first (struct List *L, position P)
 {
 	struct Node_List *N = L->front ? L->front->next : NULL;
@@ -365,13 +362,24 @@ struct Node_List *list_find_ignore_first (struct List *L, position P)
 	return N;
 }
 
-void list_erase (struct List *L, position P)
-{
-	struct Node_List *N = list_find(L, P);
+bool found_possible_cheese = false;
 
-	// if (not N or (N and (N->data.x != P.x or N->data.y != P.y)))
+void print_list (struct List *L)
+{
+	struct Node_List *N = L->front;
+	while (N)
+		fprintf(stderr, "\t[debug: print_list] (%d, %d)\n", N->data.x, N->data.y),
+		N = N->next;
+}
+
+void list_pop_front (struct List *L)
+{
+	struct Node_List *N = L->front;
+
 	if (not N)
 		return;
+
+	L->front = N->next;
 
 	if (N->next)
 		N->next->prev = N->prev;
@@ -382,13 +390,31 @@ void list_erase (struct List *L, position P)
 	free(N);
 }
 
-void print_list (struct List *L)
+void clear_list (struct List *L)
 {
-	struct Node_List *N = L->front;
+	struct Node_List *N = L->front, *T;
 	while (N)
-		fprintf(stderr, "\t[debug: print_list] (%d, %d)\n", N->data.x, N->data.y),
-		N = N->next;
+	{
+		T = N;
+		N = T->next;
+		free(T);
+	}
+	L->front = NULL;
+	L->back = NULL;
 }
+
+void destroy_list (struct List *L)
+{
+	struct Node_List *N = L->front, *T;
+	while (N)
+	{
+		T = N;
+		N = T->next;
+		free(T);
+	}
+	free(L);
+}
+
 
 struct List *positions_passed, *possible_cheese;
 // vector<pair<int, int>> positions_passed;
@@ -668,6 +694,181 @@ void print_grid(node *row)
 	// }
 // }
 
+void change_direction(enum entity_state direction)
+{
+	if (player.state == direction)
+		return;
+
+	int result;
+
+	// Opposite side.
+	if (
+			(player.state == down and direction == up) or
+			(player.state == up and direction == down) or
+			(player.state == leftt and direction == rightt) or
+			(player.state == rightt and direction == leftt)
+		)
+	{
+		send_command(ROTATE_RIGHT);
+		send_command(ROTATE_RIGHT);
+	}
+
+	if (
+		(player.state == up and direction == leftt) or
+		(player.state == leftt and direction == down) or
+		(player.state == rightt and direction == up) or
+		(player.state == down and direction == rightt)
+		)
+	{
+		send_command(ROTATE_LEFT);
+	}
+
+	if (
+		(player.state == up and direction == rightt) or
+		(player.state == rightt and direction == down) or
+		(player.state == down and direction == leftt) or
+		(player.state == leftt and direction == up)
+		)
+	{
+		send_command(ROTATE_RIGHT);
+	}
+
+	player.state = direction;
+}
+
+void possible_cheese_add_positions (struct List *list, int dist, entity play)
+{
+	position P;
+	// ++dist;
+
+	for (int x = play.x + dist, y = play.y;; --x, ++y)
+	{
+		P.x = x;
+		P.y = y;
+		if (list_find(possible_cheese, P))
+			list_push_front(list, P);
+
+		if (x == play.x)
+			break;
+	}
+
+	print_list(list);
+
+	for (int x = play.x - dist, y = play.y;; ++x, ++y)
+	{
+		P.x = x;
+		P.y = y;
+		if (list_find(possible_cheese, P))
+			list_push_front(list, P);
+
+		if (x == play.x)
+			break;
+	}
+
+	print_list(list);
+
+	for (int x = play.x - dist, y = play.y;; ++x, --y)
+	{
+		P.x = x;
+		P.y = y;
+		if (list_find(possible_cheese, P))
+			list_push_front(list, P);
+
+		if (x == play.x)
+			break;
+	}
+	print_list(list);
+
+	for (int x = play.x + dist, y = play.y;; --x, --y)
+	{
+		P.x = x;
+		P.y = y;
+		if (list_find(possible_cheese, P))
+			list_push_front(list, P);
+
+		if (x == play.x)
+			break;
+	}
+	print_list(list);
+}
+
+void list_erase (struct List *L, position P)
+{
+	struct Node_List *N = list_find(L, P);
+
+	// if (not N or (N and (N->data.x != P.x or N->data.y != P.y)))
+	if (not N)
+		return;
+
+	// Encontrei uma possível posição do queijo, N.
+	if (not found_possible_cheese)
+	{
+		found_possible_cheese = true;
+
+		int result, distance_orig, distance;
+		send_command(SENSOR_MARK);
+		distance_orig = result;
+
+		entity player_new = player;
+
+		// Agora com a distância, descobrimos.
+		enum entity_state direction_orig = stack_pce_top(S).es, direction = unknownn;
+		switch (direction_orig)
+		{
+			case up: direction = down; --player_new.y; break;
+			case rightt: direction = leftt; --player_new.x; break;
+			case down: direction = up; ++player_new.y; break;
+			case leftt: direction = rightt; ++player_new.x; break;
+			case unknownn: direction = unknownn; break;
+		}
+		change_direction(direction);
+		send_command(WALK);
+
+		send_command(SENSOR_MARK);
+		distance = result;
+		
+		change_direction(direction_orig);
+		send_command(WALK);
+
+		struct List *list = list_initialize();
+		fprintf(stderr, "[debug] first list being added\n");
+		possible_cheese_add_positions(list, distance_orig, player);
+
+		struct List *list_2 = list_initialize();
+		fprintf(stderr, "[debug] second list being added\n");
+		possible_cheese_add_positions(list_2, distance, player_new);
+
+		fprintf(stderr, "clearing my list\n");
+		clear_list(possible_cheese);
+		fprintf(stderr, "before acessing looping list\n");
+		struct Node_List *A = list->front;
+		while (A)
+		{
+			fprintf(stderr, "searching in second list for N->data\n");
+			if (list_find(list_2, A->data))
+			{
+				fprintf(stderr, "found possible cheese\n");
+				list_push_front(possible_cheese, A->data);
+			}
+			fprintf(stderr, "continue to next (%d, %d)\n", A->data.x, A->data.y);
+			A = A->next;
+			fprintf(stderr, "before while\n");
+		}
+		fprintf(stderr, "queijo agora com certeza está\n");
+		print_list(possible_cheese);
+
+		return;
+	}
+
+	if (N->next)
+		N->next->prev = N->prev;
+
+	if (N->prev)
+		N->prev->next = N->next;
+
+	free(N);
+}
+
 // Read sensor given the player direction.
 void read_sensor(enum entity_state direction, node *block, int result)
 {
@@ -712,90 +913,124 @@ void read_sensor(enum entity_state direction, node *block, int result)
 	{
 		case up:
 			if (block->up->state == unknown)
+			{
 				block->up->state     = result & 1 ? blank : wall;
+				if (block->up->state == blank and list_find(possible_cheese, (position){.x = block->up->x, .y = block->up->y}))
+					change_direction(up);
+			}
 			if (block->rightt->state == unknown)
+			{
 				block->rightt->state = result & 2 ? blank : wall;
+				if (block->rightt->state == blank and list_find(possible_cheese, (position){.x = block->rightt->x, .y = block->rightt->y}))
+					change_direction(rightt);
+			}
 			if (block->down->state == unknown)
+			{
 				block->down->state   = result & 4 ? blank : wall;
+				if (block->down->state == blank and list_find(possible_cheese, (position){.x = block->down->x, .y = block->down->y}))
+					change_direction(down);
+			}
 			if (block->leftt->state == unknown)
+			{
 				block->leftt->state  = result & 8 ? blank : wall;
+				if (block->leftt->state == blank and list_find(possible_cheese, (position){.x = block->leftt->x, .y = block->leftt->y}))
+					change_direction(leftt);
+			}
 			break;
 		case rightt:
 			if (block->rightt->state == unknown)
+			{
 				block->rightt->state = result & 1 ? blank : wall;
+				if (block->rightt->state == blank and list_find(possible_cheese, (position){.x = block->rightt->x, .y = block->rightt->y}))
+					change_direction(rightt);
+			}
+
 			if (block->down->state == unknown)
+			{
 				block->down->state   = result & 2 ? blank : wall;
+				if (block->down->state == blank and list_find(possible_cheese, (position){.x = block->down->x, .y = block->down->y}))
+					change_direction(down);
+			}
+
 			if (block->leftt->state == unknown)
+			{
 				block->leftt->state  = result & 4 ? blank : wall;
+				if (block->leftt->state == blank and list_find(possible_cheese, (position){.x = block->leftt->x, .y = block->leftt->y}))
+					change_direction(leftt);
+			}
+
 			if (block->up->state == unknown)
+			{
 				block->up->state     = result & 8 ? blank : wall;
+				if (block->up->state == blank and list_find(possible_cheese, (position){.x = block->up->x, .y = block->up->y}))
+					change_direction(up);
+			}
+
 			break;
 		case down:
 			if (block->down->state == unknown)
+			{
 				block->down->state   = result & 1 ? blank : wall;
+				if (block->down->state == blank and list_find(possible_cheese, (position){.x = block->down->x, .y = block->down->y}))
+					change_direction(down);
+			}
+
 			if (block->leftt->state == unknown)
+			{
 				block->leftt->state  = result & 2 ? blank : wall;
+				if (block->leftt->state == blank and list_find(possible_cheese, (position){.x = block->leftt->x, .y = block->leftt->y}))
+					change_direction(leftt);
+			}
+
 			if (block->up->state == unknown)
+			{
 				block->up->state     = result & 4 ? blank : wall;
+				if (block->up->state == blank and list_find(possible_cheese, (position){.x = block->up->x, .y = block->up->y}))
+					change_direction(up);
+			}
+
 			if (block->rightt->state == unknown)
+			{
 				block->rightt->state = result & 8 ? blank : wall;
+				if (block->rightt->state == blank and list_find(possible_cheese, (position){.x = block->rightt->x, .y = block->rightt->y}))
+					change_direction(rightt);
+			}
+
 			break;
 		case leftt:
 			if (block->leftt->state == unknown)
+			{
 				block->leftt->state  = result & 1 ? blank : wall;
+				if (block->leftt->state == blank and list_find(possible_cheese, (position){.x = block->leftt->x, .y = block->leftt->y}))
+					change_direction(leftt);
+			}
+
 			if (block->up->state == unknown)
+			{
 				block->up->state     = result & 2 ? blank : wall;
+				if (block->up->state == blank and list_find(possible_cheese, (position){.x = block->up->x, .y = block->up->y}))
+					change_direction(up);
+			}
+
 			if (block->rightt->state == unknown)
+			{
 				block->rightt->state = result & 4 ? blank : wall;
+				if (block->rightt->state == blank and list_find(possible_cheese, (position){.x = block->rightt->x, .y = block->rightt->y}))
+					change_direction(rightt);
+			}
+
 			if (block->down->state == unknown)
+			{
 				block->down->state   = result & 8 ? blank : wall;
+				if (block->down->state == blank and list_find(possible_cheese, (position){.x = block->down->x, .y = block->down->y}))
+					change_direction(down);
+			}
+
 			break;
 		case unknownn:
 			// fprintf(stderr, "[ERROR] Weid coming here, isnt?");
 			break;
 	}
-}
-
-void change_direction(enum entity_state direction)
-{
-	if (player.state == direction)
-		return;
-
-	int result;
-
-	// Opposite side.
-	if (
-			(player.state == down and direction == up) or
-			(player.state == up and direction == down) or
-			(player.state == leftt and direction == rightt) or
-			(player.state == rightt and direction == leftt)
-		)
-	{
-		send_command(ROTATE_RIGHT);
-		send_command(ROTATE_RIGHT);
-	}
-
-	if (
-		(player.state == up and direction == leftt) or
-		(player.state == leftt and direction == down) or
-		(player.state == rightt and direction == up) or
-		(player.state == down and direction == rightt)
-		)
-	{
-		send_command(ROTATE_LEFT);
-	}
-
-	if (
-		(player.state == up and direction == rightt) or
-		(player.state == rightt and direction == down) or
-		(player.state == down and direction == leftt) or
-		(player.state == leftt and direction == up)
-		)
-	{
-		send_command(ROTATE_RIGHT);
-	}
-
-	player.state = direction;
 }
 
 struct Walk_Result {
@@ -911,17 +1146,104 @@ struct Walk_Result walk (node *grid, enum entity_state direction)
 #define count_zeroes() \
 	zeroes = 0; \
 	for (int i = 0; i < 4; ++i) \
-		zeroes += (result & (1 << i)) == 1 ? 1 : 0
+		zeroes += (result & (1 << i))
 
 #define all_sensor() \
 	send_command(SENSOR_WALL); \
 	read_sensor(player.state, grid, result); \
-	grid->state = visited
-
-// count_zeroes()
+	grid->state = visited; \
+	count_zeroes()
 
 // print_grid(grid)
 
+
+node *walker(node *grid)
+{
+	int result, zeroes;
+	all_sensor();
+
+	pair_char_entity pce;
+
+	// S.push(make_pair(SENSOR_WALL, player.state));
+
+	// Base case: we don't have our two-way, three-way, or three-way.
+	while ((zeroes == 1) or 
+		   (grid->up->state != wall and grid->down->state != wall and grid->leftt->state == wall and grid->rightt->state == wall) or
+		   (grid->leftt->state != wall and grid->rightt->state != wall and grid->up->state == wall and grid->down->state == wall)
+		)
+	{
+		if (grid->up->state == blank)
+		{
+			// fprintf(stderr, "[debug] before walk\n");
+			grid = walk(grid, up).first;
+			// fprintf(stderr, "[debug] after walk\n");
+			pce.c = WALK;
+			pce.es = player.state;
+			stack_pce_push(S, pce);
+			// S.push(make_pair(WALK, player.state));
+			if (grid->state == cheese)
+				return grid;
+			all_sensor();
+		}
+		else if (grid->rightt->state == blank)
+		{
+			grid = walk(grid, rightt).first;
+			pce.c = WALK;
+			pce.es = rightt;
+			stack_pce_push(S, pce);
+			// S.push(make_pair(WALK, rightt));
+			if (grid->state == cheese)
+				return grid;
+			all_sensor();
+		}
+		else if (grid->down->state == blank)
+		{
+			grid = walk(grid, down).first;
+			pce.c = WALK;
+			pce.es = down;
+			stack_pce_push(S, pce);
+			// S.push(make_pair(WALK, down));
+			if (grid->state == cheese)
+				return grid;
+			all_sensor();
+		}
+		else if (grid->leftt->state == blank)
+		{
+			grid = walk(grid, leftt).first;
+			pce.c = WALK;
+			pce.es = leftt;
+			stack_pce_push(S, pce);
+			// S.push(make_pair(WALK, leftt));
+			if (grid->state == cheese)
+				return grid;
+			all_sensor();
+		}
+		else {
+			// Go back.
+			pce = stack_pce_top(S);
+			enum entity_state direction = pce.es;
+			// auto [command, direction] = S.top();
+			stack_pce_pop(S);
+			// S.pop();
+
+			switch (direction)
+			{
+				case up: change_direction(down); break;
+				case rightt: change_direction(leftt); break;
+				case down: change_direction(up); break;
+				case leftt: change_direction(rightt); break;
+				case unknownn: fprintf(stderr, "[ERROR] Do not enter!\n"); break;
+			}
+			grid = walk(grid, player.state).first;
+			if (grid->state == cheese)
+				return grid;
+		}
+	}
+	fprintf(stderr, "[debug] leaving walker\n");
+	// debug(grid->x, grid->y);
+
+	return grid;
+}
 
 #define sense_up() \
 		grid = walk(grid, up).first; \
@@ -991,14 +1313,14 @@ node *detector(node *grid)
 		// esquerda
 		if (grid->leftt->state != wall)
 		{
-			stack_pce_push(S, (pair_char_entity){.c = WALK, .es = leftt});
+			// S.push(make_pair(WALK, leftt));
 			sense_leftt();
-			// grid = walk(grid, rightt).first;
+			grid = walk(grid, rightt).first;
 		// direita
 		} else {
+			// S.push(make_pair(WALK, rightt));
 			sense_rightt();
-			stack_pce_push(S, (pair_char_entity){.c = WALK, .es = rightt});
-			// grid = walk(grid, leftt).first;
+			grid = walk(grid, leftt).first;
 		}
 
 	// direita
@@ -1010,14 +1332,14 @@ node *detector(node *grid)
 		// em cima
 		if (grid->up->state != wall)
 		{
-			stack_pce_push(S, (pair_char_entity){.c = WALK, .es = up});
+			// S.push(make_pair(WALK, up));
 			sense_up();
-			// grid = walk(grid, down).first;
-		/// em baixo
+			grid = walk(grid, down).first;
+		// em baixo
 		} else {
-			stack_pce_push(S, (pair_char_entity){.c = WALK, .es = down});
+			// S.push(make_pair(WALK, down));
 			sense_down();
-			// grid = walk(grid, up).first;
+			grid = walk(grid, up).first;
 		}
 
 
@@ -1029,14 +1351,14 @@ node *detector(node *grid)
 		// esquerda
 		if (grid->leftt->state != wall)
 		{
-			stack_pce_push(S, (pair_char_entity){.c = WALK, .es = leftt});
+			// S.push(make_pair(WALK, leftt));
 			sense_leftt();
-			// grid = walk(grid, rightt).first;
+			grid = walk(grid, rightt).first;
 		// direita
 		} else {
-			stack_pce_push(S, (pair_char_entity){.c = WALK, .es = rightt});
+			// S.push(make_pair(WALK, rightt));
 			sense_rightt();
-			// grid = walk(grid, leftt).first;
+			grid = walk(grid, leftt).first;
 		}
 
 	// esquerda
@@ -1047,14 +1369,14 @@ node *detector(node *grid)
 		// em cima
 		if (grid->up->state != wall)
 		{
-			stack_pce_push(S, (pair_char_entity){.c = WALK, .es = up});
+			// S.push(make_pair(WALK, up));
 			sense_up();
-			// grid = walk(grid, down).first;
+			grid = walk(grid, down).first;
 		// em baixo
 		} else {
-			stack_pce_push(S, (pair_char_entity){.c = WALK, .es = down});
+			// S.push(make_pair(WALK, down));
 			sense_down();
-			// grid = walk(grid, up).first;
+			grid = walk(grid, up).first;
 		}
 
 	// não visited nada
@@ -1069,17 +1391,17 @@ node *detector(node *grid)
 			grid = walk(grid, down).first;
 
 			if (grid->rightt->state != wall) {
-				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = rightt});
+				// S.push(make_pair(WALK, rightt));
 				sense_rightt();
-				// grid = walk(grid, leftt).first;
+				grid = walk(grid, leftt).first;
 			} else if (grid->down->state != wall) {
-				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = down});
+				// S.push(make_pair(WALK, down));
 				sense_down();
-				// grid = walk(grid, up).first;
+				grid = walk(grid, up).first;
 			} else if (grid->leftt->state != wall) {
-				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = leftt});
+				// S.push(make_pair(WALK, leftt));
 				sense_leftt();
-				// grid = walk(grid, rightt).first;
+				grid = walk(grid, rightt).first;
 			}
 
 
@@ -1088,34 +1410,17 @@ node *detector(node *grid)
 			grid = walk(grid, leftt).first;
 
 			if (grid->up->state != wall) {
-				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = up});
+				// S.push(make_pair(WALK, up));
 				sense_up();
-				// grid = walk(grid, down).first;
+				grid = walk(grid, down).first;
 			} else if (grid->down->state != wall) {
-				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = down});
+				// S.push(make_pair(WALK, down));
 				sense_down();
-				// grid = walk(grid, up).first;
+				grid = walk(grid, up).first;
 			} else if (grid->leftt->state != wall) {
-				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = leftt});
+				// S.push(make_pair(WALK, leftt));
 				sense_leftt();
-				// grid = walk(grid, rightt).first;
-			}
-		} else if (grid->leftt->state != wall) {
-			sense_leftt();
-			grid = walk(grid, rightt).first;
-
-			if (grid->up->state != wall) {
-				sense_up();
-				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = up});
-				// grid = walk(grid, down).first;
-			} else if (grid->rightt->state != wall) {
-				sense_rightt();
-				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = rightt});
-				// grid = walk(grid, leftt).first;
-			} else if (grid->down->state != wall) {
-				sense_down();
-				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = down});
-				// grid = walk(grid, up).first;
+				grid = walk(grid, rightt).first;
 			}
 
 		} else if (grid->down->state != wall) {
@@ -1123,17 +1428,34 @@ node *detector(node *grid)
 			grid = walk(grid, up).first;
 
 			if (grid->up->state != wall) {
-				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = up});
+				// S.push(make_pair(WALK, up));
 				sense_up();
-				// grid = walk(grid, down).first;
+				grid = walk(grid, down).first;
 			} else if (grid->rightt->state != wall) {
-				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = rightt});
+				// S.push(make_pair(WALK, rightt));
 				sense_rightt();
-				// grid = walk(grid, leftt).first;
+				grid = walk(grid, leftt).first;
 			} else if (grid->leftt->state != wall) {
-				stack_pce_push(S, (pair_char_entity){.c = WALK, .es = leftt});
+				// S.push(make_pair(WALK, leftt));
 				sense_leftt();
-				// grid = walk(grid, rightt).first;
+				grid = walk(grid, rightt).first;
+			}
+		} else if (grid->leftt->state != wall) {
+			sense_leftt();
+			grid = walk(grid, rightt).first;
+
+			if (grid->up->state != wall) {
+				// S.push(make_pair(WALK, up));
+				sense_up();
+				grid = walk(grid, down).first;
+			} else if (grid->rightt->state != wall) {
+				// S.push(make_pair(WALK, rightt));
+				sense_rightt();
+				grid = walk(grid, leftt).first;
+			} else if (grid->down->state != wall) {
+				// S.push(make_pair(WALK, down));
+				sense_down();
+				grid = walk(grid, up).first;
 			}
 		}
 
@@ -1141,6 +1463,7 @@ node *detector(node *grid)
 
 	// fprintf(stderr, "cheese quadrant: %d and %d\n", cheese_q.x, cheese_q.y);
 	position P;
+	// ++distance;
 	for (int x = orig.x + distance, y = orig.y; ;--x, ++y)
 	{
 		P.x = x * (cheese_q.x ? 1 : -1);
@@ -1152,180 +1475,7 @@ node *detector(node *grid)
 		if (x == orig.x)
 			break;
 	}
-
-	return grid;
-}
-
-#define pair(first, second) (pair_char_entity){.c = first, .es = second}
-
-node *detector2(node *grid)
-{
-	int result;
-	send_command(SENSOR_MARK);
-	int distance = result;
-
-	// ----- Para possíveis posições do queijo.
-	position cheese_q = {.x = 0, .y = 0};
-	position orig = {.x = player.x, .y = player.y };
-
-	// ------ Tentar ir para onde eu já fui, já que eu volto no caminho oposto.
-	if (grid->up->state == visited) {
-		sense_up();
-		grid = walk(grid, down).first;
-
-		if (grid->leftt->state != wall) {
-			stack_pce_push(S, pair(WALK, leftt)),
-			sense_leftt();
-		} else {
-			stack_pce_push(S, pair(WALK, rightt)),
-			sense_rightt();
-		}
-	} else if (grid->rightt->state == visited) {
-		sense_rightt();
-		grid = walk(grid, leftt).first;
-
-		if (grid->up->state != wall) {
-			stack_pce_push(S, pair(WALK, up)),
-			sense_up();
-		} else {
-			stack_pce_push(S, pair(WALK, down)),
-			sense_down();
-		}
-	} else if (grid->down->state == visited) {
-		sense_down();
-		grid = walk(grid, up).first;
-
-		if (grid->leftt->state != wall) {
-			stack_pce_push(S, pair(WALK, leftt)),
-			sense_leftt();
-		} else {
-			stack_pce_push(S, pair(WALK, rightt)),
-			sense_rightt();
-		}
-	} else if (grid->leftt->state == visited) {
-		sense_leftt();
-		grid = walk(grid, rightt).first;
-
-		if (grid->up->state != wall) {
-			stack_pce_push(S, pair(WALK, up)),
-			sense_up();
-		} else {
-			stack_pce_push(S, pair(WALK, down)),
-			sense_down();
-		}
-	// ------- Não visitei ainda nada
-	} else {
-		if (grid->up->state != wall) {
-			sense_up();
-			stack_pce_push(S, pair(WALK, up));
-		} else if (grid->rightt->state != wall) {
-			sense_rightt();
-			stack_pce_push(S, pair(WALK, rightt));
-		} else if (grid->down->state != wall) {
-			sense_down();
-			stack_pce_push(S, pair(WALK, down));
-		} else if (grid->leftt->state != wall) {
-			sense_leftt();
-			stack_pce_push(S, pair(WALK, leftt));
-		}
-
-		distance = result;
-
-		send_command(SENSOR_WALL);
-		read_sensor(player.state, grid, result);
-
-		bool found = false;
-		switch (player.state)
-		{
-			case up: case down:
-				if (grid->leftt->state == blank) {
-					sense_leftt();
-					stack_pce_push(S, pair(WALK, leftt));
-					found = true;
-				} else if (grid->rightt->state == blank) {
-					sense_leftt();
-					stack_pce_push(S, pair(WALK, leftt));
-					found = true;
-				}
-				break;
-			case rightt: case leftt:
-				if (grid->up->state == blank) {
-					sense_up();
-					stack_pce_push(S, pair(WALK, up));
-					found = true;
-				} else if (grid->down->state == blank) {
-					sense_down();
-					stack_pce_push(S, pair(WALK, down));
-					found = true;
-				}
-				break;
-			case unknownn:
-				break;
-		}
-
-		// If we didn't find any place to sensor, then let's go back where we can sensor.
-		if (not found)
-		{
-			enum entity_state direction = stack_pce_top(S).es;
-			stack_pce_pop(S);
-
-			// --- Opposite side of direction.
-			switch (direction)
-			{
-				case up: direction = down; break;
-				case rightt: direction = leftt; break;
-				case down: direction = up; break;
-				case leftt: direction = rightt; break;
-				case unknownn: break;
-			}
-
-			grid = walk(grid, direction).first;
-
-			switch (direction)
-			{
-				case up: case down:
-					if (grid->leftt->state == blank) {
-						sense_leftt();
-						stack_pce_push(S, pair(WALK, leftt));
-						found = true;
-					} else if (grid->rightt->state == blank) {
-						sense_leftt();
-						stack_pce_push(S, pair(WALK, leftt));
-						found = true;
-					}
-					break;
-				case rightt: case leftt:
-					if (grid->up->state == blank) {
-						sense_up();
-						stack_pce_push(S, pair(WALK, up));
-						found = true;
-					} else if (grid->down->state == blank) {
-						sense_down();
-						stack_pce_push(S, pair(WALK, down));
-						found = true;
-					}
-					break;
-				case unknownn:
-					break;
-			}
-
-			assert(found == true);
-		}
-	}
-	// ------------------------------------------------------------
-	// Calculando posśiveis posições do queijo para um quadrante.
-	// ------------------------------------------------------------
-	position P;
-	for (int x = orig.x + distance, y = orig.y; ;--x, ++y)
-	{
-		P.x = x * (cheese_q.x ? 1 : -1);
-		P.y = y * (cheese_q.y ? 1 : -1);
-
-		list_push_front(possible_cheese, P);
-
-		if (x == orig.x)
-			break;
-	}
+	print_list(possible_cheese);
 
 	return grid;
 }
@@ -1357,18 +1507,8 @@ position bias_calculator()
 
 bool bias_direction(node *block, position bias)
 {
-	// Possible positions of cheese has priority.
-	if (block->up and block->up->state == blank and list_find(possible_cheese, (position){.x = block->up->x, .y = block->up->y}))
-		return change_direction(up), true;
-	if (block->rightt and block->rightt->state == blank and list_find(possible_cheese, (position){.x = block->rightt->x, .y = block->rightt->y}))
-		return change_direction(rightt), true;
-	if (block->down and block->down->state == blank and list_find(possible_cheese, (position){.x = block->down->x, .y = block->down->y}))
-		return change_direction(down), true;
-	if (block->leftt and block->leftt->state == blank and list_find(possible_cheese, (position){.x = block->leftt->x, .y = block->leftt->y}))
-		return change_direction(leftt), true;
-
 	// X has priority
-	else if (abs(bias.x) > abs(bias.y) or (bias.x and not bias.y)) {
+	if (abs(bias.x) > abs(bias.y) or (bias.x and not bias.y)) {
 		// go right
 		if (bias.x < 0) {
 			if (block->rightt->state == blank) {
@@ -1582,85 +1722,6 @@ bool bias_direction(node *block, position bias)
 			}
 		}
 
-	// X is negative or positive.
-	} else if (bias.x != 0) {
-		// go right
-		if (bias.x < 0)
-		{
-			if (block->rightt->state == blank)
-			{
-				change_direction(rightt);
-				return true;
-			// go up
-			} else if (bias.y < 0) {
-				if (block->up->state == blank)
-				{
-					change_direction(up);
-					return true;
-				} else if (block->down->state == blank)
-				{
-					change_direction(down);
-					return true;
-				} else if (block->leftt->state == blank)
-				{
-					change_direction(leftt);
-					return true;
-				}
-			// go down
-			} else {
-				if (block->down->state == blank)
-				{
-					change_direction(down);
-					return true;
-				} else if (block->up->state == blank)
-				{
-					change_direction(up);
-					return true;
-				} else if (block->leftt->state == blank)
-				{
-					change_direction(leftt);
-					return true;
-				}
-			}
-		// go leftt
-		} else {
-			if (block->leftt->state == blank)
-			{
-				change_direction(leftt);
-				return true;
-			// go up
-			} else if (bias.y < 0) {
-				if (block->up->state == blank)
-				{
-					change_direction(up);
-					return true;
-				} else if (block->down->state == blank)
-				{
-					change_direction(down);
-					return true;
-				} else if (block->rightt->state == blank)
-				{
-					change_direction(rightt);
-					return true;
-				}
-			// go down
-			} else {
-				if (block->down->state == blank)
-				{
-					change_direction(down);
-					return true;
-				} else if (block->up->state == blank)
-				{
-					change_direction(up);
-					return true;
-				} else if (block->rightt->state == blank)
-				{
-					change_direction(rightt);
-					return true;
-				}
-			}
-		}
-
 	// Y == X and X == 0, does not matter which way
 	} else {
 		if (block->up->state == blank) {
@@ -1680,13 +1741,13 @@ bool bias_direction(node *block, position bias)
 	return false;
 }
 
-void print_queue(struct Queue_PCE *Q)
+void print_queue()
 {
-	struct Node_PCE *t = Q->front;
+	struct Node_PCE *t = C->front;
 	// queue<pair<char, entity_state>> Q = C;
 
 	pair_char_entity pce;
-	fprintf(stderr, "Queue Q = {\n");
+	fprintf(stderr, "Queue C = {\n");
 
 	// while (not Q.empty())
 	while (t)
@@ -1735,185 +1796,10 @@ void print_stack(struct Stack_PCE *S)
 	fprintf(stderr, "}\n");
 }
 
-pair_char_entity better_walk(enum entity_state direction, int k, bool reverse)
-{
-	// pair<char, entity_state> b;
-	pair_char_entity b;
-
-	if (reverse)
-		switch (direction)
-		{
-			case up: b.es = down; break;
-			case rightt: b.es = leftt; break;
-			case down: b.es = up; break;
-			case leftt: b.es = rightt; break;
-			case unknownn: b.es = unknownn; break;
-		}
-	else
-		b.es = direction;
-
-	switch (k)
-	{
-		case 4:
-			b.c = RUN_MAX;
-			break;
-		case 3:
-			b.c = RUN_NORMAL;
-			break;
-		case 2:
-			b.c = RUN_MIN;
-			break;
-		case 1:
-			b.c = WALK;
-			break;
-		default:
-			fprintf(stderr, "better_walk: SHOULD NOT ENTER HERE");
-			exit(1);
-	}
-
-	return b;
-}
-
-void compress_flier (struct Queue_PCE *back, struct Stack_PCE *forward, int qtd)
-{
-	enum entity_state direction = unknownn;
-	int k = 0;
-
-	pair_char_entity P;
-
-	int i = 0;
-
-	while (i != qtd and not stack_pce_is_empty(S))
-	{
-		fprintf(stderr, "[debug:compress_flier] Meu i eh %d\n", i);
-		P = stack_pce_top(S);
-		stack_pce_pop(S);
-		// auto command = S.top();
-		// S.pop();
-
-		// First iteration:
-		if (not k)
-		{
-			fprintf(stderr, "[debug:compress_flier:if] aqui entrei\n");
-			direction = P.es;
-			// direction = P.second,
-			++k;
-			++i;
-
-			if (i == qtd or stack_pce_is_empty(S))
-			{
-				fprintf(stderr, "[debug:compress_flier] 0. Tive que adicionar aqui\n");
-				queue_pce_push(back, better_walk(direction, k, true));
-				stack_pce_push(forward, better_walk(direction, k, false));
-			}
-
-			continue;
-		}
-
-		// When it is different, we stop.
-		// Or when we already have our limit, four walks.
-		// if (command.second != direction or k == 4)
-		if (P.es != direction or k == 4)
-		{
-			fprintf(stderr, "[debug:compress_flier] 1. Tive que adicionar aqui\n");
-			queue_pce_push(back, better_walk(direction, k, true));
-			stack_pce_push(forward, better_walk(direction, k, false));
-
-			// Reset.
-			direction = P.es;
-			// direction = command.second;
-			k = 1;
-			++i;
-
-			// if (empty())
-			if (i == qtd or stack_pce_is_empty(S))
-			{
-				fprintf(stderr, "[debug:compress_flier] 2. Tive que adicionar aqui\n");
-				queue_pce_push(back, better_walk(direction, k, true));
-				stack_pce_push(forward, better_walk(direction, k, false));
-			}
-
-		} else
-		{
-			++k;
-			++i;
-
-			// if (S.empty())
-			if (i == qtd or stack_pce_is_empty(S))
-			{
-				fprintf(stderr, "[debug:compress_flier] 3. Tive que adicionar aqui\n");
-				queue_pce_push(back, better_walk(direction, k, true));
-				stack_pce_push(forward, better_walk(direction, k, false));
-			}
-
-		}
-	}
-}
-
-void fly_back(struct Queue_PCE *back)
-{
-	int result;
-	pair_char_entity pce;
-	char command;
-	enum entity_state direction;
-
-	while (not queue_pce_is_empty(back))
-	{
-		pce = queue_pce_front(back);
-		command = pce.c;
-		direction = pce.es;
-		// auto [command, direction] = C.front();
-
-		queue_pce_pop(back);
-		// C.pop();
-
-		change_direction(direction);
-		send_command(command);
-
-		int d = 0;
-
-		switch (command)
-		{
-			case RUN_MAX: d = 4; break;
-			case RUN_NORMAL: d = 3; break;
-			case RUN_MIN: d = 2; break;
-			case WALK: d = 1; break;
-			default:
-				fprintf(stderr, "[ERROR] Should not be here!");
-		}
-
-		switch (direction)
-		{
-			case up: player.y += d; break;
-			case rightt: player.x += d; break;
-			case down: player.y -= d; break;
-			case leftt: player.x -= d; break;
-			case unknownn: break;
-		}
-	}
-
-	fprintf(stderr, "[SOL] The player is at (%d, %d)\n", player.x, player.y);
-}
-
-void print_block_situation (node *block)
-{
-	fprintf(stderr, "[debug] This block is at (%d, %d)\n", block->x, block->y);
-	fprintf(stderr, "[debug] Its children are:\n");
-	if (block->up)
-		fprintf(stderr, "\t\tblock->up->state: %d\n", block->up->state);
-	if (block->rightt)
-		fprintf(stderr, "\t\tblock->rightt->state: %d\n", block->rightt->state);
-	if (block->down)
-		fprintf(stderr, "\t\tblock->down->state: %d\n", block->down->state);
-	if (block->leftt)
-		fprintf(stderr, "\t\tblock->leftt->state: %d\n", block->leftt->state);
-}
-
-
 node *misser_hitter(node *block)
 {
 	int result = 1;
-	node *aux;
+	node *aux = block;
 	struct Walk_Result pc;
 	struct pair_char_entity pce;
 
@@ -1952,22 +1838,35 @@ node *misser_hitter(node *block)
 					P.x = block->x - 1;
 					break;
 			}
-			list_erase(possible_cheese, P);
+			// fprintf(stderr, "[debug:print_list] to search (%d, %d)\n", P.x, P.y);
 			struct Node_List *N = list_find(positions_passed, P);
 			// -----------------------------------------------
 
+			// fprintf(stderr, "[debug:print_list] before walk\n");
+			// print_list(positions_passed);
 			pc = walk(block, player.state);
+			// fprintf(stderr, "[debug:print_list] after walk\n");
+			// print_list(positions_passed);
+			// auto pc = walk(block, player.state);
 			aux = pc.first;
+
+			// fprintf(stderr, "Tried to walk in, I am in block (%d, %d)\n", aux->x, aux->y);
 
 			// If hit, leave.
 			if (not pc.second or aux == block)
 			{
 				block = aux;
 				break;
-			} else if (aux->x or aux->y) {
+			}
+			 else if (aux->x or aux->y) {
 
+				// When it is not the last, to adjust to the prev above and below.
 				if (N)
+				// if (f_it != prev(end(positions_passed)))
 				{
+					if (aux->state != cheese)
+						list_erase(possible_cheese, P);
+
 					fprintf(stderr, "Found the same position: (%d, %d)\n", aux->x, aux->y);
 					block = aux;
 					block->state = visited;
@@ -1980,7 +1879,10 @@ node *misser_hitter(node *block)
 					found_same = true;
 					break;
 				}
-			}
+
+			 	// auto f_it = find(begin(positions_passed), prev(end(positions_passed)), make_pair(aux->x, aux->y));
+
+			 }
 
 			// If we went back to the start, clean the stack.
 			if (not aux->x and not aux->y)
@@ -2031,17 +1933,6 @@ node *misser_hitter(node *block)
 			{
 				send_command(SENSOR_WALL);
 				read_sensor(player.state, block, result);
-
-				if (
-						(block->up->state == visited and block->rightt->state == wall and block->down->state == wall and block->leftt->state == wall) or
-						(block->up->state == wall and block->rightt->state == visited and block->down->state == wall and block->leftt->state == wall) or
-						(block->up->state == wall and block->rightt->state == wall and block->down->state == visited and block->leftt->state == wall) or
-						(block->up->state == wall and block->rightt->state == wall and block->down->state == wall and block->leftt->state == visited)
-					)
-					break;
-
-				// print_grid(block);
-				// count_zeroes();
 			}
 
 			// if (player.state == up and block->up->state == blank) continue;
@@ -2049,11 +1940,8 @@ node *misser_hitter(node *block)
 			// else if (player.state == down and block->down->state == blank) continue;
 			// else if (player.state == leftt and block->leftt->state == blank) continue;
 
-			debug("1. antes do bias direction\n");
 			if (bias_direction(block, bias_calculator()))
 				continue;
-			debug("2. depois do bias direction\n");
-
 
 		}
 
@@ -2079,276 +1967,219 @@ node *misser_hitter(node *block)
 			bias = bias_calculator();
 			// fprintf(stderr, "\t1. Bias: (%d, %d)\n", bias.x, bias.y);
 			
-			debug("3. antes do bias direction\n");
 			if (bias_direction(block, bias))
 				continue;
-			debug("4. depois do bias direction\n");
 		}
 
-		// ---------------------------------------------------------------
 		// Base case: we need to go back, this way is useless.
 		// Algorithm: we go back one by one, sensoring around.
-		// ----------------------------------------------------------------
-		debug("cheugei aqui !\n");
-		print_stack(S);
+		// TODO: optimise the way back.
 
-		node *grid = block;
-		int qtd = 0;
-		struct Node_PCE *N = S->top;
-		enum entity_state direction = unknownn;
-
-		print_block_situation(grid);
-
-		while (N)
+		// while (not S.empty())	
+		while (not stack_pce_is_empty(S))
 		{
-			direction = N->data.es;
-			N = N->link;
+			pce = stack_pce_top(S);
+			// char command = pce.c;
+			enum entity_state direction = pce.es;
+			// auto [command, direction] = S.top();
+
+			stack_pce_pop(S);
+			// S.pop();
+			
+			// print_stack(S);
 
 			switch (direction)
 			{
-				case up: grid = grid->down; break;
-				case rightt: grid = grid->leftt; break;
-				case down: grid = grid->up; break;
-				case leftt: grid = grid->rightt; break;
-				case unknownn: break;
+				case up: direction = down; break;
+				case rightt: direction = leftt; break;
+				case down: direction = up; break;
+				case leftt: direction = rightt; break;
+				case unknownn: direction = unknownn; break;
 			}
+			block = walk(block, direction).first;
+			if (block->state == cheese)
+				return block;
 
-			++qtd;
+			// print_list(possible_cheese);
+			list_erase(possible_cheese, (position){.x = block->x, .y = block->y});
+			// remove_possible_cheese(block);
+			// print_list(possible_cheese);
 
-			if (
-					not grid->up or
-					not grid->rightt or
-					not grid->down or
-					not grid->leftt or
-					(grid->up and grid->up->state == blank) or
-					(grid->rightt and grid->rightt->state == blank) or
-					(grid->down and grid->down->state == blank) or
-					(grid->leftt and grid->leftt->state == blank)
-				)
+			// Already sensored.
+			// FIXIT: We don't continue...
+			if (block->up and block->rightt and block->down and block->leftt and block->up->state != unknown and block->rightt->state != unknown and block->down->state != unknown and block->leftt->state != unknown)
 			{
-				fprintf(stderr, "Imprimindo porque tive que parar... com quantidade = %d\n", qtd);
-				print_block_situation(grid);
+				bias = bias_calculator();
+				// fprintf(stderr, "\t2. Bias: (%d, %d)\n", bias.x, bias.y);
+				if (bias_direction(block, bias))
+					break;
+				else
+					continue;
+			}
+			// else {
+			// 	fprintf(stderr, "This block was not sensored? (%d, %d)\n", block->x, block->y);
+			// 	if (not block->up) fprintf(stderr, "\tblock->up not existent!\n");
+			// 	if (not block->rightt) fprintf(stderr, "\tblock->rightt not existent!\n");
+			// 	if (not block->down) fprintf(stderr, "\tblock->down not existent!\n");
+			// 	if (not block->leftt) fprintf(stderr, "\tblock->leftt not existent!\n");
+			// }
+
+			// Sensor around.
+			send_command(SENSOR_WALL);
+			read_sensor(player.state, block, result);
+			// print_grid(block);
+			bias = bias_calculator();
+			// fprintf(stderr, "\t3. Bias: (%d, %d)\n", bias.x, bias.y);
+			if (bias_direction(block, bias))
+			{
 				break;
 			}
 		}
-
-		debug("volte seu ratao!\n");
-		struct Queue_PCE *back = queue_pce_initialize();
-		compress_flier(back, NULL, qtd);
-		print_queue(back);
-		fly_back(back);
-		queue_pce_destroy(back);
-
-		block = grid;
-
-		// fprintf(stderr, "\t2. Bias: (%d, %d)\n", bias.x, bias.y);
-		if (bias_direction(block, bias_calculator()))
-			continue;
-		else
-		{
-			debug("[ERRO GRAVE] O que voce ta fazendo aqui?\n");
-			// exit(1);
-		}
-
-		// ------------------------------------------------------------
-		// Antigo 
-		// ------------------------------------
-		// while (not stack_pce_is_empty(S))
-		// {
-		// 	pce = stack_pce_top(S);
-		// 	// char command = pce.c;
-		// 	enum entity_state direction = pce.es;
-		// 	// auto [command, direction] = S.top();
-
-		// 	stack_pce_pop(S);
-		// 	// S.pop();
-		// 	
-		// 	// print_stack(S);
-
-		// 	switch (direction)
-		// 	{
-		// 		case up: direction = down; break;
-		// 		case rightt: direction = leftt; break;
-		// 		case down: direction = up; break;
-		// 		case leftt: direction = rightt; break;
-		// 		case unknownn: direction = unknownn; break;
-		// 	}
-		// 	block = walk(block, direction).first;
-		// 	if (block->state == cheese)
-		// 		return block;
-
-		// 	// print_list(possible_cheese);
-		// 	// list_erase(possible_cheese, (position){.x = block->x, .y = block->y});
-		// 	// remove_possible_cheese(block);
-		// 	// print_list(possible_cheese);
-
-		// 	// Already sensored.
-		// 	// FIXIT: We don't continue...
-		// 	if (block->up and block->rightt and block->down and block->leftt and block->up->state != unknown and block->rightt->state != unknown and block->down->state != unknown and block->leftt->state != unknown)
-		// 	{
-		// 		bias = bias_calculator();
-		// 		// fprintf(stderr, "\t2. Bias: (%d, %d)\n", bias.x, bias.y);
-		// 		if (bias_direction(block, bias))
-		// 			break;
-		// 		else
-		// 			continue;
-		// 	}
-		// 	// else {
-		// 	// 	fprintf(stderr, "This block was not sensored? (%d, %d)\n", block->x, block->y);
-		// 	// 	if (not block->up) fprintf(stderr, "\tblock->up not existent!\n");
-		// 	// 	if (not block->rightt) fprintf(stderr, "\tblock->rightt not existent!\n");
-		// 	// 	if (not block->down) fprintf(stderr, "\tblock->down not existent!\n");
-		// 	// 	if (not block->leftt) fprintf(stderr, "\tblock->leftt not existent!\n");
-		// 	// }
-
-		// 	// Sensor around.
-		// 	send_command(SENSOR_WALL);
-		// 	read_sensor(player.state, block, result);
-		// 	// print_grid(block);
-		// 	bias = bias_calculator();
-		// 	// fprintf(stderr, "\t3. Bias: (%d, %d)\n", bias.x, bias.y);
-		// 	if (bias_direction(block, bias))
-		// 	{
-		// 		break;
-		// 	}
-		// }
 	}
 	return block;
 }
 
-node *walker(node *grid)
+pair_char_entity better_walk(enum entity_state direction, int k, bool reverse)
 {
-	int result;
-	all_sensor();
+	// pair<char, entity_state> b;
+	pair_char_entity b;
 
-	pair_char_entity pce;
+	if (reverse)
+		switch (direction)
+		{
+			case up: b.es = down; break;
+			case rightt: b.es = leftt; break;
+			case down: b.es = up; break;
+			case leftt: b.es = rightt; break;
+			case unknownn: b.es = unknownn; break;
+		}
+	else
+		b.es = direction;
 
-	// S.push(make_pair(SENSOR_WALL, player.state));
-
-	// Base case: we don't have our two-way, three-way, or three-way.
-	while (
-			(grid->up->state == wall and grid->down->state == wall) or
-			(grid->leftt->state == wall and grid->rightt->state == wall)
-		)
+	switch (k)
 	{
-		if (grid->up->state == blank)
+		case 4:
+			b.c = RUN_MAX;
+			break;
+		case 3:
+			b.c = RUN_NORMAL;
+			break;
+		case 2:
+			b.c = RUN_MIN;
+			break;
+		case 1:
+			b.c = WALK;
+			break;
+		default:
+			fprintf(stderr, "better_walk: SHOULD NOT ENTER HERE");
+			exit(1);
+	}
+
+	return b;
+}
+
+void compress_flier ()
+{
+	enum entity_state direction = unknownn;
+	int k = 0;
+
+	pair_char_entity P;
+
+	while (not stack_pce_is_empty(S))
+	{
+		P = stack_pce_top(S);
+		stack_pce_pop(S);
+		// auto command = S.top();
+		// S.pop();
+
+		// First iteration:
+		if (not k)
 		{
-			// fprintf(stderr, "[debug] before walk\n");
-			grid = walk(grid, up).first;
-			// fprintf(stderr, "[debug] after walk\n");
-			pce.c = WALK;
-			pce.es = player.state;
-			stack_pce_push(S, pce);
-			// S.push(make_pair(WALK, player.state));
-			if (grid->state == cheese)
-				return grid;
-			// debug("antes do all sensor\n");
-			all_sensor();
-			// debug("passou do all sensor\n");
+			direction = P.es;
+			// direction = P.second,
+			++k;
+
+			if (stack_pce_is_empty(S))
+				queue_pce_push(C, better_walk(direction, k, true)),
+				stack_pce_push(F, better_walk(direction, k, false));
+
+			continue;
 		}
-		else if (grid->rightt->state == blank)
+
+		// When it is different, we stop.
+		// Or when we already have our limit, four walks.
+		// if (command.second != direction or k == 4)
+		if (P.es != direction or k == 4)
 		{
-			grid = walk(grid, rightt).first;
-			pce.c = WALK;
-			pce.es = rightt;
-			stack_pce_push(S, pce);
-			// S.push(make_pair(WALK, rightt));
-			if (grid->state == cheese)
-				return grid;
-			all_sensor();
-		}
-		else if (grid->down->state == blank)
+			queue_pce_push(C, better_walk(direction, k, true));
+			stack_pce_push(F, better_walk(direction, k, false));
+
+			// Reset.
+			direction = P.es;
+			// direction = command.second;
+			k = 1;
+
+			// if (empty())
+			if (stack_pce_is_empty(S))
+				queue_pce_push(C, better_walk(direction, k, true)),
+				stack_pce_push(F, better_walk(direction, k, false));
+
+		} else
 		{
-			grid = walk(grid, down).first;
-			pce.c = WALK;
-			pce.es = down;
-			stack_pce_push(S, pce);
-			// S.push(make_pair(WALK, down));
-			if (grid->state == cheese)
-				return grid;
-			all_sensor();
-		}
-		else if (grid->leftt->state == blank)
-		{
-			grid = walk(grid, leftt).first;
-			pce.c = WALK;
-			pce.es = leftt;
-			stack_pce_push(S, pce);
-			// S.push(make_pair(WALK, leftt));
-			if (grid->state == cheese)
-				return grid;
-			all_sensor();
-		}
-		else {
+			++k;
 
-			// 	// Go back.
-			// 	pce = stack_pce_top(S);
-			// 	enum entity_state direction = pce.es;
-			// 	// auto [command, direction] = S.top();
-			// 	stack_pce_pop(S);
-			// 	// S.pop();
+			// if (S.empty())
+			if (stack_pce_is_empty(S))
+				queue_pce_push(C, better_walk(direction, k, true)),
+				stack_pce_push(F, better_walk(direction, k, false));
 
-			// 	switch (direction)
-			// 	{
-			// 		case up: change_direction(down); break;
-			// 		case rightt: change_direction(leftt); break;
-			// 		case down: change_direction(up); break;
-			// 		case leftt: change_direction(rightt); break;
-			// 		case unknownn: fprintf(stderr, "[ERROR] Do not enter!\n"); break;
-			// 	}
-			// 	grid = walk(grid, player.state).first;
-			// 	if (grid->state == cheese)
-			// 		return grid;
-			debug("cheugei aqui !\n");
-			node *block = grid;
-			int qtd = 0;
-			struct Node_PCE *N = S->top;
-			enum entity_state direction = unknownn;
-			while (N)
-			{
-				direction = N->data.es;
-				N = N->link;
-
-				switch (direction)
-				{
-					case up: block = block->down; break;
-					case rightt: block = block->leftt; break;
-					case down: block = block->up; break;
-					case leftt: block = block->rightt; break;
-					case unknownn: break;
-				}
-
-				++qtd;
-
-				if (
-						not block->up or
-						not block->rightt or
-						not block->down or
-						not block->leftt or
-						(block->up and block->up->state == blank) or
-						(block->rightt and block->rightt->state == blank) or
-						(block->down and block->down->state == blank) or
-						(block->leftt and block->leftt->state == blank)
-					)
-					break;
-			}
-
-			debug("volte seu ratao!\n");
-			if (S->top == NULL) fprintf(stderr, "A stack esta limpa.\n");
-			struct Queue_PCE *back = queue_pce_initialize();
-			if (S->top == NULL) fprintf(stderr, "A stack esta limpa tambem.\n");
-			compress_flier(back, NULL, qtd);
-			print_queue(back);
-			fly_back(back);
-			queue_pce_destroy(back);
-
-			grid = block;
 		}
 	}
-	fprintf(stderr, "[debug] leaving walker\n");
-	// debug(grid->x, grid->y);
+}
 
-	return grid;
+void fly_back()
+{
+	int result;
+	pair_char_entity pce;
+	char command;
+	enum entity_state direction;
+
+	while (not queue_pce_is_empty(C))
+	{
+		pce = queue_pce_front(C);
+		command = pce.c;
+		direction = pce.es;
+		// auto [command, direction] = C.front();
+
+		queue_pce_pop(C);
+		// C.pop();
+
+		change_direction(direction);
+		send_command(command);
+
+		int d = 0;
+
+		switch (command)
+		{
+			case RUN_MAX: d = 4; break;
+			case RUN_NORMAL: d = 3; break;
+			case RUN_MIN: d = 2; break;
+			case WALK: d = 1; break;
+			default:
+				fprintf(stderr, "[ERROR] Should not be here!");
+		}
+
+		switch (direction)
+		{
+			case up: player.y += d; break;
+			case rightt: player.x += d; break;
+			case down: player.y -= d; break;
+			case leftt: player.x -= d; break;
+			case unknownn: break;
+		}
+	}
+
+	fprintf(stderr, "[SOL] The player is at (%d, %d)\n", player.x, player.y);
 }
 
 void fly_to_cheese()
@@ -2413,33 +2244,19 @@ node *explore(node *grid)
 		// vector<pair<int, int>> B = positions_passed;
 		is_detecting_now = true;
 		fprintf(stderr, "[debug] before detector\n");
-		print_stack(S);
-		/// grid = detector(grid);
+		grid = detector(grid);
+		fprintf(stderr, "[debug] after detector\n");
 		is_detecting_now = false;
+		grid->state = visited;
+		fprintf(stderr, "[debug] before bias direction\n");
+		bias_direction(grid, bias_calculator());
+		fprintf(stderr, "[debug] after bias direction\n");
+
+		// positions_passed = B;
+		// B.clear();
+
 		if (grid->state != cheese)
 		{
-
-			//{
-			//	position P = {.x = grid->x, .y = grid->y};
-			//	// fprintf(stderr, "[debug] before list adding (%d, %d)\n", P.x, P.y);
-			//	list_push_front(positions_passed, P);
-			//}
-
-			print_stack(S);
-			fprintf(stderr, "[debug] after detector\n");
-			grid->state = visited;
-			{
-				int result;
-				send_command(SENSOR_WALL);
-				read_sensor(player.state, grid, result);
-			}
-			fprintf(stderr, "[debug] before bias direction\n");
-			bias_direction(grid, bias_calculator());
-			fprintf(stderr, "[debug] after bias direction\n");
-
-			// positions_passed = B;
-			// B.clear();
-
 			// positions_passed.clear();
 
 			// print_stack();
@@ -2478,15 +2295,15 @@ node *explore(node *grid)
 	// Algorithm: make flier.
 	// Objective: Given a path, compress it to run as fast as it can.
 	print_stack(S);
-	compress_flier(C, F, -1);
-	print_queue(C);
+	compress_flier();
+	print_queue();
 
 	// Alogorithm: flier.
 	// Objective: run as fast as it can given a path.
-	fly_back(C);
+	fly_back();
 
 	fly_to_cheese();
-	print_queue(C);
+	print_queue();
 
 	return grid;
 }
@@ -2503,7 +2320,6 @@ int main (void)
 
 	node *grid = create_node(visited, NULL, NULL, NULL, NULL, 0, 0);
 
-	debug("starting explorer\n");
 	explore(grid);
 
 	// CASE: last run is not getting added.
@@ -2532,6 +2348,9 @@ int main (void)
 	stack_pce_destroy(F);
 
 	queue_pce_destroy(C);
+
+	// destroy_list(possible_cheese);
+	// destroy_list(positions_passed);
 
 	destroy_grid(grid);
 }
