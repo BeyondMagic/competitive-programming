@@ -1264,8 +1264,18 @@ position bias_calculator()
 
 bool bias_direction(node *block, position bias)
 {
+	// Possible positions of cheese has priority.
+	if (block->up->state == blank and list_find(possible_cheese, (position){.x = block->up->x, .y = block->up->y}))
+		return change_direction(up), true;
+	else if (block->rightt->state == blank and list_find(possible_cheese, (position){.x = block->rightt->x, .y = block->rightt->y}))
+		return change_direction(rightt), true;
+	else if (block->down->state == blank and list_find(possible_cheese, (position){.x = block->down->x, .y = block->down->y}))
+		return change_direction(down), true;
+	else if (block->leftt->state == blank and list_find(possible_cheese, (position){.x = block->leftt->x, .y = block->leftt->y}))
+		return change_direction(leftt), true;
+
 	// X has priority
-	if (abs(bias.x) > abs(bias.y) or (bias.x and not bias.y)) {
+	else if (abs(bias.x) > abs(bias.y) or (bias.x and not bias.y)) {
 		// go right
 		if (bias.x < 0) {
 			if (block->rightt->state == blank) {
