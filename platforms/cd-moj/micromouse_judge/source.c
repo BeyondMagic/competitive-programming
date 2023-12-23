@@ -803,6 +803,20 @@ struct Walk_Result {
 	int second;
 };
 
+void print_block_situation (node *block)
+{
+	fprintf(stderr, "[debug] This block is at (%d, %d)\n", block->x, block->y);
+	fprintf(stderr, "[debug] Its children are:\n");
+	if (block->up)
+		fprintf(stderr, "\t\tblock->up->state: %d\n", block->up->state);
+	if (block->rightt)
+		fprintf(stderr, "\t\tblock->rightt->state: %d\n", block->rightt->state);
+	if (block->down)
+		fprintf(stderr, "\t\tblock->down->state: %d\n", block->down->state);
+	if (block->leftt)
+		fprintf(stderr, "\t\tblock->leftt->state: %d\n", block->leftt->state);
+}
+
 bool is_detecting_now = false;
 
 struct Walk_Result walk (node *grid, enum entity_state direction)
@@ -903,6 +917,9 @@ struct Walk_Result walk (node *grid, enum entity_state direction)
 			// positions_passed.emplace_back(grid->x, grid->y);
 		}
 	}
+
+	fprintf(stderr, "[debug:walk] Player at now:\n");
+	print_block_situation(grid);
 
 	struct Walk_Result wr = {.first = grid, .second = result};
 	return wr;
@@ -1895,21 +1912,6 @@ void fly_back(struct Queue_PCE *back)
 	fprintf(stderr, "[SOL] The player is at (%d, %d)\n", player.x, player.y);
 }
 
-void print_block_situation (node *block)
-{
-	fprintf(stderr, "[debug] This block is at (%d, %d)\n", block->x, block->y);
-	fprintf(stderr, "[debug] Its children are:\n");
-	if (block->up)
-		fprintf(stderr, "\t\tblock->up->state: %d\n", block->up->state);
-	if (block->rightt)
-		fprintf(stderr, "\t\tblock->rightt->state: %d\n", block->rightt->state);
-	if (block->down)
-		fprintf(stderr, "\t\tblock->down->state: %d\n", block->down->state);
-	if (block->leftt)
-		fprintf(stderr, "\t\tblock->leftt->state: %d\n", block->leftt->state);
-}
-
-
 node *misser_hitter(node *block)
 {
 	int result = 1;
@@ -2113,6 +2115,20 @@ node *misser_hitter(node *block)
 				case unknownn: break;
 			}
 
+			// Já to aqui! seu burro, eu dei um loop.
+			if (block->x == grid->x and block->y == grid->y)
+			{
+				if (grid->up->state == blank) grid->up->state = visited;
+				if (grid->rightt->state == blank) grid->rightt->state = visited;
+				if (grid->down->state == blank) grid->down->state = visited;
+				if (grid->leftt->state == blank) grid->leftt->state = visited;
+				block = grid;
+				while (qtd != -1)
+					stack_pce_pop(S),
+					--qtd;
+				++qtd;
+			}
+
 			++qtd;
 
 			if (
@@ -2131,6 +2147,7 @@ node *misser_hitter(node *block)
 				break;
 			}
 		}
+
 
 		debug("volte seu ratao!\n");
 		struct Queue_PCE *back = queue_pce_initialize();
@@ -2414,7 +2431,7 @@ node *explore(node *grid)
 		is_detecting_now = true;
 		fprintf(stderr, "[debug] before detector\n");
 		print_stack(S);
-		/// grid = detector(grid);
+		grid = detector(grid);
 		is_detecting_now = false;
 		if (grid->state != cheese)
 		{
@@ -2428,7 +2445,7 @@ node *explore(node *grid)
 			print_stack(S);
 			fprintf(stderr, "[debug] after detector\n");
 			grid->state = visited;
-			{
+			if (not grid->up or not grid->rightt or not grid->down or not grid->leftt) {
 				int result;
 				send_command(SENSOR_WALL);
 				read_sensor(player.state, grid, result);
