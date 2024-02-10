@@ -19,11 +19,20 @@ int main ()
 	ios::sync_with_stdio(false);
 	cin.tie(nullptr);
 
-	int n;
-	cin >> n;
-	for (int x = 0; x <= n; ++x)
-		for (int y = 0; y <= n; ++y)
-			for (int z = 0; z <= n; ++z)
-				if (x + y + z <= n)
-					cout << z << ' ' << y << ' ' << x << endl;
+	vector<int> A{-1};
+	int q;
+	cin >> q;
+	while (q--)
+	{
+		int t, xk;
+		cin >> t >> xk;
+		// append
+		if (t == 1)
+		{
+			A.emplace_back(xk);
+		// find
+		} else {
+			cout << A[int(A.size()) - xk] << endl;
+		}
+	}
 }
