@@ -34,6 +34,42 @@ export def make-tests [
 
 	cd -
 }
+
+# Give the root folder.
+def root_folder [] : nothing -> string {
+	^git rev-parse --show-cdup
+}
+
+# Create problem.
+export def --env create [
+	folder : string # Folder to be created.
+	--type : string = 'c++' # Type of language.
+	--tests : number = 1 # Amount of tests. Natural number (positive integer).
+] : nothing -> nothing {
+
+	# Raise error when folder already exists.
+	if ($folder | path exists) {
+		error make --unspanned {
+			msg: "The problem already exists."
+		}
+	}
+
+	# Go to the folder problem..
+	mkdir $folder
+	cd $folder
+
+	let root = root_folder
+		| str trim
+
+	let template = $root + './templates/' + $type + '/*'
+
+	cp --recursive $template ./
+
+	# Go back.
+	cd -
+
+	modify $folder --tests $tests
+}
 #
 # Will enter in the folder and change environment.
 export def --env modify [
