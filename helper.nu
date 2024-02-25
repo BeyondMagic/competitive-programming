@@ -7,6 +7,33 @@ export def test [
 ] : string -> nothing {
 	let input = $in
 }
+
+# Make tests in the current folder.
+export def make-tests [
+	n : number # Amount of tests.
+	--test-folder : string = './tests/' # Folder for tests.
+] : nothing -> nothing {
+
+	# In case there is folder, let's create it.
+	mkdir $test_folder
+	cd $test_folder
+
+	mut i = 0
+	while $i != $n {
+		let test = [
+			($i + 1)
+			'.'
+		]
+		| str join
+		| path expand
+
+		touch ($test + 'in') ($test + 'out')
+
+		$i += 1
+	}
+
+	cd -
+}
 #
 # Will enter in the folder and change environment.
 export def --env modify [
