@@ -72,7 +72,7 @@ export def c++ [
 			# Stick to the standardad.
 			'-pedantic'
 			# Disallow implicit conversion.
-			'-Wconversion'
+			#'-Wconversion'
 			# Disallow implicit sign conversion.
 			#'-Wsign-conversion'
 			# Variable shadowing/repeating names of variables in the same context.
