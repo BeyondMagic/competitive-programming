@@ -128,6 +128,7 @@ export def c++ [
 # Mapping extension to its respective language builder:
 #	c++ -> C++
 #	cpp -> C++
+#	TODO: c -> c
 export def main [] : string -> nothing {
 	let input = $in
 
