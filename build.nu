@@ -114,3 +114,22 @@ export def c++ [
 	# Save the file for language servers.
 	] | save --force compile_commands.json
 }
+
+# Will try to build any file based on the extension.
+#
+# Mapping extension to its respective language builder:
+#	c++ -> C++
+#	cpp -> C++
+export def main [] : string -> nothing {
+	let input = $in
+
+	let extension = $input
+		| path basename
+		| split row '.'
+		| last
+
+	$input | match $extension {
+		'c++' => c++
+		'cpp' => c++
+	}
+}
