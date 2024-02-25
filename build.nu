@@ -5,6 +5,23 @@
 use log.nu
 const name = "build"
 
+def lsp_database [
+	command : list<string> # The command itself passed as a list.
+] : nothing -> nothing {
+	let input = $in
+
+	# Compilation database like bear for clang and gcc for language servers.
+	[
+		{
+			arguments: $command
+			directory: ($input | path dirname | path expand)
+			file: ($input | path expand)
+		}
+
+	# Save the file for language servers.
+	] | save --force compile_commands.json
+}
+
 # Compile source code.
 export def c++ [
 	--output : string = "./binary" # Binary output.
@@ -103,16 +120,7 @@ export def c++ [
 		log success --name $name "Compiled successfully!"
 	}
 
-	# Compilation database like bear for clang and gcc for language servers.
-	[
-		{
-			arguments: $command
-			directory: ($input | path dirname | path expand)
-			file: ($input | path expand)
-		}
-
-	# Save the file for language servers.
-	] | save --force compile_commands.json
+	$input | lsp_database $command
 }
 
 # Will try to build any file based on the extension.
