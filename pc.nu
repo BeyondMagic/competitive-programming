@@ -2,7 +2,6 @@
 #
 # João Farias © 2023-2024 BeyonadMagic <beyondmagic@mail.ru>
 
-use log.nu
 const name = "build"
 
 const green = (ansi green_bold)
@@ -140,6 +139,7 @@ export def --env modify [
 	--tests : number = 1 # Amount of tests. Natural number (positive integer).
 	--test-folder : string = './tests/' # Folder for tests.
 ] : nothing -> nothing {
+
 	# Raise error when path is not directory problem.
 	if ($folder | path type) != 'dir' {
 		error make --unspanned {
