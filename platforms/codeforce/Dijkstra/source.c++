@@ -46,7 +46,7 @@ int solve()
 		if (_w > dist[size_t(u)])
 			continue;
 
-		for(const auto & [v, w] : edges[size_t(u)])
+		for (const auto &[v, w] : edges[size_t(u)])
 			if(dist[size_t(u)] + w < dist[size_t(v)])
 				pq.emplace(dist[size_t(v)] = dist[size_t(u)] + w, v), verts[size_t(v)] = u;
 	}

@@ -21,7 +21,7 @@ auto djikistra (vector<vector<pair<long long, long long>>> &edges, long long sou
 	int n = int(edges.size());
 	int s = source;
 	vector<long long> dist(n + 1, oo),
-						verts(n + 1, -1);
+					  verts(n + 1, -1);
 
 	priority_queue<pair<long long, long long>, vector<pair<long long, long long>>, greater<pair<long long, long long>>> pq;
 
@@ -42,7 +42,7 @@ auto djikistra (vector<vector<pair<long long, long long>>> &edges, long long sou
 	}
 
 	if (dist[destiny] == oo)
-		return (long long)(-1);
+		return -1ll;
 
 	return dist[destiny];
 }
@@ -57,7 +57,7 @@ int main ()
 
 	vector<vector<pair<long long, long long>>> graph(n + 1);
 
-	for (int i = 1, a, b, x; cin >> a >> b >> x; ++i)
+	for (long long i = 1, a, b, x; cin >> a >> b >> x; ++i)
 		graph[i].emplace_back(i + 1, a),
 		graph[i].emplace_back(x, b);
 

@@ -29,6 +29,8 @@ FLAGS := $(FLAGS) -DLOCAL
 #---------------------------------------------
 # -- Warnings we *need* to see.
 
+FLAGS := $(FLAGS) -Wno-unused
+
 # FLAGS := $(FLAGS) -O3
 # 
 FLAGS := $(FLAGS) -Wall

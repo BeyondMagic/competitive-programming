@@ -36,7 +36,10 @@ FLAGS := $(FLAGS) -Werror
 
 FLAGS := $(FLAGS) -Wextra
 
-FLAGS := $(FLAGS) -pedantic
+# Call `mprobe()` after risk operations and `mcheck()`.
+FLAGS := $(FLAGS) -lmcheck
+
+#FLAGS := $(FLAGS) -pedantic
 
 FLAGS := $(FLAGS) -Wconversion
 

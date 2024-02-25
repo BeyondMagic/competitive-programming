@@ -60,6 +60,12 @@ enum Entity_State
 	left,
 };
 
+enum General_Direction
+{
+	horizontal,
+	vertical
+};
+
 struct Entity
 {
 	struct Position position;
@@ -294,6 +300,19 @@ void list_pop_back(struct List *list)
 	free(temp);
 }
 
+bool list_find(struct List *list, bool (*compare) (void *, void *), void *x)
+{
+	assert(list);
+	struct Node *N = list->front;
+	while (N)
+	{
+		if (compare(N->data, x))
+			return true;
+		N = N->next;
+	}
+	return false;
+}
+
 struct List *positions_passed, *possible_cheese;
 
 // --------------------------
@@ -444,12 +463,34 @@ void read_sensor(Room *u, int result)
 	player.state = orig;
 }
 
-void change_direction(enum Entity_State direction)
+Room *create_adjacent_room(Room *u, enum Entity_State direction)
+{
+	switch (direction)
+	{
+		case up:
+			if (not u->adjacents[up])
+				u->adjacents[up] = create_room(unknown, NULL, NULL, u, NULL, player.position.x, player.position.y + 1);
+			return u->adjacents[up];
+		case right:
+			if (not u->adjacents[right])
+				u->adjacents[right] = create_room(unknown, NULL, NULL, NULL, u, player.position.x + 1, player.position.y);
+			return u->adjacents[right];
+		case down:
+			if (not u->adjacents[down])
+				u->adjacents[down] = create_room(unknown, u, NULL, NULL, NULL, player.position.x, player.position.y - 1);
+			return u->adjacents[down];
+		case left:
+			if (not u->adjacents[left])
+				u->adjacents[left] = create_room(unknown, u, NULL, NULL, NULL, player.position.x - 1, player.position.y);
+			return u->adjacents[left];
+	}
+}
+
+void Change_direction(enum Entity_State direction)
 {
 	if (player.state == direction)
 		return;
 
-	// Opposite side.
 	if (
 			(player.state == down and direction == up) or
 			(player.state == up and direction == down) or
@@ -478,7 +519,57 @@ void change_direction(enum Entity_State direction)
 	player.state = direction;
 }
 
+void Walk(Room *u)
+{
+	u = create_adjacent_room(u, player.state);
+
+	switch (player.state)
+	{
+		case up: ++player.position.y; break;
+		case right: ++player.position.x; break;
+		case down: --player.position.y; break;
+		case left: --player.position.x; break;
+	}
+
+	switch (send_command(walk))
+	{
+		// Found cheese.
+		case 2:
+			u->state = cheese;
+		case 1:
+			u->state = blank;
+			break;
+		case 0:
+			debug("Walked into wall, dumb!");
+			assert(false);
+			break;
+	}
+
+	print_room_situation(u);
+}
+
+struct Position bias_calculator()
+{
+	struct Position bias = {.x = 0, .y = 0};
+
+	struct Position *d;
+	struct Node *p = possible_cheese->front;
+	while (p)
+	{
+		d = p->data;
+		bias.x += player.position.x - d->x;
+		bias.y += player.position.y - d->y;
+		p = p->next;
+	}
+
+	return bias;
+}
+
+bool change_direction_bias(Room *u)
+{
+	struct Position bias = bias_calculator();
+}
+
 int main (void)
 {
-
 }
