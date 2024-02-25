@@ -2,10 +2,71 @@
 #
 # João Farias © 2023-2024 BeyonadMagic <beyondmagic@mail.ru>
 
+use log.nu
+const name = "build"
+
+const green = (ansi green_bold)
+const red = (ansi red_bold)
+
 # Given test file, will match result.
 export def test [
-] : string -> nothing {
-	let input = $in
+	--executable : string = './binary' # Program to run.
+	--test-folder : string = './tests/' # Folder for tests.
+] : nothing -> nothing {
+	ls --full-paths ($test_folder + '*.in')
+	| get name
+	| par-each {|file|
+
+		# Benchmark start...
+		let start = date now
+
+		# Result of the test.
+		let result = open $file
+			| ^$executable
+			| complete
+
+		# ... and end.
+		let end = date now
+
+		let output = ($file
+			| str substring ..-2
+			) + 'out'
+
+		let expected = open $output
+
+		# Set respectiv ecolour for output.
+		let colour_output = if $result.stdout == $expected {
+			$green
+		} else {
+			$red
+		}
+
+		# Return a record explaining how the test went.
+		{
+			# Duration of the test.
+			time : ($end - $start)
+
+			# The expected output of the test.
+			expected : ($colour_output + $expected)
+
+			# The output of the program with the given test.
+			stdout : ($colour_output + $result.stdout)
+
+			# The stderr of the given test.
+			stderr : (if ('stderr' in $result) {
+				$red + ($result.stderr | into string)
+			} else {
+				''
+			})
+
+			# The exit code of the program with the given test.
+			exit_code : (if $result.exit_code != 0 {
+				$red + ($result.exit_code | into string)
+			} else {
+				$green + ($result.exit_code | into string)
+			})
+		}
+	}
 }
 
 # Make tests in the current folder.
