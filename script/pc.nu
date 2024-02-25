@@ -2,7 +2,7 @@
 #
 # João Farias © 2023-2024 BeyonadMagic <beyondmagic@mail.ru>
 
-const name = "build"
+use root.nu
 
 const green = (ansi green_bold)
 const red = (ansi red_bold)
@@ -95,10 +95,6 @@ export def make-tests [
 	cd -
 }
 
-# Give the root folder.
-def root_folder [] : nothing -> string {
-	^git rev-parse --show-cdup
-}
 
 # Create problem.
 export def --env create [
@@ -118,7 +114,7 @@ export def --env create [
 	mkdir $folder
 	cd $folder
 
-	let root = root_folder
+	let root = root folder
 		| str trim
 
 	let template = $root + './templates/' + $type + '/*'
