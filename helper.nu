@@ -2,7 +2,11 @@
 #
 # João Farias © 2023-2024 BeyonadMagic <beyondmagic@mail.ru>
 
-# Given folder, modify the source of a problem.
+# Given test file, will match result.
+export def test [
+] : string -> nothing {
+	let input = $in
+}
 #
 # Will enter in the folder and change environment.
 export def --env modify [
