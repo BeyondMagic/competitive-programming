@@ -24,25 +24,16 @@ def lsp_database [
 
 # Compile source code.
 export def c++ [
+	file : string = './source.c++' # The file to build.
 	--output : string = "./binary" # Binary output.
 	--eyes = false # Print the command of build.
 	--optimise = false # Optimise (O3).
 	--debug = true # Add debug flags.
 	--standard : string = 'c++20' # Standardad of the compiler.
-] : string -> nothing {
-
-	# Input is supposed to be a path for a file
-	let input = $in
-	let type = $input | describe
-
-	# Raise error when nothing was given.
-	if $type == 'nothing' {
-		error make --unspanned {
-			msg: "No input file was passed"
-		}
+] : nothing -> nothing {
 
 	# Raise error when string is not a valid path and file.
-	} else if $type == 'string' and ($input | path type) != 'file' {
+	if ($file | path type) != 'file' {
 		error make --unspanned {
 			msg: "Path passed is not a file"
 		}
@@ -96,7 +87,7 @@ export def c++ [
 	let command = [
 		'c++'
 		...$args
-		$input
+		$file
 		'-o'
 		$output
 	]
@@ -120,7 +111,7 @@ export def c++ [
 		log success --name $name "Compiled successfully!"
 	}
 
-	$input | lsp_database $command
+	$file | lsp_database $command
 }
 
 # Will try to build any file based on the extension.
@@ -129,16 +120,22 @@ export def c++ [
 #	c++ -> C++
 #	cpp -> C++
 #	TODO: c -> c
-export def main [] : string -> nothing {
-	let input = $in
-
-	let extension = $input
+export def main [
+	file : string = './source.c++' # File to build.
+	--output : string = './binary' # The output binary.
+	--eyes = false # Print the command of build.
+] : nothing -> nothing {
+	let extension = $file
 		| path basename
 		| split row '.'
 		| last
 
-	$input | match $extension {
-		'c++' => c++
-		'cpp' => c++
+	$file | match $extension {
+		'c++' => {
+			c++ $file --output $output --eyes $eyes
+		}
+		'cpp' => {
+			c++ $file --output $output --eyes $eyes
+		}
 	}
 }
