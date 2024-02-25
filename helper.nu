@@ -53,3 +53,5 @@ export def --env modify [
 		($test_folder + '*')
 	]
 }
+
+export module build.nu
