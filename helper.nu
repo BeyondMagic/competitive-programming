@@ -70,13 +70,15 @@ export def --env create [
 
 	modify $folder --tests $tests
 }
+
+# Modify the source of a problem.
 #
 # Will enter in the folder and change environment.
 export def --env modify [
-	folder : string # Folder to modiy
-	--tests : number # Specify new number of tests.
+	folder : string # Folder to modiy.
+	--tests : number = 1 # Amount of tests. Natural number (positive integer).
 	--test-folder : string = './tests/' # Folder for tests.
-] : string -> nothing {
+] : nothing -> nothing {
 	# Raise error when path is not directory problem.
 	if ($folder | path type) != 'dir' {
 		error make --unspanned {
@@ -88,31 +90,16 @@ export def --env modify [
 
 	# Raise error when a `source.*` code is not found.
 	# To represent when a path does not seem like a problem.
-	let file = ls --full-paths `source.*`
+	let source = ls --full-paths `source.*`
 		| first
 		| get name
 
-	# In case there is folder, let's create it.
-	mkdir $test_folder
-
-	# Let's create tests.
-	if not ($tests | is-empty) {
-		mut test = 0
-		while $test != $tests {
-			let name = [
-				$test_folder
-				($test + 1)
-			] | str join
-
-			touch ($name + '.in' | path expand)
-
-			$test += 1
-		}
-	}
+	# Make the tests.
+	make-tests $tests --test-folder $test_folder
 
 	# Run environment editor.
 	run-external $env.EDITOR ...[
-		$file
+		$source
 		# Make next files opened, but not focused.
 		"+args %"
 		# Open all the test files.
