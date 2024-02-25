@@ -30,15 +30,16 @@ export def --env modify [
 
 	# Let's create tests.
 	if not ($tests | is-empty) {
-		mut test = 1
+		mut test = 0
 		while $test != $tests {
 			let name = [
 				$test_folder
-				$test
-				'.in'
+				($test + 1)
 			] | str join
 
-			touch ($name + '.in') ($name + '.out')
+			touch ($name + '.in' | path expand)
+
+			$test += 1
 		}
 	}
 
