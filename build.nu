@@ -65,7 +65,7 @@ export def c++ [
 			# Disallow implicit conversion.
 			'-Wconversion'
 			# Disallow implicit sign conversion.
-			'-Wsign-conversion'
+			#'-Wsign-conversion'
 			# Variable shadowing/repeating names of variables in the same context.
 			'-Wshadow'
 		]
