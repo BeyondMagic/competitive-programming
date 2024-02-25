@@ -3,6 +3,8 @@
 # João Farias © 2023-2024 BeyonadMagic <beyondmagic@mail.ru>
 
 use log.nu
+use root.nu
+
 const name = "build"
 
 def lsp_database [
@@ -39,9 +41,16 @@ export def c++ [
 		}
 	}
 
+	let library_folder = root folder
+		| path join './debug/'
+
 	# Standard for the compiler.
 	mut args = [
 		('-std=' + $standard)
+		# Add debug library.
+		('-I' + $library_folder)
+		# Set local variable.
+		'-DLOCAL'
 	]
 
 	$args = $args ++ if $optimise {
@@ -91,9 +100,6 @@ export def c++ [
 		'-o'
 		$output
 	]
-
-	# Create folder for this file.
-	mkdir ($output | path dirname)
 
 	if $eyes {
 		print $command
