@@ -6,6 +6,8 @@ use root.nu
 
 const green = (ansi green_bold)
 const red = (ansi red_bold)
+const yellow = (ansi yellow_bold)
+const white = (ansi white_bold)
 
 # Given test file, will match result.
 export def test [
@@ -16,11 +18,13 @@ export def test [
 	| get name
 	| par-each {|file|
 
+		let data = open $file
+
 		# Benchmark start...
 		let start = date now
 
 		# Result of the test.
-		let result = open $file
+		let result = $data
 			| ^$executable
 			| complete
 
@@ -36,6 +40,11 @@ export def test [
 		# Set respectiv ecolour for output.
 		let colour_output = if $result.stdout == $expected {
 			$green
+
+		# If trailing characters are the problem, use yellow instead.
+		} else if ($result.stdout | str trim) == $expected {
+			$yellow
+
 		} else {
 			$red
 		}
