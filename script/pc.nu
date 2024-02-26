@@ -54,6 +54,9 @@ export def test [
 			# Duration of the test.
 			time : ($end - $start)
 
+			# Test itself.
+			test : ($white + $data)
+
 			# The expected output of the test.
 			expected : ($colour_output + $expected)
 
