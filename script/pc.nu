@@ -140,7 +140,6 @@ export def --env create [
 	cd $folder
 
 	let root = root folder
-		| str trim
 
 	let template = $root + './templates/' + $type + '/*'
 
