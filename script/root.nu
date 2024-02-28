@@ -4,7 +4,8 @@
 
 # Give the root folder.
 export def folder [] : nothing -> string {
-	^git rev-parse --show-cdup
+	(^git rev-parse --show-cdup
 	| str trim
 	| path expand
+	) + '/'
 }
