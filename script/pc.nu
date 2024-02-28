@@ -9,6 +9,19 @@ const red = (ansi red_bold)
 const yellow = (ansi yellow_bold)
 const white = (ansi white_bold)
 
+# Copy content of the source code.
+export def copy [
+	file : string = './source.*' # File to copy content from.
+] : nothing -> nothing {
+	let path = ls --directory $file
+		| get name
+		| first
+	
+	open --raw $path
+	| str substring ..-1
+	| ^wl-copy
+}
+
 # Given test file, will match result.
 export def test [
 	--executable : string = './binary' # Program to run.
