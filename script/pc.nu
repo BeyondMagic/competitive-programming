@@ -55,7 +55,7 @@ export def test [
 			$green
 
 		# If trailing characters are the problem, use yellow instead.
-		} else if ($result.stdout | str trim) == $expected {
+		} else if ($result.stdout | str trim) == ($expected | str trim) {
 			$yellow
 
 		} else {
