@@ -13,7 +13,7 @@ const white = (ansi white_bold)
 export def copy [
 	file : string = './source.*' # File to copy content from.
 ] : nothing -> nothing {
-	let path = ls --directory $file
+	let path = ls --directory ($file | into glob)
 		| get name
 		| first
 	
@@ -27,7 +27,7 @@ export def test [
 	--executable : string = './binary' # Program to run.
 	--test-folder : string = './tests/' # Folder for tests.
 ] : nothing -> nothing {
-	ls --full-paths ($test_folder + '*.in')
+	ls --full-paths ($test_folder + '*.in' | into glob)
 	| get name
 	| par-each {|file|
 
@@ -142,6 +142,7 @@ export def --env create [
 	let root = root folder
 
 	let template = $root + './templates/' + $type + '/*'
+		| into glob
 
 	cp --recursive $template ./
 
@@ -171,7 +172,7 @@ export def --env modify [
 
 	# Raise error when a `source.*` code is not found.
 	# To represent when a path does not seem like a problem.
-	let source = ls --full-paths `source.*`
+	let source = ls --full-paths ('source.*' | into glob)
 		| first
 		| get name
 
@@ -186,7 +187,7 @@ export def --env modify [
 		# Open all the test files.
 		# NOTE: In UNIX systems it opens by default in order.
 		# May need to change for other operating systems.
-		($test_folder + '*')
+		...(glob ($test_folder + '*'))
 	]
 }
 
