@@ -187,7 +187,7 @@ export def --env modify [
 		# Open all the test files.
 		# NOTE: In UNIX systems it opens by default in order.
 		# May need to change for other operating systems.
-		...(glob ($test_folder + '*'))
+		...(glob ($test_folder + '*') | reverse)
 	]
 }
 
