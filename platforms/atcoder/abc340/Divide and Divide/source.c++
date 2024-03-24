@@ -6,21 +6,23 @@
 
 using namespace std;
 
+#define endl '\n'
+#define space ' '
+
+static constexpr auto &print = cout;
+
 #ifdef LOCAL
 	#include <debug.hpp>
 #else
 	#define debug(...)
 #endif
 
-static constexpr auto &print = cout;
-#define endl '\n'
-
 /*
  * Read integer from standard input and return it.
  */
 template<
 	typename T,
-	enable_if_t<is_same_v<T, int>, bool> = true
+	enable_if_t<is_arithmetic<T>::value, bool> = true
 >
 inline auto
 read ()
@@ -40,9 +42,17 @@ ostream& operator<<(ostream& out, const vector<int>& vec)
 	const auto before = prev(vec_end);
 
 	for (auto it = vec.begin(); it < vec_end; ++it)
-		out << *it << (it == before ? endl : ' ');
+		out << *it << (it == before ? endl : space);
 
 	return out;
+}
+
+long long process(unordered_map<long long, long long> &dp, long long x)
+{
+	if (not dp[x])
+		dp[x] = process(dp, x / 2) + process(dp, (x + 1) / 2);
+
+	return (dp[x] < 0 ? 0 : dp[x]) + x;
 }
 
 int main ()
@@ -50,17 +60,12 @@ int main ()
 	ios::sync_with_stdio(false);
 	cin.tie(nullptr);
 
-	const auto Q = read<int>();
-	for (int i = 1; i <= Q; ++i)
-	{
-		const auto T = read<int>();
-		if (T == 1)
-		{
-			const auto X = read<int>();
-			print << T << ' ' << X << endl;
-		} else {
-			const auto K = read<int>();
-			print << T << ' ' << K << endl;
-		}
-	}
+	unordered_map<long long, long long> dp;
+	dp[0] = -1;
+	dp[1] = -1;
+	dp[2] = -1;
+	dp[3] = 2;
+
+	const auto N = read<long long>();
+	print << process(dp, N) << endl;
 }
