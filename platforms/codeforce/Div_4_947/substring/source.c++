@@ -84,85 +84,41 @@ int main ()
 		auto N = read<int>();
 		auto S = read<string>();
 
-		auto less_half = 0;
+		unordered_set<string> processed;
 
-		auto max = N / 2;
+		auto size_found = 0;
 
-		for (int k = 0; k <= max; ++k)
-		for (int i = 1; i <= max; ++i)
+		for (auto size = 1; size * 2 <= N and not size_found; ++size)
+		for (int i = 0; i < N; ++i)
 		{
-			auto s_new = S.substr(k, i);
+			auto orig = S.substr(i, size);
 
-			// fazer a string multiplicando ela até ser igual ou maior que a string original.
-			while (s_new.length() < S.length())
-				s_new += s_new;
+			auto s = orig;
 
-			// se passar do tamanho, ja desiste.
-			if (s_new.length() != S.length())
+			if (processed.contains(s))
 				continue;
 
+			processed.insert(s);
+
+			while (s.length() < S.length())
+				s += orig;
+
+			if (s.length() != S.length())
+				continue;
+
+			// calculate difference of charcters.
 			int qnt = 0;
 			for (int j = 0; j < N; ++j)
-				if (s_new[j] != S[j])
+				if (s[j] != S[j])
 					++qnt;
 
 			if (qnt <= 1)
 			{
-				less_half = i;
+				size_found = size;
 				break;
 			}
 		}
 
-		if (less_half)
-			print << less_half << endl;
-		else
-			print << N << endl;
-
-		// a gente começa da menor substring possivel, de tamanho 1
-		// e crescemos ela até conseguirmos formar uma que seja igual ou diferente a todas as outras substrings de mesmo tamanho no resto da string original
-
-		// se passarmos da metade tamanho
-		// só a string inteira derá pra imprimir
-		// auto max = N / 2;
-
-		// int less_half = 0;
-
-		// for (int i = 1; i <= max; ++i)
-		// {
-		// 	string s_new = S.substr(0, i);
-
-		// 	print << "s_new = " << s_new << endl;
-
-		// 	// para as outras substrings...
-		// 	int qnt = 0;
-
-		// 	for (int k = 0; k + i - 1 <= max; ++k)
-		// 	{
-		// 		// substring depois de i
-		// 		string s_c = S.substr(i + k + 1, i);
-
-		// 		// quantidade de diferenças nessa string.
-		// 		for (int j = 0; j < i; ++j)
-		// 			if (s_c[j] != s_new[j])
-		// 				++qnt;
-
-		// 		print << ": s_c = " << s_c << " : qnt = " << qnt << endl;
-		// 	}
-
-		// 	if (qnt <= 1) {
-		// 		less_half = i;
-		// 		break;
-		// 	} else
-		// 		print << "at the end : qnt = " << qnt << endl;
-		// }
-
-		// print << "|| VALUE || = ";
-
-		// if (less_half)
-		// 	print << less_half << endl;
-		// else
-		// 	print << N << endl;
-			
-
+		print << (size_found ? size_found : N) << endl;
 	}
 }
