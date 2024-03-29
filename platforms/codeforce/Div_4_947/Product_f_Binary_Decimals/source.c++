@@ -80,9 +80,12 @@ auto calculate(const int max = 6) -> void
 	auto l = 0;
 	for (int i = 2; l <= max; ++i)
 	{
-		auto bin = bitset<32>(size_t(i));
+		auto bin = bitset<32>(i);
+		// 0...010
 		auto s = bin.to_string();
+
 		l = s.length() - s.find('1');
+
 		dec_bin.insert(stoi(s));
 	}
 }

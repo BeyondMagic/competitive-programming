@@ -85,14 +85,10 @@ int main ()
 		for (int i = 0; i < 2 * n; ++i)
 		{
 			for (int j = 0; j < 2 * n; ++j)
-			{
 				if ((j % 4 <= 1 and i % 4 <= 1) or (j % 4 >= 2 and i % 4 >= 2))
-				{
 					print << '#';
-				} else {
+				else
 					print << '.';
-				}
-			}
 			print << endl;
 		}
 	}
