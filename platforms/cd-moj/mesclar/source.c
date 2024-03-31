@@ -1,14 +1,13 @@
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <stdbool.h>
-// #include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <limits.h>
 
 typedef struct celula {
 	int dado;
 	struct celula *prox;
 } celula;
 
-/*
 void imprime (celula *le)
 {
 	while (le && le->prox)
@@ -86,7 +85,7 @@ celula *busca_rec (celula *le, int x)
 	if (!le || le->dado == x)
 		return le;
 	return busca_rec(le->prox, x);
-}*/
+}
 
 void mescla_listas (celula *l1, celula *l2, celula *l3)
 {
@@ -106,7 +105,6 @@ void mescla_listas (celula *l1, celula *l2, celula *l3)
 		}
 }
 
-/*
 int main(void)
 {
 	puts("! Criacao !");
@@ -187,4 +185,4 @@ int main(void)
 		imprime(&head3);
 		
 	}
-}*/
+}

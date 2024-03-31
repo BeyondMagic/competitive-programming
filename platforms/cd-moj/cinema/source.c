@@ -2,7 +2,6 @@
 
 int main (void)
 {
-
     int colunas, linhas;
 
     scanf("%d %d\n", &colunas, &linhas);
