@@ -79,7 +79,9 @@ int main(void)
 				// puts("good");
 				i += digits;
 				// free(next);
+				char *old = next;
 				next = number_add_one(next + offset);
+				free(old);
 			}
 		}
 
