@@ -132,7 +132,8 @@ export def c [
 	let command = [
 		'gcc'
 		...$args
-		$file
+		($file | path basename)
+		# ('"' + $file + '"')
 		'-o'
 		$output
 	]
@@ -227,7 +228,8 @@ export def c++ [
 	let command = [
 		'c++'
 		...$args
-		$file
+		($file | path basename)
+		# ('"' + $file + '"')
 		'-o'
 		$output
 	]
