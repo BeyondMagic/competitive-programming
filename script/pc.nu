@@ -145,6 +145,7 @@ export def --env create [
 
 	let root = root folder
 
+	let type = $type | str downcase
 	let template = $root + './templates/' + $type + '/*'
 		| into glob
 
