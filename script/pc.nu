@@ -100,11 +100,11 @@ export def test [
 # Make tests in the current folder.
 export def make-tests [
 	n : number # Amount of tests.
-	--test-folder : string = './tests/' # Folder for tests.
+	--test-folder: string = 'tests' # Folder for tests.
 ] : nothing -> nothing {
 
 	# In case there is folder, let's create it.
-	mkdir $test_folder
+	mkdir ($test_folder | path expand)
 	cd $test_folder
 
 	mut i = 0
@@ -163,7 +163,7 @@ export def --env create [
 export def --env modify [
 	folder : string # Folder to modiy.
 	--tests : number = 1 # Amount of tests. Natural number (positive integer).
-	--test-folder : string = './tests/' # Folder for tests.
+	--test-folder : string = 'tests' # Folder for tests.
 ] : nothing -> nothing {
 
 	# Raise error when path is not directory problem.
@@ -192,7 +192,7 @@ export def --env modify [
 		# Open all the test files.
 		# NOTE: In UNIX systems it opens by default in order.
 		# May need to change for other operating systems.
-		...(glob ($test_folder + '*') | sort)
+		...(glob ($test_folder + '/*') | sort)
 	]
 }
 
