@@ -8,6 +8,7 @@ using namespace std;
 
 #define endl '\n'
 #define space ' '
+#define mod %
 
 static constexpr auto &print = cout;
 
