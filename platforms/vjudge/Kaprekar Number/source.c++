@@ -96,7 +96,7 @@ int main ()
 		// c_2 = N em inteiro
 		auto c_2 = stoi(S);
 
-		reverse(begin(S), end(S));
+		ranges::reverse(S);
 
 		// c_1 = N inversa em inteiro
 		auto c_1 = stoi(S);

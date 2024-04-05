@@ -84,10 +84,5 @@ int main ()
 {
 	fast_io();
 
-	auto N = read<int>();
-
-	if (N < 100)
-		return print << 100 - N << endl, 0;
-
-	print << 100 - N mod 100 << endl;
+	print << 100 - read<int>() mod 100 << endl;
 }
