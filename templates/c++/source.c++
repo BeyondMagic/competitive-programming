@@ -64,6 +64,22 @@ read ()
 }
 
 /*
+ * Read pair of perhaps different somethings from standard input and return it.
+ */
+template<
+	typename T,
+	typename K
+>
+inline auto
+read ()
+-> pair<T, K>
+{
+	pair<T, K> P;
+	cin >> P.first >> P.second;
+	return P;
+}
+
+/*
  * Print a vector of key data structures separated by a character and ended by a special character.
  */
 template<
