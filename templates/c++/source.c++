@@ -64,19 +64,28 @@ read ()
 }
 
 /*
- * Read pair of perhaps different somethings from standard input and return it.
+ * Read tuple of (possible) diferent types from standard input and return it.
  */
 template<
-	typename T,
-	typename K
+	typename... types
 >
 inline auto
 read ()
--> pair<T, K>
+-> tuple<types...>
 {
-	pair<T, K> P;
-	cin >> P.first >> P.second;
-	return P;
+	auto some_function = [](auto&& x)
+	{
+		cin >> x;
+	};
+
+	tuple<types...> T;
+	apply(
+		[&](auto &...x) {
+			(..., some_function(x));
+		}, T
+	);
+
+	return T;
 }
 
 /*
