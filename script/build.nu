@@ -154,6 +154,7 @@ export def c [
 		log success --name $name "Compiled successfully!"
 	}
 
+	$file | lsp_database $command
 }
 
 # Compile C++ source code.
