@@ -67,7 +67,8 @@ read ()
  * Read tuple of (possible) diferent types from standard input and return it.
  */
 template<
-	typename... types
+	typename... types,
+	enable_if_t<(sizeof...(types) > 1), bool> = true
 >
 inline auto
 read ()
