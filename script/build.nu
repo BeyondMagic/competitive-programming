@@ -67,6 +67,7 @@ export def c [
 	--optimise = false # Optimise (O3).
 	--debug = true # Add debug flags.
 	--standard: string = 'c17' # Standardad of the compiler.
+	--information = true # Information of the compiling.
 ]: nothing -> nothing {
 
 	# Raise error when string is not a valid path and file.
@@ -144,11 +145,14 @@ export def c [
 
 	log debug --name $name "Compiling."
 
-	let exit_code = nu --commands ($command | str join ' ')
+	let result = nu --commands ($command | str join ' ')
 		| complete
-		| get exit_code
 
-	if $exit_code != 0 {
+	if $information {
+		print $result.stderr
+	}
+
+	if $result.exit_code != 0 {
 		log fail --name $name "Failed at compiling!"
 	} else {
 		log success --name $name "Compiled successfully!"
@@ -165,6 +169,7 @@ export def c++ [
 	--optimise = false # Optimise (O3).
 	--debug = true # Add debug flags.
 	--standard: string = 'c++20' # Standardad of the compiler.
+	--information = true # Information of the compiling.
 ]: nothing -> nothing {
 
 	# Raise error when string is not a valid path and file.
@@ -240,12 +245,14 @@ export def c++ [
 	}
 
 	log debug --name $name "Compiling."
-
-	let exit_code = nu --commands ($command | str join ' ')
+	let result = nu --commands ($command | str join ' ')
 		| complete
-		| get exit_code
 
-	if $exit_code != 0 {
+	if $information {
+		print $result.stderr
+	}
+
+	if $result.exit_code != 0 {
 		log fail --name $name "Failed at compiling!"
 	} else {
 		log success --name $name "Compiled successfully!"
