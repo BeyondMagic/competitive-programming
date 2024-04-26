@@ -32,11 +32,11 @@ fast_io (void)
 #endif
 
 /*
- * Read integer from standard input and return it.
+ * Read number or string from standard input and return it.
  */
 template<
 	typename T,
-	enable_if_t<is_arithmetic<T>::value, bool> = true
+	enable_if_t<(is_arithmetic<T>::value or is_same_v<T, string>), bool> = true
 >
 inline auto
 read ()
@@ -45,22 +45,6 @@ read ()
 	T number;
 	cin >> number;
 	return number;
-}
-
-/*
- * Read string from standard input and return it.
- */
-template<
-	typename T,
-	enable_if_t<is_same_v<T, string>, bool> = true
->
-inline auto
-read ()
--> T
-{
-	T str;
-	cin >> str;
-	return str;
 }
 
 /*
