@@ -1,0 +1,5 @@
+/bin/sleep 1.5
+/bin/true ign
+/bin/false 222
+/bin/uname -s
+/bin/sleep 1

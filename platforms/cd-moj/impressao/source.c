@@ -1,3 +1,5 @@
+#include <iso646.h>
+
 int puts(const char *str);
 int printf(const char *restrict format, ...);
 
@@ -8,17 +10,20 @@ typedef struct celula {
 
 void imprime (celula *le)
 {
-	while (le && le->prox)
-		printf("%d -> ", le->prox->dado), le = le->prox;
+	while (le and le->prox)
+		printf("%d -> ", le->prox->dado),
+		le = le->prox;
 	puts("NULL");
 }
 
 void imprime_rec (celula *le)
 {
-	if (!le || !le->prox)
+	if (not le or not le->prox)
 	{
 		puts("NULL");
 		return;
 	}
-	printf("%d -> ", le->prox->dado), imprime_rec(le->prox);
+
+	printf("%d -> ", le->prox->dado),
+	imprime_rec(le->prox);
 }
