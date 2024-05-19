@@ -88,6 +88,8 @@ export def c [
 		#('-I' + $library_folder)
 		# Set local variable.
 		'-DLOCAL'
+		# Add flag for pthreads.
+		'-pthread'
 	]
 
 	$args = $args ++ if $optimise {
