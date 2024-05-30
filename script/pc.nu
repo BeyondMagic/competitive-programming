@@ -45,7 +45,7 @@ export def test [
 		let end = date now
 
 		let output = ($file
-			| str substring ..-2
+			| str substring ..-3
 			) + 'out'
 
 		let expected = open $output
