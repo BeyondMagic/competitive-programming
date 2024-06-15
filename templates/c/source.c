@@ -2,6 +2,7 @@
 	*	author: beyondmagic
 	*	sensei: Edson Alves
 **/
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <iso646.h>
