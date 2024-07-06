@@ -16,10 +16,17 @@ export def copy [
 	let path = ls --directory ($file | into glob)
 		| get name
 		| first
-	
-	open --raw $path
-	| str substring ..-1
-	| ^wl-copy
+
+	let content = if ("./library.hpp" | path exists) {
+		let library = open --raw "./library.hpp"
+
+		open --raw $path
+			| str replace `#include "library.hpp"` $library
+	} else {
+		open --raw $path
+	}
+
+	$content | ^wl-copy
 }
 
 # Given test file, will match result.
