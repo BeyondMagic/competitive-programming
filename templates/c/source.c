@@ -1,7 +1,3 @@
-/**
-	*	author: beyondmagic
-	*	sensei: Edson Alves
-**/
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
