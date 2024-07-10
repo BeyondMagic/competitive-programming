@@ -10,6 +10,19 @@ const yellow = (ansi yellow_bold)
 const white = (ansi white_bold)
 
 # Copy content of the source code.
+export def "copy file" [
+	file : string = './source.*' # File to copy content from.
+	temp : string = './.temp.cpp' # File to create temporarily.
+] : nothing -> nothing {
+	copy
+
+	^wl-paste | save $temp --force
+
+	$temp | path expand | ^wl-copy
+}
+
+
+# Copy content of the source code.
 export def copy [
 	file : string = './source.*' # File to copy content from.
 ] : nothing -> nothing {
