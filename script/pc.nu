@@ -55,7 +55,7 @@ export def test [
 			| str substring ..-3
 			) + 'out'
 
-		let expected = open $output
+		let expected = (open --raw $output) + "\n"
 
 		# Set respectiv ecolour for output.
 		let colour_output = if $result.stdout == $expected {
