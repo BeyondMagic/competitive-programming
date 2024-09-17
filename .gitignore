@@ -1,3 +1,6 @@
+# Temporary files of building.
+**/.temp.**
+
 # For C and C++ problem-builds.
 .ccls-cache/
 **/compile_commands.json
@@ -11,3 +14,6 @@
 
 # For miscelanous.
 /miscelanous/
+
+# Monitoria (UnB) questions.
+**/monitoria-**/
