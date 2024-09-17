@@ -42,8 +42,7 @@ struct UnionFind {
 		--components;
 
 		// New processing for getting the quantity of vertices in the largest component:
-		if (size[P] > largest)
-			largest = size[P];
+		largest = max(largest, size[P]);
 	}
 };
 

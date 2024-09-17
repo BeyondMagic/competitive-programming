@@ -8,6 +8,13 @@ using namespace std;
 
 #define endl '\n'
 #define space ' '
+#define mod %
+#define bits_and &
+#define bits_or |
+#define bits_not ~
+#define bits_xor ^
+#define bits_shift_right >>
+#define bits_shift_left <<
 
 static constexpr auto &print = cout;
 
@@ -93,19 +100,22 @@ int main ()
 {
 	fast_io();
 
-	auto T = read<int>();
+	map<char, int> characters;
+	map<int, int> times;
 
-	while (T--)
-	{
-		auto N = read<int>();
-		auto M = read<int>();
+	// There are exactly zero or exactly two different letters that appear exactly i times in S.
+	for (char c; cin >> c;)
+		++characters[c];
 
-		auto B = read<int, int>();
-		auto D = read<int, int>();
+	for (auto [c, n] : characters)
+		++times[n];
 
-		debug(N, M);
-		debug(B, D);
+	debug(characters);
+	debug(times);
 
+	for (auto [t, result] : times)
+		if (result != 2)
+			return print << "No" << endl, 0;
 
-	}
+	print << "Yes" << endl;
 }

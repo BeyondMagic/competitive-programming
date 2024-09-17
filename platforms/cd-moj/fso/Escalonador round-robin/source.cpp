@@ -1,6 +1,5 @@
 /**
 	*	author:		beyondmagic
-	*	sensei:		Edson Alves
 **/
 #include <bits/stdc++.h>
 
@@ -8,6 +7,15 @@ using namespace std;
 
 #define endl '\n'
 #define space ' '
+#define mod %
+#define bits_and &
+#define bits_or |
+#define bits_not ~
+#define bits_xor ^
+#define bits_shift_right >>
+#define bits_shift_left <<
+
+#define INF 1000000000
 
 static constexpr auto &print = cout;
 
@@ -89,23 +97,41 @@ ostream& operator<<(ostream& out, const vector<T>& vec)
 	return out;
 }
 
+// Deve ser resolvido em menos de 2 segundos.
 int main ()
 {
 	fast_io();
 
-	auto T = read<int>();
+	// algoritmo d. berkley
+	auto [N, quantum] = read<int, int>();
 
-	while (T--)
+	// { (time_1, pid_1), (time_2, pid_2), ... }
+	vector<pair<int, int>> P(N);
+	for (auto &[pid, temp] : P)
+		cin >> pid >> temp,
+		temp *= 1000; // 1 segundo
+
+	for (int j = 0, total = 0; N; j = j == N ? 0 : j)
 	{
-		auto N = read<int>();
-		auto M = read<int>();
+		auto &[id, time] = P[j];
 
-		auto B = read<int, int>();
-		auto D = read<int, int>();
+		total += quantum;
+		time -= quantum;
 
-		debug(N, M);
-		debug(B, D);
+		// can't clean
+		if (time > 0)
+			++j;
 
+		else if (time != -INF)
+		{
+			total += time;
+			print << id << space << '(' << total << ')' << endl;
+			// time = -INF;
+			P.erase(P.begin() + j);
 
+			--N;
+		}
 	}
+	
+	// debug(P);
 }

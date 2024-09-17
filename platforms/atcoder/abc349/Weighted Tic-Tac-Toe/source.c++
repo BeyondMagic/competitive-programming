@@ -8,6 +8,13 @@ using namespace std;
 
 #define endl '\n'
 #define space ' '
+#define mod %
+#define bits_and &
+#define bits_or |
+#define bits_not ~
+#define bits_xor ^
+#define bits_shift_right >>
+#define bits_shift_left <<
 
 static constexpr auto &print = cout;
 
@@ -93,19 +100,19 @@ int main ()
 {
 	fast_io();
 
-	auto T = read<int>();
+	vector<pair<int, pair<int, int>>> priority;
 
-	while (T--)
-	{
-		auto N = read<int>();
-		auto M = read<int>();
+	array<array<long long, 3>, 3> matrix;
+	for (int i = 0; i < 3; ++i)
+		for (int j = 0; j < 3; ++j)
+		{
+			cin >> matrix[i][j];
+			priority.emplace_back(matrix[i][j], make_pair(i, j ));
+		}
 
-		auto B = read<int, int>();
-		auto D = read<int, int>();
+	ranges::sort(priority);
 
-		debug(N, M);
-		debug(B, D);
+	debug(priority);
+	debug(matrix);
 
-
-	}
 }

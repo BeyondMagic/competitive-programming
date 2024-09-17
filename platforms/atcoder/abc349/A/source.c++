@@ -8,6 +8,13 @@ using namespace std;
 
 #define endl '\n'
 #define space ' '
+#define mod %
+#define bits_and &
+#define bits_or |
+#define bits_not ~
+#define bits_xor ^
+#define bits_shift_right >>
+#define bits_shift_left <<
 
 static constexpr auto &print = cout;
 
@@ -93,19 +100,14 @@ int main ()
 {
 	fast_io();
 
-	auto T = read<int>();
+	auto N = read<int>();
 
-	while (T--)
-	{
-		auto N = read<int>();
-		auto M = read<int>();
+	// qual é o score da última pessoa?
+	// únicamente determinado.
+	long long S = 0;
+	for (int x; cin >> x;)
+		S += x;
 
-		auto B = read<int, int>();
-		auto D = read<int, int>();
+	print << -(S) << endl;
 
-		debug(N, M);
-		debug(B, D);
-
-
-	}
 }

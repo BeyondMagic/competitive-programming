@@ -8,6 +8,13 @@ using namespace std;
 
 #define endl '\n'
 #define space ' '
+#define mod %
+#define bits_and &
+#define bits_or |
+#define bits_not ~
+#define bits_xor ^
+#define bits_shift_right >>
+#define bits_shift_left <<
 
 static constexpr auto &print = cout;
 
@@ -93,19 +100,55 @@ int main ()
 {
 	fast_io();
 
-	auto T = read<int>();
+	vector<int> characters(256, 0);
 
-	while (T--)
+	auto S = read<string>();
+	auto T = read<string>();
+
+	// to uppercase.
+	for (auto &c : S)
 	{
-		auto N = read<int>();
-		auto M = read<int>();
-
-		auto B = read<int, int>();
-		auto D = read<int, int>();
-
-		debug(N, M);
-		debug(B, D);
-
-
+		c = toupper(c);
+		++characters[c];
 	}
+
+	auto T_n = 3, Q = 0;
+
+	char first = 0, second = 0;
+
+	// first method
+	for (auto i = 0; i < T_n; ++i)
+	{
+		if (characters[T[i]])
+		{
+			++Q;
+
+			--characters[T[i]];
+
+			if (not first)
+				first = T[i];
+			else
+				second = T[i];
+
+
+			// Encontrei três caracteres iguais!
+			if (Q >= 3)
+				return print << "Yes" << endl, 0;
+		}
+	}
+
+	// second method
+	// encontrei 2 caracteres iguais
+	debug(Q);
+	debug(first, second);
+
+	if (
+			Q == 2 and
+			(
+				(T[0] == first and T[1] == second and T[2] == 'X') or
+				(T[0] == second and T[1] == first and T[2] == 'X')
+			)
+		)
+		return print << "Yes" << endl, 0;
+	print << "No" << endl;
 }
