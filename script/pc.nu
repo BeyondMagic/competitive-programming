@@ -44,11 +44,69 @@ export def copy [
 	$content | ^wl-copy
 }
 
+# To see if it's a number.
+def is-number []: string -> bool {
+	try { $in | into float } catch { null } | is-not-empty
+}
+
+# To see if the string is precise by floating precisions.
+export def is-precise [
+	a_str: string # Base expeceted argument to compare.
+	b_str: string # Given argument to compare.
+]: nothing -> bool {
+	let a = $a_str | str trim | split row ' '
+	let b = $b_str | str trim | split row ' '
+
+	let max = $a | length
+
+	# Different quantity of elements won't work.
+	if $max != ($b | length) {
+		return false
+	}
+
+	mut i = 0
+	while $i < $max {
+		
+		mut x = $a | get $i
+		mut y = $b | get $i
+
+		# Case 1: both are numbers.
+		if ($x | is-number) and ($y | is-number) {
+
+			$x = $x | str substring ..-2
+			$y = $y | str substring ..-2
+
+			if ($x | str length) > ($y | str length) {
+				if not ($x =~ $y) {
+					break
+				}
+			} else {
+				if not ($y =~ $x) {
+					break
+				}
+			}
+
+		# Case 2: string is not equal to each other.
+		} else if $x != $y {
+			break
+		}
+
+		$i = $i + 1
+	}
+
+	# If had to break of loop earlier.
+	if $i != $max {
+		false
+	} else {
+		true
+	}
+}
+
 # Given test file, will match result.
 export def test [
 	--executable : string = './binary' # Program to run.
 	--test-folder : string = './tests/' # Folder for tests.
-] : nothing -> nothing {
+]: nothing -> nothing {
 	# If it is compiled language:
 	let binary = if ($executable | path type) == 'file' {
 		$executable
@@ -95,6 +153,9 @@ export def test [
 		) {
 			$yellow
 
+		# For calculating floating number precisions:
+		} else if (is-precise $result.stdout $expected) {
+			$green
 		} else {
 			$red
 		}
