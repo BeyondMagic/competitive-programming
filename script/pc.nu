@@ -12,7 +12,7 @@ const white = (ansi white_bold)
 # Copy content of the source code.
 export def "copy file" [
 	file : string = './source.*' # File to copy content from.
-	temp : string = './.temp.cpp' # File to create temporarily.
+	temp : string = './.temp.pc' # File to create temporarily.
 ] : nothing -> nothing {
 	copy
 
@@ -30,11 +30,13 @@ export def copy [
 		| get name
 		| first
 
+	# For C++ files.
 	let content = if ("./library.hpp" | path exists) {
 		let library = open --raw "./library.hpp"
 
 		open --raw $path
 			| str replace `#include "library.hpp"` $library
+	# For the rest kind of soruces.
 	} else {
 		open --raw $path
 	}
@@ -47,6 +49,17 @@ export def test [
 	--executable : string = './binary' # Program to run.
 	--test-folder : string = './tests/' # Folder for tests.
 ] : nothing -> nothing {
+	# If it is compiled language:
+	let binary = if ($executable | path type) == 'file' {
+		$executable
+	} else {
+		'./' + (
+			ls
+			| where name =~ source
+			| get 0.name
+		)
+	}
+
 	ls --full-paths ($test_folder + '*.in' | into glob)
 	| get name
 	| par-each {|file|
@@ -58,7 +71,7 @@ export def test [
 
 		# Result of the test.
 		let result = $data
-			| ^$executable
+			| ^$binary
 			| complete
 
 		# ... and end.

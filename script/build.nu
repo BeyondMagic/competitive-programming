@@ -36,6 +36,9 @@ export def main [
 		'c' => {
 			c $input_file --output $output --eyes $eyes
 		}
+		'py' => {
+			"Python doesa interpreted languague!"
+		}
 	}
 }
 
