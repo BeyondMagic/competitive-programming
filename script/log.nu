@@ -54,9 +54,9 @@ def fprint [
 		(char newline)
 	] | str join
 
-	print $arguments
+	#print $arguments
 
-	#^printf $arguments
+	^printf $arguments
 }
 
 # Print a crossed item in red (represents task failed).
