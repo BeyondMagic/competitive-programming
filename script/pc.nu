@@ -37,6 +37,11 @@ export def copy [
 		open --raw $path
 			| str replace `#include "library.hpp"` $library
 	# For the rest kind of soruces.
+	} else if ("./library.py" | path exists) {
+		let library = open --raw "./library.py"
+
+		open --raw $path
+			| str replace `from library import *` $library
 	} else {
 		open --raw $path
 	}
