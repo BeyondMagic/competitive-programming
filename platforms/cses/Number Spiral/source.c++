@@ -2,16 +2,23 @@
 
 using namespace std;
 
-// 1 2 9 10 25
-// 1 2 -> 9 10 -> 25 26
-
-// 1 4 5 16 17
-// 1 -> 4 5 -> 16 17 -> 256 257 -> 
-
 int main ()
 {
 	auto t = read<int>();
 
-	for (int x, y; cin >> x >> y and t--;)
-		print << x << y << endl;
+	for (unsigned long long i, j; cin >> i >> j and t--;)
+	{
+		if (max(i, j) mod 2) {
+			if (i <= j)
+				print << max(i, j) * max(i, j) - i + 1;
+			else
+				print << max(i - 1, j) * max(i - 1, j) + j;
+		} else {
+			if (i >= j)
+				print << max(i, j) * max(i, j) - j + 1;
+			else
+				print << max(i, j - 1) * max(i, j - 1) + i;
+		}
+		print << endl;
+	}
 }
