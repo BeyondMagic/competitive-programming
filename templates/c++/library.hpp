@@ -29,6 +29,24 @@ fast_io (void)
 	cin.tie(nullptr);
 }
 
+using string_line = basic_string<int>;
+
+/*
+ * Read entire line from standard input and return it.
+ */
+template<
+	typename T,
+	enable_if_t<(is_same_v<T, string_line>), bool> = true
+>
+inline auto
+read ()
+-> T
+{
+	string s;
+	getline(cin, s);
+	return s;
+}
+
 /*
  * Read number or string from standard input and return it.
  */
