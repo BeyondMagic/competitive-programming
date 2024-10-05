@@ -1,0 +1,31 @@
+O prof. Jeremias resolveu adotar o método Trezentos, do prof. Fragelli, em suas disciplinas.
+Esse método consiste em parear um aluno com nota alta com outro com nota baixa, para que
+cooperem e progridam em conjunto. É claro que quando propôs isso, Jeremias ouviu um “pode
+ser dupla de três?”, o qual respondeu com um sonoro “dupla de dois, somente!”.
+Jeremias adaptará esse método da seguinte forma: primeiramente ele calculará, para qualquer
+dupla que poderá ser formada, a soma das notas dessa dupla. Em seguida, ele utilizará essa
+métrica para atribuir as duplas de modo a minimizar a diferença absoluta das somas considerando
+qualquer par de duplas.
+Não que o prof. Jeremias precise da sua ajuda para resolver esse problema, contudo, ajude-o
+mesmo assim.
+Entrada
+A primeira linha da entrada possui um inteiro n, que indica a quantidade de alunos.
+As próximas n linhas descrevem, cada, um aluno. Especificamente, a i-ésima linha desse
+conjunto possui o nome de um aluno si, seguido por um inteiro, que representa sua nota xi.
+Essas duas informações estão separadas por um espaço.
+Restrições:
+• 4 ≤ n ≤ 105 e n é par.
+• si consiste de letras maiúsculas ou minúsculas e |si| ≤ 10, 1 ≤ i ≤ n.
+• 0 ≤ xi ≤ 100, 1 ≤ i ≤ n.
+Saída
+Seu programa deverá imprimir na primeira linha a maior diferença das somas das notas de
+qualquer par de duplas, nas próximas n/2 linhas, as duplas escolhidas por Jeremias. Cada dupla
+deverá estar no formato: <aluno1> <nota1> <aluno2> <nota2>.
+O juiz aceitará qualquer atribuição de duplas que obedeça os critérios do enunciado
+No primeiro exemplo, se parearmos Guilherme com Edson e Daniel com Jeremias, ambas as
+duplas terão soma 100 cuja diferença é 0. Nesse caso, também seria possível parear Guilherme
+com Jeremias e Daniel com Edson.
+No segundo exemplo, ao parear Daniel com Alberto (soma 110), Edson com Vinicius (soma
+110) e Jeremias com Guilherme (115), temos a diferença de 5 entre as duplas de Daniel e Alberto,
+e, Jeremias e Guilherme. Qualquer outra atribuição de duplas causaria um aumento dessa
+diferença, fazendo com que ela deixasse de ser mínima
