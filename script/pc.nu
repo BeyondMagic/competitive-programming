@@ -154,8 +154,8 @@ export def test [
 			$yellow
 
 		# For calculating floating number precisions:
-		} else if (is-precise $result.stdout $expected) {
-			$green
+		#} else if (is-precise $result.stdout $expected) {
+		#	$green
 		} else {
 			$red
 		}
