@@ -17,3 +17,7 @@
 
 # Monitoria (UnB) questions.
 **/monitoria-**/
+
+# Rnote files.
+**/notas/
+**/*.rnote
