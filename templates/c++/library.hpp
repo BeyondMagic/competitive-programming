@@ -58,9 +58,9 @@ inline auto
 read ()
 -> T
 {
-	T number;
-	cin >> number;
-	return number;
+	T alpha;
+	cin >> alpha;
+	return alpha;
 }
 
 /*
