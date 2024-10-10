@@ -2,6 +2,8 @@
 
 from math import *
 
+EPS = 0.000000001
+
 # Snippets:
 def read_list():
     return [int(i) for i in input().split()]
@@ -34,11 +36,25 @@ class Segment:
         self.P = P
         self.Q = Q
 
+    def equals(self, a: float, b: float) -> bool:
+        return fabs(a - b) < EPS
+
     def distance(self, R: Point):
         return (self.P.x * self.Q.y + self.P.y * R.x + self.Q.x * R.y) - (R.x * self.Q.y + R.y * self.P.x + self.Q.x * self.P.y)
 
-    def contains(self, R: Point):
-        return self.distance(R) == 0
+    def contains(self, R: Point) -> bool:
+        if (self.P == R or self.Q == R):
+            return True
+
+        xmin = min(self.P.x, self.Q.x)
+        xmax = max(self.P.x, self.Q.x)
+        ymin = min(self.P.y, self.Q.y)
+        ymax = max(self.P.y, self.Q.y)
+
+        if (R.x < xmin or R.x > xmax or R.y < ymin or R.y > ymax):
+            return False
+
+        return self.equals( (R.y - self.P.y) * (self.Q.x - self.P.x), (R.x - self.P.x) * (self.Q.y - self.P.y) )
 
     def closest(self, R: Point):
         A = Line(self.P, self.Q).closest(R)
@@ -57,7 +73,7 @@ k = 1
 
 while True:
     n, x, y = read_list()
-    if not (n and x and y):
+    if (not n and not x and not y):
         break
 
     if k != 1:
