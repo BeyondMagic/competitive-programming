@@ -16,6 +16,7 @@ From the Professor Edson Alves in _Special Programming Topics_, a class in the U
 # Credits
 
 Many thanks to:
-- [@Berguizo](https://github.com/Berguizo) for the push to learn competitive programming.
-- [@edsomjr](https://github.com/edsomjr/) for every lesson you gave me; in programming, mathematics, and in life.
-- [@bcribas](https://github.com/bcribas) for showing how fun C can be.
+- [Renan](https://github.com/R-enanVieira) for making me keep up learning competitive programming.
+- [Matheus](https://github.com/Berguizo) for the push to learn competitive programming.
+- [Prof. Dr. Edson](https://github.com/edsomjr/) for every lesson you gave me; in programming, mathematics, and in life.
+- [Prof. Dr. Ribas](https://github.com/bcribas) for showing how fun C can be.
