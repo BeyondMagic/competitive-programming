@@ -4,7 +4,7 @@ using namespace std;
 
 vector<int> topological_sort(int N, vector<vector<int>> &graph, vector<int> &out)
 {
-	//priority_queue<int, vector<int>, less<int>> pq;
+	//priority_queue<int, vector<int>, greater<int>> pq;
 	priority_queue<int> pq;
 	//vector<bool> mark(N + 1, false);
 
@@ -45,7 +45,8 @@ int main ()
 		++out[a];
 	}
 
-	// debug(out);
+	debug(graph);
+	debug(out);
 
 	auto o = topological_sort(n, graph, out);
 
