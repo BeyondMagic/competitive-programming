@@ -2,6 +2,7 @@
 
 - [templates](/templates/): templates for the programming languages I use;
 - [platforms](/platforms/): platforms with problems I've solved;
+- [notes](/notes/): notes I made and used to resolve problems;
 - [debug](/debug/): debugging files for the programming languages;
 - [tep](https://github.com/edsomjr/tep): learning resource for the course _Special Programming Topics_.
 
