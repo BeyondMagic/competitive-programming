@@ -28,7 +28,7 @@ def fprint [
 	--format: string   # Format of the program.
 	--colour: string   # Colour of the whole message.
 	--left: int = 0    # Extra padding.
-] -> null {
+]: nothing -> nothing {
 
 	let final_name = '[' + $name + ']'
 
@@ -64,7 +64,7 @@ export def fail [
 	...message: string,                 # Message to print
 	--name: string = $name_default,     # Name of the program.
 	--format: string = $format_default, # Format (printf specification) of the message.
-] -> null {
+]: nothing -> nothing {
 	let t_fg_red = (tput setaf 1)
 	fprint $message --left 4 --name $name --format ('[X] ' + $format) --colour $red_bold
 }
@@ -74,7 +74,7 @@ export def success [
 	...message: string,                 # Message to print
 	--name: string = $name_default,     # Name of the program.
 	--format: string = $format_default, # Format (printf specification) of the message.
-] -> null {
+]: nothing -> nothing {
 	fprint $message --left 4 --name $name --format ('[✓] ' + $format) --colour $green_bold
 }
 
@@ -83,7 +83,7 @@ export def error [
 	...message: string,                 # Message to print
 	--name: string = $name_default,     # Name of the program.
 	--format: string = $format_default, # Format (printf specification) of the message.
-] -> null {
+]: nothing -> nothing {
 	fprint $message --name $name --format $format --colour $red
 }
 
@@ -92,7 +92,7 @@ export def warning [
 	...message: string,                 # Message to print
 	--name: string = $name_default,     # Name of the program.
 	--format: string = $format_default, # Format (printf specification) of the message.
-] -> null {
+]: nothing -> nothing {
 	fprint $message --name $name --format $format --colour $yellow_bold
 }
 
@@ -101,6 +101,6 @@ export def debug [
 	...message: string,                 # Message to print
 	--name: string = $name_default,     # Name of the program.
 	--format: string = $format_default, # Format (printf specification) of the message.
-] -> null {
+]: nothing -> nothing {
 	fprint $message --name $name --format $format --colour $white_bold
 }
