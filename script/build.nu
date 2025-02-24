@@ -214,6 +214,8 @@ export def c++ [
 			'-Wextra'
 			# Stick to the standardad.
 			'-pedantic'
+			# Hide all symbols by default.
+			'-Fvisibility=hidden'
 			# Disallow implicit conversion.
 			#'-Wconversion'
 			# Disallow implicit sign conversion.
