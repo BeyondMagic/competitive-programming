@@ -4,10 +4,5 @@ using namespace std;
 
 int main ()
 {
-	int t, n, m, r_x, r_y, d_x, d_y;
 
-	while (t--)
-	{
-
-	}
 }
