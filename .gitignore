@@ -21,3 +21,6 @@
 # Rnote files.
 **/notas/
 **/*.rnote
+
+# Typst files.
+**/*.typ
