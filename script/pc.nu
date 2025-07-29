@@ -144,17 +144,19 @@ export def test [
 			| str substring ..-3
 			) + 'out'
 
-		let expected = (open --raw $output) + "\n"
+		let expected = open --raw $output | str trim
+
+		let stdout = $result.stdout | str trim
 
 		# Set respectiv ecolour for output.
-		let colour_output = if $result.stdout == $expected {
+		let colour_output = if $stdout == $expected {
 			$green
 
 		# If trailing characters are the problem, use yellow instead.
 		} else if (
-			$result.stdout | lines | str trim | str join "\n"
+			$result.stdout | lines | str trim
 		) == (
-			$expected | lines | str trim | str join "\n"
+			$expected | lines | str trim
 		) {
 			$yellow
 
@@ -287,7 +289,7 @@ export def --env modify [
 	run-external $env.EDITOR ...[
 		$source
 		# Make next files opened, but not focused.
-		"+args %"
+		#"+args %"
 		# Open all the test files.
 		# NOTE: In UNIX systems it opens by default in order.
 		# May need to change for other operating systems.
