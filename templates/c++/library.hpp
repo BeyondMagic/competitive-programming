@@ -124,3 +124,24 @@ prefix_sum(const vector<T>& vec)
 		prefix[i] = prefix[i - 1] + vec[i];
 	return prefix;
 }
+
+/**
+ * Calculate the difference array of a vector/array.
+ * The difference array is a way to represent the changes in a sequence.
+ * It allows you to efficiently perform range updates and queries.
+*/
+template<
+	typename T,
+	enable_if_t<(is_arithmetic<T>::value), bool> = true
+>
+inline auto
+difference_array(const vector<T>& vec)
+-> vector<T>
+{
+	const auto n = vec.size();
+	vector<T> diff(n);
+	diff[0] = vec[0];
+	for (size_t i = 1; i < n; ++i)
+		diff[i] = vec[i] - vec[i - 1];
+	return diff;
+}
