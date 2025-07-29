@@ -106,8 +106,10 @@ ostream& operator<<(ostream& out, const vector<T>& vec)
 	return out;
 }
 
-/*
+/**
  * Calculate the prefix sum of a vector/array.
+ * Prefix sum is a technique to calculate the cumulative sum of elements in a sequence.
+ * It allows you to efficiently calculate the sum of any subarray.
  */
 template<
 	typename T,
