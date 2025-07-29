@@ -106,3 +106,21 @@ ostream& operator<<(ostream& out, const vector<T>& vec)
 	return out;
 }
 
+/*
+ * Calculate the prefix sum of a vector/array.
+ */
+template<
+	typename T,
+	enable_if_t<(is_arithmetic<T>::value), bool> = true
+>
+inline auto
+prefix_sum(const vector<T>& vec)
+-> vector<T>
+{
+	const auto n = vec.size();
+	vector<T> prefix(n);
+	prefix[0] = vec[0];
+	for (size_t i = 1; i < n; ++i)
+		prefix[i] = prefix[i - 1] + vec[i];
+	return prefix;
+}
