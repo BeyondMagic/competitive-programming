@@ -147,3 +147,42 @@ difference_array(const vector<T>& vec)
 		diff[i] = vec[i] - vec[i - 1];
 	return diff;
 }
+
+/**
+ * This function computes the power of a base raised to an exponent with an optional modulus.
+ * Works for integer, floating-point, complex numbers, usize, etc.
+ */
+template <
+	typename T,
+	enable_if_t<(is_arithmetic<T>::value), bool> = true
+	// std::enable_if_t<std::is_integral_v<T>,int> = 0
+>
+inline auto
+power(
+	T base,
+	size_t exponent,
+	T modulus = std::numeric_limits<T>::max())
+	-> T
+{
+	T result = 1;
+	bool do_mod = (modulus != std::numeric_limits<T>::max());
+
+	if (do_mod)
+		base %= modulus;
+
+	while (exponent > 0)
+	{
+		if (exponent & 1)
+		{
+			result = result * base;
+			if (do_mod)
+				result %= modulus;
+		}
+		base = base * base;
+		if (do_mod)
+			base %= modulus;
+		exponent >>= 1;
+	}
+
+	return result;
+}
