@@ -204,6 +204,8 @@ export def c++ [
 		]
 	} else {
 		[
+			# C++23
+			'-std=c++23'
 			# No unused variables.
 			'-Wno-unused'
 			# All warnings to be treated as errors.
