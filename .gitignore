@@ -24,3 +24,6 @@
 
 # Typst files.
 **/*.typ
+
+# VS code files.
+/.vscode/
