@@ -8,8 +8,6 @@
 
 using namespace std;
 
-constexpr auto &print = cout;
-
 /* Make code more humane. */
 #define endl '\n'
 #define space ' '
