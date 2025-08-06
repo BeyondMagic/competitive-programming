@@ -88,19 +88,53 @@ read ()
 }
 
 /*
- * Print a vector of key data structures separated by a character and ended by a special character.
+ * Read any Container of n elements of its value_type.
+ * Works for vector<T>, deque<T>, list<T>, set<T>, multiset<T>, ...
  */
 template<
-	typename T
+	typename Container,
+	typename Value = typename Container::value_type,
+	enable_if_t<
+		is_arithmetic<Value>::value || is_same_v<Value, string>,
+		bool
+	> = true
 >
-ostream& operator<<(ostream& out, const vector<T>& vec)
+inline auto
+read(size_t n)
+-> Container
 {
-	const auto vec_end = vec.end();
-	const auto before = prev(vec_end);
+	Container c;
+	for (size_t i = 0; i < n; ++i) {
+		Value x;
+		cin >> x;
+		// insert at end as a hint:
+		c.insert(c.end(), std::move(x));
+	}
+	return c;
+}
 
-	for (auto it = vec.begin(); it < vec_end; ++it)
-		out << *it << (it == before ? endl : space);
-
+/*
+ * Generic container printing (vector, array, set, multiset, deque, list, ...),
+ * excluding std::string and string_line to avoid printing them char by char.
+ */
+template<
+	typename Container,
+	// Exclude std::string and string_line
+	enable_if_t<!is_same_v<Container, std::string> && !is_same_v<Container, string_line>, bool> = true,
+	// Ensure .begin() and .end() exist
+	typename = decltype(declval<Container>().begin()),
+	typename = decltype(declval<Container>().end())
+>
+ostream& operator<<(ostream& out, const Container& c)
+{
+	bool first = true;
+	for (const auto& x : c)
+	{
+		if (!first)
+			out << space;
+		first = false;
+		out << x;
+	}
 	return out;
 }
 
