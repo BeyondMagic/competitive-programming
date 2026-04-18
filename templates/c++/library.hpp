@@ -18,6 +18,8 @@ using namespace std;
 #define bits_xor ^
 #define bits_shift_right >>
 #define bits_shift_left <<
+#define even(x) (!((x) & 1))
+#define odd(x) ((x) & 1)
 
 /* Disconnect C. */
 inline auto
