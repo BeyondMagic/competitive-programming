@@ -1,9 +1,9 @@
 #include <bits/stdc++.h>
 
 #ifdef LOCAL
-	#include <debug.hpp>
+#include <debug.hpp>
 #else
-	#define debug(...)
+#define debug(...)
 #endif
 
 using namespace std;
@@ -23,8 +23,9 @@ using namespace std;
 
 /* Disconnect C. */
 inline auto
-fast_io (void)
--> void {
+fast_io(void)
+	-> void
+{
 	ios::sync_with_stdio(false);
 	cin.tie(nullptr);
 }
@@ -34,13 +35,12 @@ using string_line = basic_string<int>;
 /*
  * Read entire line from standard input and return it.
  */
-template<
+template <
 	typename T,
-	enable_if_t<(is_same_v<T, string_line>), bool> = true
->
+	enable_if_t<(is_same_v<T, string_line>), bool> = true>
 inline auto
-read ()
--> T
+read()
+	-> T
 {
 	string s;
 	getline(cin, s);
@@ -50,13 +50,12 @@ read ()
 /*
  * Read number or string from standard input and return it.
  */
-template<
+template <
 	typename T,
-	enable_if_t<(is_arithmetic<T>::value or is_same_v<T, string>), bool> = true
->
+	enable_if_t<(is_arithmetic<T>::value or is_same_v<T, string>), bool> = true>
 inline auto
-read ()
--> T
+read()
+	-> T
 {
 	T alpha;
 	cin >> alpha;
@@ -66,25 +65,25 @@ read ()
 /*
  * Read tuple of (possible) diferent types from standard input and return it.
  */
-template<
+template <
 	typename... types,
-	enable_if_t<(sizeof...(types) > 1), bool> = true
->
+	enable_if_t<(sizeof...(types) > 1), bool> = true>
 inline auto
-read ()
--> tuple<types...>
+read()
+	-> tuple<types...>
 {
-	auto some_function = [](auto&& x)
+	auto some_function = [](auto &&x)
 	{
 		cin >> x;
 	};
 
 	tuple<types...> T;
 	apply(
-		[&](auto &...x) {
+		[&](auto &...x)
+		{
 			(..., some_function(x));
-		}, T
-	);
+		},
+		T);
 
 	return T;
 }
@@ -93,20 +92,19 @@ read ()
  * Read any Container of n elements of its value_type.
  * Works for vector<T>, deque<T>, list<T>, set<T>, multiset<T>, ...
  */
-template<
+template <
 	typename Container,
 	typename Value = typename Container::value_type,
 	enable_if_t<
 		is_arithmetic<Value>::value || is_same_v<Value, string>,
-		bool
-	> = true
->
+		bool> = true>
 inline auto
 read(size_t n)
--> Container
+	-> Container
 {
 	Container c;
-	for (size_t i = 0; i < n; ++i) {
+	for (size_t i = 0; i < n; ++i)
+	{
 		Value x;
 		cin >> x;
 		// insert at end as a hint:
@@ -119,18 +117,17 @@ read(size_t n)
  * Generic container printing (vector, array, set, multiset, deque, list, ...),
  * excluding std::string and string_line to avoid printing them char by char.
  */
-template<
+template <
 	typename Container,
 	// Exclude std::string and string_line
 	enable_if_t<!is_same_v<Container, std::string> && !is_same_v<Container, string_line>, bool> = true,
 	// Ensure .begin() and .end() exist
 	typename = decltype(declval<Container>().begin()),
-	typename = decltype(declval<Container>().end())
->
-ostream& operator<<(ostream& out, const Container& c)
+	typename = decltype(declval<Container>().end())>
+ostream &operator<<(ostream &out, const Container &c)
 {
 	bool first = true;
-	for (const auto& x : c)
+	for (const auto &x : c)
 	{
 		if (!first)
 			out << space;
@@ -145,13 +142,12 @@ ostream& operator<<(ostream& out, const Container& c)
  * Prefix sum is a technique to calculate the cumulative sum of elements in a sequence.
  * It allows you to efficiently calculate the sum of any subarray.
  */
-template<
+template <
 	typename T,
-	enable_if_t<(is_arithmetic<T>::value), bool> = true
->
+	enable_if_t<(is_arithmetic<T>::value), bool> = true>
 inline auto
-prefix_sum(const vector<T>& vec)
--> vector<T>
+prefix_sum(const vector<T> &vec)
+	-> vector<T>
 {
 	const auto n = vec.size();
 	vector<T> prefix(n);
@@ -165,14 +161,13 @@ prefix_sum(const vector<T>& vec)
  * Calculate the difference array of a vector/array.
  * The difference array is a way to represent the changes in a sequence.
  * It allows you to efficiently perform range updates and queries.
-*/
-template<
+ */
+template <
 	typename T,
-	enable_if_t<(is_arithmetic<T>::value), bool> = true
->
+	enable_if_t<(is_arithmetic<T>::value), bool> = true>
 inline auto
-difference_array(const vector<T>& vec)
--> vector<T>
+difference_array(const vector<T> &vec)
+	-> vector<T>
 {
 	const auto n = vec.size();
 	vector<T> diff(n);
@@ -190,7 +185,7 @@ template <
 	typename T,
 	enable_if_t<(is_arithmetic<T>::value), bool> = true
 	// std::enable_if_t<std::is_integral_v<T>,int> = 0
->
+	>
 inline auto
 power(
 	T base,
