@@ -13,7 +13,7 @@
 #define even(x) (!((x) & 1))
 #define odd(x) ((x) & 1)
 
-int main (void)
+int main(void)
 {
 	int a;
 	scanf("%d", &a);
