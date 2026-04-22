@@ -8,10 +8,9 @@ using namespace std;
  * Method of Fermat for Integer Factorization.
  * O(|P - Q)
  */
-template<typename T>
+template <typename T>
 [[nodiscard("Use the return divisors of the number.")]]
-constexpr
-auto factor_fermat (T n)
+constexpr auto factor_fermat(T n)
 {
 	static_assert(is_integral<T>::value, "Must be a integer.");
 	T a = T(ceil(sqrt(n)));
@@ -30,11 +29,9 @@ auto factor_fermat (T n)
 /*
  * Transform number into binary representation.
  */
-template<typename T>
+template <typename T>
 [[nodiscard("Use the return value of the binary representation of a number.")]]
-inline
-constexpr
-auto to_binary (T A)
+inline constexpr auto to_binary(T A)
 {
 	static_assert(is_arithmetic<T>::value, "Must be a number.");
 	long long unsigned int R = 0;
@@ -51,13 +48,13 @@ auto to_binary (T A)
 /* Growing-ordered polynomial, so the first
  * is the highest degree to the last which is
  * the lowest degree. */
-template<typename T>
+template <typename T>
 struct polynomial
 {
 	static_assert(is_arithmetic<T>::value, "Must be a number.");
 	vector<T> coefficients;
 
-	polynomial() : coefficients(1, 0){};
+	polynomial() : coefficients(1, 0) {};
 
 	constexpr inline auto degree() const
 	{
@@ -66,7 +63,7 @@ struct polynomial
 	}
 
 	// Derivate (prefix operator).
-	polynomial& operator--()
+	polynomial &operator--()
 	{
 		const auto N = degree(this);
 
@@ -79,16 +76,16 @@ struct polynomial
 	}
 
 	// Evaluate.
-	polynomial& operator()(T a)
+	polynomial &operator()(T a)
 	{
 		T result = 0;
 		const auto N = degree(this);
 
 		// P(x) = dx³ + cx² + bx¹ + a
-		// r = d 
+		// r = d
 		for (size_t i = 0; i < N; ++i)
 			result *= a,
-			result += coefficients[i];
+				result += coefficients[i];
 
 		return result;
 	}
@@ -131,7 +128,7 @@ struct polynomial
 	}*/
 };
 
-int main ()
+int main()
 {
 	long long a;
 	float b;
