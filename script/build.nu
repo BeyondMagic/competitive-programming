@@ -69,7 +69,7 @@ export def c [
 	--eyes = false # Print the command of build.
 	--optimise = false # Optimise (O3).
 	--debug = true # Add debug flags.
-	--standard: string = 'c17' # Standardad of the compiler.
+	--standard: string = 'c23' # Standardad of the compiler.
 	--information = true # Information of the compiling.
 ]: nothing -> nothing {
 
