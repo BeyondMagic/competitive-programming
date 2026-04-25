@@ -125,7 +125,8 @@ export def test [
 
 	ls --full-paths ($test_folder + '*.in' | into glob)
 	| get name
-	| par-each {|file|
+	| sort
+	| par-each --keep-order  {|file|
 
 		let data = open $file
 
