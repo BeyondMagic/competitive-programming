@@ -69,7 +69,7 @@ export def c [
 	--eyes = false # Print the command of build.
 	--optimise = false # Optimise (O3).
 	--debug = true # Add debug flags.
-	--standard: string = 'c23' # Standardad of the compiler.
+	--standard: string = 'c23' # Standard of the compiler.
 	--information = true # Information of the compiling.
 ]: nothing -> nothing {
 
@@ -111,7 +111,7 @@ export def c [
 			'-Werror'
 			# Further extra flags.
 			'-Wextra'
-			# Stick to the standardad.
+			# Stick to the standard.
 			'-pedantic'
 			# Disallow implicit conversion.
 			#'-Wconversion'
@@ -173,7 +173,7 @@ export def c++ [
 	--eyes = false # Print the command of build.
 	--optimise = false # Optimise (O3).
 	--debug = true # Add debug flags.
-	--standard: string = 'c++20' # Standardad of the compiler.
+	--standard: string = 'c++23' # Standard of the compiler.
 	--information = true # Information of the compiling.
 ]: nothing -> nothing {
 
@@ -204,8 +204,6 @@ export def c++ [
 		]
 	} else {
 		[
-			# C++23
-			'-std=c++23'
 			# No unused variables.
 			'-Wno-unused'
 			# All warnings to be treated as errors.
@@ -214,7 +212,7 @@ export def c++ [
 			'-Werror'
 			# Further extra flags.
 			'-Wextra'
-			# Stick to the standardad.
+			# Stick to the standard.
 			'-pedantic'
 			# Hide all symbols by default.
 			'-Fvisibility=hidden'
