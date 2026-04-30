@@ -215,3 +215,49 @@ power(
 
 	return result;
 }
+
+template <typename T>
+bool are_nearly_equal(T a, T b, T epsilon = std::numeric_limits<T>::epsilon())
+{
+	// 1. Handle exact equality (includes infinities)
+	if (a == b)
+		return true;
+
+	T abs_diff = std::abs(a - b);
+	T abs_a = std::abs(a);
+	T abs_b = std::abs(b);
+	T largest = std::max(abs_a, abs_b);
+
+	// 2. Relative tolerance for large numbers
+	// 3. Absolute tolerance for numbers near zero
+	// Using 4x epsilon for a small safety buffer (typical ULP allowance)
+	return abs_diff < (largest * epsilon * 4);
+}
+
+template <typename T>
+bool is_less_than(T a, T b, T epsilon = std::numeric_limits<T>::epsilon())
+{
+	// If a is significantly smaller than b, return true.
+	// If they are "nearly equal" according to your tolerance, return false.
+	return (a < b) && !are_nearly_equal(a, b, epsilon);
+}
+
+template <typename T>
+bool is_less_than_or_equal(T a, T b, T epsilon = std::numeric_limits<T>::epsilon())
+{
+	return (a < b) || are_nearly_equal(a, b, epsilon);
+}
+
+template <typename T>
+bool is_greater_than(T a, T b, T epsilon = std::numeric_limits<T>::epsilon())
+{
+	// If a is significantly smaller than b, return true.
+	// If they are "nearly equal" according to your tolerance, return false.
+	return (b < a) && !are_nearly_equal(b, a, epsilon);
+}
+
+template <typename T>
+bool is_less_greater_or_equal(T a, T b, T epsilon = std::numeric_limits<T>::epsilon())
+{
+	return (b < a) || are_nearly_equal(b, a, epsilon);
+}
