@@ -1,0 +1,26 @@
+[
+  {
+    "arguments": [
+      "c++",
+      "-std=c++23",
+      "-I/home/terra/storage/desktop/projects/competitive-programming/./debug/",
+      "-DLOCAL",
+      "-Wno-unused",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-pedantic",
+      "-Fvisibility=hidden",
+      "-Wshadow",
+      "-ggdb",
+      "-fsanitize-undefined-trap-on-error",
+      "-fsanitize-address-use-after-scope",
+      "-fsanitize=address,undefined",
+      "source.c++",
+      "-o",
+      "./binary"
+    ],
+    "directory": "/home/terra/storage/desktop/projects/competitive-programming/platforms/cd-moj/Velocidade de Internet",
+    "file": "/home/terra/storage/desktop/projects/competitive-programming/platforms/cd-moj/Velocidade de Internet/source.c++"
+  }
+]
