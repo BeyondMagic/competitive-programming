@@ -20,6 +20,7 @@ using namespace std;
 #define bits_shift_left <<
 #define even(x) (!((x) & 1))
 #define odd(x) ((x) & 1)
+#define long_long long long
 
 /* Disconnect C. */
 inline auto
