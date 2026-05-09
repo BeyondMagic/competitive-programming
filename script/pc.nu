@@ -112,8 +112,18 @@ export def test [
 	--executable : string = './binary' # Program to run.
 	--test-folder : string = './tests/' # Folder for tests.
 ]: nothing -> nothing {
+	let is_grepe = ("./source.grepe" | path exists)
+
+	let grepe_pattern = if $is_grepe {
+		open --raw "./source.grepe" | str trim
+	} else {
+		''
+	}
+
 	# If it is compiled language:
-	let binary = if ($executable | path type) == 'file' {
+	let binary = if $is_grepe {
+		''
+	} else if ($executable | path type) == 'file' {
 		$executable
 	} else {
 		'./' + (
@@ -134,9 +144,13 @@ export def test [
 		let start = date now
 
 		# Result of the test.
-		let result = $data
-			| ^$binary
-			| complete
+		let result = if $is_grepe {
+			^grep -E $grepe_pattern $file | complete
+		} else {
+			$data
+				| ^$binary
+				| complete
+		}
 
 		# ... and end.
 		let end = date now
@@ -168,6 +182,12 @@ export def test [
 			$red
 		}
 
+		let ok_exit_code = if $is_grepe {
+			($result.exit_code == 0) or ($result.exit_code == 1)
+		} else {
+			$result.exit_code == 0
+		}
+
 		# Return a record explaining how the test went.
 		{
 			# Duration of the test.
@@ -190,7 +210,7 @@ export def test [
 			})
 
 			# The exit code of the program with the given test.
-			exit_code : (if $result.exit_code != 0 {
+			exit_code : (if not $ok_exit_code {
 				$red + ($result.exit_code | into string)
 			} else {
 				$green + ($result.exit_code | into string)
@@ -204,10 +224,18 @@ export def make-tests [
 	n : number # Amount of tests.
 	--test-folder: string = 'tests' # Folder for tests.
 ] : nothing -> nothing {
+	let tests_dir = ($test_folder | path expand)
+	if ($tests_dir | path exists) {
+		if ($tests_dir | path type) != 'dir' {
+			error make --unspanned {
+				msg: "The given tests folder path exists but is not a directory."
+			}
+		}
+	} else {
+		mkdir $tests_dir
+	}
 
-	# In case there is folder, let's create it.
-	mkdir ($test_folder | path expand)
-	cd $test_folder
+	cd $tests_dir
 
 	mut i = 0
 	while $i != $n {
