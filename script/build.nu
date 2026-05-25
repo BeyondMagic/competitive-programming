@@ -112,7 +112,7 @@ export def c [
 			# Further extra flags.
 			'-Wextra'
 			# Stick to the standard.
-			'-pedantic'
+			# '-pedantic'
 			# Disallow implicit conversion.
 			#'-Wconversion'
 			# Disallow implicit sign conversion.
@@ -213,7 +213,7 @@ export def c++ [
 			# Further extra flags.
 			'-Wextra'
 			# Stick to the standard.
-			'-pedantic'
+			# '-pedantic'
 			# Hide all symbols by default.
 			'-Fvisibility=hidden'
 			# Disallow implicit conversion.
