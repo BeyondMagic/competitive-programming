@@ -48,12 +48,14 @@ read()
 	return s;
 }
 
+using uint128 = unsigned __int128;
+
 /*
  * Read number or string from standard input and return it.
  */
 template <
 	typename T,
-	enable_if_t<(is_arithmetic<T>::value or is_same_v<T, string>), bool> = true>
+	enable_if_t<(not is_same_v<T, uint128>) and (is_arithmetic<T>::value or is_same_v<T, string>), bool> = true>
 inline auto
 read()
 	-> T
@@ -115,6 +117,28 @@ read(size_t n)
 }
 
 /*
+ * Read uint128 from standard input.
+ */
+template <
+	typename T,
+	enable_if_t<(is_same_v<T, uint128>), bool> = true>
+inline auto
+read()
+	-> T
+{
+	uint128 x = 0;
+	char ch = getchar();
+	while (ch < '0' || ch > '9')
+		ch = getchar();
+	while (ch >= '0' && ch <= '9')
+	{
+		x = x * 10 + (ch - '0');
+		ch = getchar();
+	}
+	return x;
+}
+
+/*
  * Generic container printing (vector, array, set, multiset, deque, list, ...),
  * excluding std::string and string_line to avoid printing them char by char.
  */
@@ -135,6 +159,32 @@ ostream &operator<<(ostream &out, const Container &c)
 		first = false;
 		out << x;
 	}
+	return out;
+}
+
+/**
+ * For uint128, we need a custom output operator since it's not natively supported by C++ streams.
+ * 	if (x > 9) print(x / 10);
+	cout << char(x % 10 + '0');
+ */
+ostream &operator<<(ostream &out, const uint128 &x)
+{
+	if (x == 0)
+	{
+		out << '0';
+		return out;
+	}
+
+	// Work on a copy since x is const; collect digits then print in correct order.
+	uint128 y = x;
+	string s;
+	while (y > 0)
+	{
+		s.push_back(char(y % 10 + '0'));
+		y /= 10;
+	}
+	reverse(s.begin(), s.end());
+	out << s;
 	return out;
 }
 
