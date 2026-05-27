@@ -5,7 +5,7 @@ using namespace std;
 int main()
 {
 	fast_io();
-	auto [a, b] = read<int128, uint128>();
-	cout << a << space << b << endl;
+	auto a = read<int>();
+	cout << a << endl;
 	debug("Hello, World!");
 }

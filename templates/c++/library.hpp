@@ -49,99 +49,13 @@ read()
 }
 
 using uint128 = unsigned __int128;
-using int128 = __int128;
-
-/*
- * Read uint128 from standard input.
- */
-istream &operator>>(istream &in, uint128 &x)
-{
-	x = 0;
-	int sign = 1;
-	uint128 magnitude = 0;
-	char ch = 0;
-
-	in >> std::ws;
-	if (!in.get(ch))
-		return in;
-	if (ch == '-' || ch == '+')
-	{
-		sign = (ch == '-') ? -1 : 1;
-		if (!in.get(ch))
-		{
-			in.setstate(ios::failbit);
-			return in;
-		}
-	}
-	if (ch < '0' || ch > '9')
-	{
-		in.setstate(ios::failbit);
-		return in;
-	}
-	for (;;)
-	{
-		magnitude = magnitude * 10 + static_cast<uint128>(ch - '0');
-		if (!in.get(ch))
-			break;
-		if (ch < '0' || ch > '9')
-			break;
-	}
-	if (in && (ch < '0' || ch > '9'))
-		in.unget();
-	if (sign < 0)
-	{
-		x = 0;
-		x -= magnitude;
-		return in;
-	}
-	x = magnitude;
-	return in;
-}
-
-istream &operator>>(istream &in, int128 &x)
-{
-	x = 0;
-	int sign = 1;
-	uint128 magnitude = 0;
-	char ch = 0;
-
-	in >> std::ws;
-	if (!in.get(ch))
-		return in;
-	if (ch == '-' || ch == '+')
-	{
-		sign = (ch == '-') ? -1 : 1;
-		if (!in.get(ch))
-		{
-			in.setstate(ios::failbit);
-			return in;
-		}
-	}
-	if (ch < '0' || ch > '9')
-	{
-		in.setstate(ios::failbit);
-		return in;
-	}
-	for (;;)
-	{
-		magnitude = magnitude * 10 + static_cast<uint128>(ch - '0');
-		if (!in.get(ch))
-			break;
-		if (ch < '0' || ch > '9')
-			break;
-	}
-	if (in && (ch < '0' || ch > '9'))
-		in.unget();
-	x = (sign < 0) ? -static_cast<int128>(magnitude) : static_cast<int128>(magnitude);
-	return in;
-}
 
 /*
  * Read number or string from standard input and return it.
  */
 template <
 	typename T,
-	enable_if_t<is_arithmetic<T>::value or is_same_v<T, string>, bool> = true>
+	enable_if_t<(not is_same_v<T, uint128>) and (is_arithmetic<T>::value or is_same_v<T, string>), bool> = true>
 inline auto
 read()
 	-> T
@@ -203,6 +117,28 @@ read(size_t n)
 }
 
 /*
+ * Read uint128 from standard input.
+ */
+template <
+	typename T,
+	enable_if_t<(is_same_v<T, uint128>), bool> = true>
+inline auto
+read()
+	-> T
+{
+	uint128 x = 0;
+	char ch = getchar();
+	while (ch < '0' || ch > '9')
+		ch = getchar();
+	while (ch >= '0' && ch <= '9')
+	{
+		x = x * 10 + (ch - '0');
+		ch = getchar();
+	}
+	return x;
+}
+
+/*
  * Generic container printing (vector, array, set, multiset, deque, list, ...),
  * excluding std::string and string_line to avoid printing them char by char.
  */
@@ -228,6 +164,8 @@ ostream &operator<<(ostream &out, const Container &c)
 
 /**
  * For uint128, we need a custom output operator since it's not natively supported by C++ streams.
+ * 	if (x > 9) print(x / 10);
+	cout << char(x % 10 + '0');
  */
 ostream &operator<<(ostream &out, const uint128 &x)
 {
@@ -247,28 +185,6 @@ ostream &operator<<(ostream &out, const uint128 &x)
 	}
 	reverse(s.begin(), s.end());
 	out << s;
-	return out;
-}
-
-/**
- * For int128, we also need a custom output operator since it's not natively supported by C++ streams.
- */
-ostream &operator<<(ostream &out, const int128 &x)
-{
-	if (x == 0)
-	{
-		out << '0';
-		return out;
-	}
-
-	int128 y = x;
-	if (y < 0)
-	{
-		out << '-';
-		y = -y;
-	}
-	uint128 uy = static_cast<uint128>(y);
-	out << uy; // Reuse uint128 output operator
 	return out;
 }
 
