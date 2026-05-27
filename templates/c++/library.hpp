@@ -78,6 +78,44 @@ istream &operator>>(istream &in, uint128 &x)
 	return in;
 }
 
+istream &operator>>(istream &in, int128 &x)
+{
+	x = 0;
+	int sign = 1;
+	uint128 magnitude = 0;
+	char ch = 0;
+
+	in >> std::ws;
+	if (!in.get(ch))
+		return in;
+	if (ch == '-' || ch == '+')
+	{
+		sign = (ch == '-') ? -1 : 1;
+		if (!in.get(ch))
+		{
+			in.setstate(ios::failbit);
+			return in;
+		}
+	}
+	if (ch < '0' || ch > '9')
+	{
+		in.setstate(ios::failbit);
+		return in;
+	}
+	for (;;)
+	{
+		magnitude = magnitude * 10 + static_cast<uint128>(ch - '0');
+		if (!in.get(ch))
+			break;
+		if (ch < '0' || ch > '9')
+			break;
+	}
+	if (in && (ch < '0' || ch > '9'))
+		in.unget();
+	x = (sign < 0) ? -static_cast<int128>(magnitude) : static_cast<int128>(magnitude);
+	return in;
+}
+
 /*
  * Read number or string from standard input and return it.
  */
@@ -170,8 +208,6 @@ ostream &operator<<(ostream &out, const Container &c)
 
 /**
  * For uint128, we need a custom output operator since it's not natively supported by C++ streams.
- * 	if (x > 9) print(x / 10);
-	cout << char(x % 10 + '0');
  */
 ostream &operator<<(ostream &out, const uint128 &x)
 {
@@ -191,6 +227,28 @@ ostream &operator<<(ostream &out, const uint128 &x)
 	}
 	reverse(s.begin(), s.end());
 	out << s;
+	return out;
+}
+
+/**
+ * For int128, we also need a custom output operator since it's not natively supported by C++ streams.
+ */
+ostream &operator<<(ostream &out, const int128 &x)
+{
+	if (x == 0)
+	{
+		out << '0';
+		return out;
+	}
+
+	int128 y = x;
+	if (y < 0)
+	{
+		out << '-';
+		y = -y;
+	}
+	uint128 uy = static_cast<uint128>(y);
+	out << uy; // Reuse uint128 output operator
 	return out;
 }
 
