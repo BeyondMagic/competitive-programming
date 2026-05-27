@@ -49,13 +49,41 @@ read()
 }
 
 using uint128 = unsigned __int128;
+using int128 = __int128;
+
+/*
+ * Read uint128 from standard input.
+ */
+istream &operator>>(istream &in, uint128 &x)
+{
+	x = 0;
+	char ch = 0;
+	while (in.get(ch))
+	{
+		if (ch >= '0' && ch <= '9')
+			break;
+	}
+	if (!in)
+		return in;
+	for (;;)
+	{
+		x = x * 10 + static_cast<uint128>(ch - '0');
+		if (!in.get(ch))
+			break;
+		if (ch < '0' || ch > '9')
+			break;
+	}
+	if (in && (ch < '0' || ch > '9'))
+		in.unget();
+	return in;
+}
 
 /*
  * Read number or string from standard input and return it.
  */
 template <
 	typename T,
-	enable_if_t<(not is_same_v<T, uint128>) and (is_arithmetic<T>::value or is_same_v<T, string>), bool> = true>
+	enable_if_t<is_arithmetic<T>::value or is_same_v<T, string>, bool> = true>
 inline auto
 read()
 	-> T
@@ -114,28 +142,6 @@ read(size_t n)
 		c.insert(c.end(), std::move(x));
 	}
 	return c;
-}
-
-/*
- * Read uint128 from standard input.
- */
-template <
-	typename T,
-	enable_if_t<(is_same_v<T, uint128>), bool> = true>
-inline auto
-read()
-	-> T
-{
-	uint128 x = 0;
-	char ch = getchar();
-	while (ch < '0' || ch > '9')
-		ch = getchar();
-	while (ch >= '0' && ch <= '9')
-	{
-		x = x * 10 + (ch - '0');
-		ch = getchar();
-	}
-	return x;
 }
 
 /*
