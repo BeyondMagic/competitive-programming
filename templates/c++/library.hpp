@@ -57,17 +57,30 @@ using int128 = __int128;
 istream &operator>>(istream &in, uint128 &x)
 {
 	x = 0;
+	int sign = 1;
+	uint128 magnitude = 0;
 	char ch = 0;
-	while (in.get(ch))
-	{
-		if (ch >= '0' && ch <= '9')
-			break;
-	}
-	if (!in)
+
+	in >> std::ws;
+	if (!in.get(ch))
 		return in;
+	if (ch == '-' || ch == '+')
+	{
+		sign = (ch == '-') ? -1 : 1;
+		if (!in.get(ch))
+		{
+			in.setstate(ios::failbit);
+			return in;
+		}
+	}
+	if (ch < '0' || ch > '9')
+	{
+		in.setstate(ios::failbit);
+		return in;
+	}
 	for (;;)
 	{
-		x = x * 10 + static_cast<uint128>(ch - '0');
+		magnitude = magnitude * 10 + static_cast<uint128>(ch - '0');
 		if (!in.get(ch))
 			break;
 		if (ch < '0' || ch > '9')
@@ -75,6 +88,13 @@ istream &operator>>(istream &in, uint128 &x)
 	}
 	if (in && (ch < '0' || ch > '9'))
 		in.unget();
+	if (sign < 0)
+	{
+		x = 0;
+		x -= magnitude;
+		return in;
+	}
+	x = magnitude;
 	return in;
 }
 
