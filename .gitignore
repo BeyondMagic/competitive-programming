@@ -27,3 +27,6 @@
 
 # VS code files.
 /.vscode/
+
+# Mypy cache.
+**/.mypy_cache/
