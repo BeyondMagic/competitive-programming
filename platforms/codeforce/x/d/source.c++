@@ -43,11 +43,48 @@ int main()
 				for (int i = 0; i < 2 * n; ++i)
 					if (even(A[i]))
 						ps.emplace_back(i);
-				co
 			}
+			else
+			{
+				for (int i = 0; i < 2 * n; ++i)
+					if (odd(A[i]))
+						ps.emplace_back(i);
+			}
+			auto sz = int(ps.size());
+			for (int i = 0; i < sz; ++i)
+			{
+				cout << ps[i];
+				if (even(i))
+					cout << space;
+				else
+					cout << endl;
+			}
+			// auto endd = prev(end(ps));
+			// for (auto it = begin(ps); it != endd; it = next(next(it)))
+			// 	cout << *it << space << *next(it) << endl;
+
 		// the gcd is 3
 		} else {
 			debug("gcd 3");
+			vector<int> ps;
+			set<int> marked;
+			for (int i = 0, j; i < n; ++i)
+			{
+				j = i + 1;
+				while (marked.count(j) == 1 or (A[i] + A[j]) mod 3 != 0)
+					++j;
+				marked.emplace(j);
+			}
+
+			auto sz = int(ps.size());
+			for (int i = 0; i < sz; ++i)
+			{
+				cout << ps[i];
+				if (even(i))
+					cout << space;
+				else
+					cout << endl;
+			}
 		}
 	}
 }
