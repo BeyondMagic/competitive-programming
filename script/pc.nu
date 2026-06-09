@@ -112,25 +112,42 @@ export def test [
 	--executable : string = './binary' # Program to run.
 	--test-folder : string = './tests/' # Folder for tests.
 ]: nothing -> nothing {
-	let is_grepe = ("./source.grepe" | path exists)
+	let sources = ls --full-paths ('source.*' | into glob)
+
+	let source = if (($sources | where {|entry| ($entry.name | path basename) == 'source.grepe'} | length) > 0) {
+		$sources
+			| where {|entry| ($entry.name | path basename) == 'source.grepe'}
+			| get 0.name
+	} else if (($sources | where {|entry| ($entry.name | path basename) == 'source.hs'} | length) > 0) and (($executable | path type) != 'file') {
+		$sources
+			| where {|entry| ($entry.name | path basename) == 'source.hs'}
+			| get 0.name
+	} else {
+		$sources
+			| get 0.name
+	}
+
+	let extension = $source
+		| path basename
+		| split row '.'
+		| last
+
+	let is_grepe = $extension == 'grepe'
+	let is_haskell = $extension == 'hs'
 
 	let grepe_pattern = if $is_grepe {
-		open --raw "./source.grepe" | str trim
+		open --raw $source | str trim
 	} else {
 		''
 	}
 
 	# If it is compiled language:
-	let binary = if $is_grepe {
+	let binary = if $is_grepe or $is_haskell {
 		''
 	} else if ($executable | path type) == 'file' {
 		$executable
 	} else {
-		'./' + (
-			ls
-			| where name =~ source
-			| get 0.name
-		)
+		'./' + ($source | path basename)
 	}
 
 	ls --full-paths ($test_folder + '*.in' | into glob)
@@ -145,7 +162,11 @@ export def test [
 
 		# Result of the test.
 		let result = if $is_grepe {
-			^grep -E $grepe_pattern $file | complete
+			^grep -E -- $grepe_pattern $file | complete
+		} else if $is_haskell {
+			$data
+				| ^runghc $source
+				| complete
 		} else {
 			$data
 				| ^$binary

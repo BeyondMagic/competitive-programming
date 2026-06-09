@@ -36,6 +36,9 @@ export def main [
 		'c' => {
 			c $input_file --output $output --eyes $eyes
 		}
+		'hs' => {
+			hs $input_file --output $output --eyes $eyes
+		}
 		'py' => {
 			"Python doesa interpreted languague!"
 		}
@@ -266,4 +269,28 @@ export def c++ [
 	}
 
 	$file | lsp_database $command
+}
+
+# Haskell source code is executed directly through runghc.
+export def hs [
+	file: string = './source.hs' # The file to run.
+	--output: string = "./binary" # Unused for interpreted languages.
+	--eyes = false # Print the command of execution.
+]: nothing -> nothing {
+	if ($file | path type) != 'file' {
+		error make --unspanned {
+			msg: "Path passed is not a file"
+		}
+	}
+
+	let command = [
+		'runghc'
+		($file | path basename)
+	]
+
+	if $eyes {
+		print $command
+	}
+
+	log warning --name $name "Haskell uses runghc directly; no build artifact generated."
 }
