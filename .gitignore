@@ -30,3 +30,5 @@
 
 # Mypy cache.
 **/.mypy_cache/
+
+**/s.cpp
