@@ -1,23 +1,14 @@
 import Text.Printf
-
-toInt ns = map (\n -> read n :: Int) ns
-toDouble ns = map (\n -> read n :: Double) ns
-
-f (a:b:_) = a * b
-solve xs = f (toDouble xs)
-
+import Data.List
+import Data.Ord
+import Data.Bits
 
 main :: IO ()
 main = do
-    line1 <- getLine
-    line2 <- getLine
-    line3 <- getLine
-    line4 <- getLine
+    l1 <- getLine
+    l2 <- getLine
 
-    let linesList = [line1, line2, line3, line4]
-    print linesList
+    let x = read l1 :: Double
+    let y = read l2 :: Double
 
-    -- printf "|%-10s|\n" "Left"     -- Prints: |Left      |
-    -- printf "|%10s|\n"  "Right"    -- Prints: |     Right|
-    -- printf "%05d\n"    (42::Int)  -- Prints: 00042
-    -- printf "%.3f\n"    (1.23456)  -- Prints: 1.235 (Rounds automatically)
+    printf "%.3f km/l\n" (x / y)
