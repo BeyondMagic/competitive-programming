@@ -1,7 +1,3 @@
-/**
-	*	author:		beyondmagic
-	*	sensei:		Edson Alves
-**/
 #include <bits/stdc++.h>
 
 using namespace std;
