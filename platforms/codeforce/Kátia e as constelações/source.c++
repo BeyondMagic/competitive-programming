@@ -10,7 +10,8 @@ int main()
 	for (auto &[x, y] : P)
 		cin >> x >> y;
 
-	vector<vector<long long>> V(n);
+	UFDS U(n);
+
 	for (auto i = 0; i < n; ++i)
 	{
 		auto &[ax, ay] = P[i];
@@ -21,15 +22,9 @@ int main()
 			auto k = (ax - bx) * (ax - bx) + (ay - by) * (ay - by);
 
 			if (k <= d * d)
-				V[i].emplace_back(j);
+				U.union_set(i, j);
 		}
 	}
-
-	UFDS U(n);
-
-	for (int i = 0; i < n; ++i)
-		for (auto &v : V[i])
-			U.union_set(i, v);
 
 	vector<int> A(n, 0);
 	auto mx = 0;
