@@ -397,3 +397,46 @@ bool is_less_greater_or_equal(T a, T b, T epsilon = std::numeric_limits<T>::epsi
 {
 	return (b < a) || are_nearly_equal(b, a, epsilon);
 }
+// Base template defaults to void for C++14 transparent functor behavior
+template <typename T = void>
+struct greater_second
+{
+	bool operator()(const T &a, const T &b) const
+	{
+		if (a.second != b.second)
+			return a.second < b.second;
+		return a.first < b.first;
+	}
+};
+
+template <typename T = void>
+struct less_second
+{
+	bool operator()(const T &a, const T &b) const
+	{
+		if (a.second != b.second)
+			return a.second > b.second;
+		return a.first > b.first;
+	}
+};
+
+// Transparent specialization for generic types (C++14/17/20)
+template <>
+struct greater_second<void>
+{
+	template <typename T, typename U>
+	auto operator()(T &&a, U &&b) const -> decltype(std::tie(a.second, a.first) < std::tie(b.second, b.first))
+	{
+		return std::tie(a.second, a.first) < std::tie(b.second, b.first);
+	}
+};
+
+template <>
+struct less_second<void>
+{
+	template <typename T, typename U>
+	auto operator()(T &&a, U &&b) const -> decltype(std::tie(b.second, b.first) < std::tie(a.second, a.first))
+	{
+		return std::tie(b.second, b.first) < std::tie(a.second, a.first);
+	}
+};
