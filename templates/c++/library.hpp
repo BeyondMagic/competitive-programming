@@ -397,6 +397,86 @@ bool is_less_greater_or_equal(T a, T b, T epsilon = std::numeric_limits<T>::epsi
 {
 	return (b < a) || are_nearly_equal(b, a, epsilon);
 }
+
+/*
+ * BITree
+ * A BITree (Binary Indexed Tree) is a data structure that provides efficient methods for cumulative frequency tables.
+ * It allows for efficient updates and prefix sum queries in logarithmic time.
+ */
+template <typename T>
+class BITree
+{
+public:
+	// Initialize two tracking vectors
+	BITree(size_t n) : ts1(n + 2, 0), ts2(n + 2, 0), N(n) {}
+
+	// Returns the point value at index i
+	long long value_at(long long i)
+	{
+		return prefix_sum(i) - prefix_sum(i - 1);
+	}
+
+	// Adds x to the element at a single index i
+	void point_add(size_t i, long long x)
+	{
+		range_add(i, i, x);
+	}
+
+	// Adds x to all elements from index i to j
+	void range_add(size_t i, size_t j, long long x)
+	{
+		// Update first tree for scaling factors
+		add(ts1, i, x);
+		add(ts1, j + 1, -x);
+
+		// Update second tree for independent constants
+		add(ts2, i, x * (i - 1));
+		add(ts2, j + 1, -x * j);
+	}
+
+	// Returns the sum of elements from index i to j
+	long long range_query(size_t i, size_t j)
+	{
+		return prefix_sum(j) - prefix_sum(i - 1);
+	}
+
+private:
+	std::vector<T> ts1; // Tracks D_1[k]
+	std::vector<T> ts2; // Tracks (k - 1) * D_1[k]
+	size_t N;
+
+	int lsb(int n)
+	{
+		return n & (-n);
+	}
+
+	// Helper to add value to a specific target tree
+	void add(std::vector<T> &tree, size_t i, long long x)
+	{
+		while (i <= N)
+		{
+			tree[i] += x;
+			i += lsb(i);
+		}
+	}
+
+	// Helper to get prefix sum from 1 to i
+	long long prefix_sum(long long i)
+	{
+		long long sum1 = 0;
+		long long sum2 = 0;
+		long long original_i = i;
+
+		while (i >= 1)
+		{
+			sum1 += ts1[i];
+			sum2 += ts2[i];
+			i -= lsb(i);
+		}
+		return original_i * sum1 - sum2;
+	}
+};
+
 // Base template defaults to void for C++14 transparent functor behavior
 template <typename T = void>
 struct greater_second
