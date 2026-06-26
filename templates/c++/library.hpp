@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <assert.h>
 
 #ifdef LOCAL
 #include <debug.hpp>
